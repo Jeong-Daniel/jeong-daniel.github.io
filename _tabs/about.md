@@ -17,13 +17,13 @@ Second major : [<u>BigData Science</u>](https://github.com/Jeong-Daniel/Bigdata_
 ## Working
 ![meta ci](https://user-images.githubusercontent.com/85277660/212669538-41cc5155-f346-4479-9690-3cd6111824f5.png)   
 > * Metaverse Entertainmnet  
-> TD팀 Software Engineer   
+> Tech&Dev Team Software Engineer   
 > 22.12.01 ~ 23.01.31    
 
 ![ligci](https://user-images.githubusercontent.com/85277660/212669546-ed6def8d-cc90-49f6-9130-413abeae7f17.png)    
 > * LIG Nex1  
-> G1 Professional     
-> 23.02.06 ~  
+> Laser Systems Research Engineer  
+> 23.02.06 ~ now  
 
 ## Certification & Course
 *   ADsP(Advanced Data Analytics Semi-Professional)  
