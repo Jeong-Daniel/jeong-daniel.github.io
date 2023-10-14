@@ -81,6 +81,8 @@ wsl --install -d Ubuntu-22.04
 wsl --unregister <DistributionName>
 ```
 
+
+
 설치가 완료되었다면 바로 우분투 CLI환경을 구동하게 됩니다. 여기서 유저명과 비밀번호를 입력하게되면 모든 사용준비를 마치게 되는 것입니다. 간단하지요
 
 PowerShell에서 다음과 같은 명령어를 통해서 바로 설치해둔 우분투로 넘어가거나 또는 종료할 수 있습니다.
@@ -93,6 +95,28 @@ wsl --shutdown
 /// 특정 wsl종료
 wsl --terminate <Distribution Name>
 ```
+
+![우분투 환경 실행](https://github.com/Jeong-Daniel/jeong-daniel.github.io/assets/85277660/62a0a861-8e86-4021-9ca6-0af52ce96d7c)
+
+이제 바로 여기서 필요한 작업을 수행하시면 됩니다.
+
+![리눅스 드라이브](https://github.com/Jeong-Daniel/jeong-daniel.github.io/assets/85277660/c3b9aef4-cb61-45b6-ab26-9376bb28229f)
+
+그리고 내 컴퓨터에 들어가면 이렇게 Linux라는 드라이브가 만들어지는데
+
+![리눅스 폴더](https://github.com/Jeong-Daniel/jeong-daniel.github.io/assets/85277660/bc37bf5a-a318-4c6c-a6b7-fd36ee85b9c8)
+
+C드라이브에 들어가듯이 바로 리눅스가 설치된 환경에서 파일을 자유롭게 쓰기/읽기가 가능해집니다.
+
+
+그리고 지금 wsl에 설치된 리눅스 목록을 확인하고 싶다면
+
+![리눅스 목록 확인](https://github.com/Jeong-Daniel/jeong-daniel.github.io/assets/85277660/574acca3-8213-43b2-ae77-1f809a705055)
+
+```
+$ wsl -l -v
+```
+해당 명령어를 입력하면 다음과 같이 지금 설치된 리눅스의 목록과 상태가 나옵니다.
 
 [WSL의 기본 명령](https://learn.microsoft.com/ko-kr/windows/wsl/basic-commands#unregister-or-uninstall-a-linux-distribution)
 
@@ -127,9 +151,7 @@ usbipd wsl attach --busid <busid> --auto-attach
 usbipd wsl detach --busid <busid>
 ```
 
-auto attach 명령이 없다면 중간에 끊어졌을때 다시 Host가 권한을 독점을하지만 해당 명령어를 붙여주면 중간에 끊어지더라도 다시 감지되면 wsl로 계속해서 붙을 수 있게 해준다.
-
-참고로 이 기능 자체가 WSL2에서만 가능한것으로 나온다. 
+auto attach 명령이 없다면 중간에 끊어졌을때 다시 Host가 권한을 독점을하지만 해당 명령어를 붙여주면 중간에 끊어지더라도 다시 감지되면 wsl로 계속해서 붙을 수 있게 해줍니다. 참고로 이 기능 자체가 WSL2에서만 가능한것으로 나옵니다.
 
 [USB 디바이스 연결 공식문서](https://learn.microsoft.com/ko-kr/windows/wsl/connect-usb)
 
@@ -140,4 +162,6 @@ sudo apt install linux-tools-generic hwdata
 sudo update-alternatives --install /usr/local/bin/usbip usbip /usr/lib/linux-tools/*-generic/usbip 20
 ```
 
- 우분투에 직접 해당 명령어를 통해서 Linux에서 USBIP 도구 및 하드웨어 데이터베이스 설치를 하면 된다고 한다.
+ 우분투에 직접 해당 명령어를 통해서 Linux에서 USBIP 도구 및 하드웨어 데이터베이스 설치를 하면 된다고 합니다.
+
+ 여기까지 간단하게 wsl 환경으로 리눅스를 가동해보고 설치와 기본적인 동작 USB 연결등을 해보았습니다. SSH 네트워크 통신, 드라이브 마운트, GPU환경등 할려면 아직 많은 것이 기다리고 있는데 이것도 주말에 한번씩 정리를 해보면 도움이 되겠지요
