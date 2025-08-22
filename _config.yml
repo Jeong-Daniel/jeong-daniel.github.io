@@ -192,6 +192,8 @@ defaults:
     values:
       layout: page
       permalink: /:title/
+  - scope:
+      path: assets/img/favicons
 
 sass:
   style: compressed
