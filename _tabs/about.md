@@ -39,13 +39,6 @@ Second major : [<u>BigData Science</u>](https://github.com/Jeong-Daniel/Bigdata_
 
 ## Technology Stack
 * Programming Language & Web Framework<br/>
-<img src="https://img.shields.io/badge/Python-0769AD?style=for-the-badge&logo=python&logoColor=white"><img src="https://img.shields.io/badge/JAVA-007396?style=for-the-badge&logo=java&logoColor=white">
-<img src="https://img.shields.io/badge/Django-27423A?style=for-the-badge&logo=django&logoColor=white"><img src="https://img.shields.io/badge/Spring-9fdf82?style=for-the-badge&logo=spring&logoColor=white"><br/>
 * Computer Vision(with Raspberry Pi & Python)<br/>
-<img src="https://img.shields.io/badge/Opencv-072743?style=for-the-badge&logo=opencv&logoColor=white">
 * Machin Learning / Deep Learning<br/>
-<img src="https://img.shields.io/badge/Scikit_Learn-FF8C00?style=for-the-badge&logo=Scikit-learn&logoColor=white">
-<img src="https://img.shields.io/badge/Pytorch-e06666?style=for-the-badge&logo=Pytorch&logoColor=white">
-<img src="https://img.shields.io/badge/Tensorflow-FF8C00?style=for-the-badge&logo=Tensorflow&logoColor=white"><img src="https://img.shields.io/badge/Keras-F80000?style=for-the-badge&logo=Keras&logoColor=white">
 * DataBase<br/>
-<img src="https://img.shields.io/badge/oracle-F80000?style=for-the-badge&logo=oracle&logoColor=white"><img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"><img src="https://img.shields.io/badge/mariaDB-003545?style=for-the-badge&logo=mariaDB&logoColor=white">

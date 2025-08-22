@@ -151,7 +151,7 @@ bundle exec jekyll serve를 입력해주시면 됩니다.
 
 자 그러면 블로그 서버가 로컬상에서 작동이 되는 것을 볼 수 있습니다. 여기서 로컬서버주소인
 
-http://127.0.0.1:4000/ (뒤에 낯선게 붙어있는데 4000은 포트번호입니다)
+https://127.0.0.1:4000/ (뒤에 낯선게 붙어있는데 4000은 포트번호입니다)
 
 ![에러 예시](https://user-images.githubusercontent.com/85277660/210136495-be5fa317-ecae-41c4-9a31-b814ee296ed6.png)
 
@@ -179,9 +179,9 @@ git push
 
 그러면 이제 간단하게 테마나 적용해봅시다.
 
-[ttps://jekyllthemes.io/](https://jekyllthemes.io/)  
+[https://jekyllthemes.io/](https://jekyllthemes.io/)  
 
-[http://jekyllthemes.org/](http://jekyllthemes.org/)  
+[https://jekyllthemes.org/](https://jekyllthemes.org/)  
 
 [https://jekyll-themes.com/](https://jekyll-themes.com/)  
 

@@ -32,7 +32,7 @@ vi든 nano든 텍스트 편집기로 sources.list를 수정합시다.
 여기서 맨 아래에다가 
 
 ```
-deb http://cn.archive.ubuntu.com/ubuntu/ bionic universe
+deb https://cn.archive.ubuntu.com/ubuntu/ bionic universe
 ```
 해당 주소를 추가를 해줍시다.
 
@@ -44,7 +44,7 @@ deb http://cn.archive.ubuntu.com/ubuntu/ bionic universe
 
 *그런데 이렇게 텍스트 편집기 열어서 수정하는거 말고
 ```
-sudo apt-add-repository 'deb http://cn.archive.ubuntu.com/ubuntu/ bionic universe'
+sudo apt-add-repository 'deb https://cn.archive.ubuntu.com/ubuntu/ bionic universe'
 ```
 이런식으로 입력이 가능한거 같더라
 
@@ -62,7 +62,7 @@ The following signatures couldn't be verified because the public key is not avai
 
 대충 중간에 NO_PUBKEY ~~~~ 해서 뒤에 어떤 키가 필요한지 나오게 된다.
 
-[http://pgp.mit.edu/](http://pgp.mit.edu/)
+[https://pgp.mit.edu/](https://pgp.mit.edu/)
 
 위 사이트에 들어가서 코드를 검색하는데 앞에 0x를 붙여야 한다.
 
