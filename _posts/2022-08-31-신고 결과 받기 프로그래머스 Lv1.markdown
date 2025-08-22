@@ -1,0 +1,75 @@
+---
+title: 성격 유형 검사하기 프로그래머스 Lv1
+date:   2022-08-31 13:58:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/92334](https://school.programmers.co.kr/learn/courses/30/lessons/92334)
+
+저는 이 문제를 2차원 행렬로 풀고 싶었습니다. 0으로 초기화한 테이블에다가 신고를 기록을 하고 신고 횟수가 k번 이상인 애들을 모아서 알려주는 것이었는데 막상풀고보니 for문이 너무 많은 것을 보았습니다.
+
+```py
+def solution(id_list, report, k):
+    length = len(id_list)
+    graph = [[0]*length for _ in range(length)]
+    
+    name_list = {}
+    for i in range(length):
+        name_list[id_list[i]]=i
+    
+    for j in range(len(report)):
+        a,b = map(str,report[j].split())
+        left_index = name_list[a]
+        right_index = name_list[b]
+        graph[left_index][right_index] = 1    
+    
+    report_list = []
+    for i in range(length):
+        check = sum(list(zip(*graph))[i])
+        if check >= k:
+            report_list.append(i)
+    
+    answer = [0]*length
+    for i in range(length):
+        for j in report_list:
+            if graph[i][j] == 1:
+                answer[i]+=1
+
+    return answer
+```
+
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211154255-e4d327c8-1b52-440b-8c6b-85dd50336dfe.png)
+
+대부분의 테스는 통과하였지만 결국 몇개는 시간 초과로 실패를 했습니다. (아마 백준이었다면 pypy3로 해결을..?) 뭔가 다른 방법이 필요해 보입니다. 그렇다면 2차원 행렬에 기록하는대신 그래프를 이용해볼려고 합니다. 신고를 할때마다 그래프를 그리고 간선의 개수가 k개 이상인 것을 뽑아 해당 노드를 가르키는 녀석들에게 차례대로 리포트를 하는 식입니다.
+
+```py
+def solution(id_list, report, k):
+    length = len(id_list)
+    graph = [[]*length for _ in range(length)]
+    name_list = {}
+    for i in range(length):
+        name_list[id_list[i]]=i
+
+    for j in range(len(report)):
+        a,b = map(str,report[j].split())
+        if name_list[a] not in graph[name_list[b]]:
+            graph[name_list[b]].append(name_list[a])
+
+    answer = [0]*length
+    for i in range(length):
+        if len(graph[i])>=k:
+            for i in graph[i]:
+                answer[i]+=1            
+            
+    return answer
+```
+
+이거는 통과를 하네요 처음에 풀려고 했던 방식은 for문 4개에 이중 for문 한개였는데 다시 그래프-노드로 접근을 하니 for문 3개 2중 for문 하나로 줄었습니다.
+
+그리고 그래프도 처음 2차원 배열보다도 공간이 많이 줄어든 형태로 만들었습니다. 일단 첫번째 for문은 이름 사전을 이용했습니다. 이용자가 이름으로 주어지는데 인덱스화 시키기 위해서입니다.
+
+그리고 신고를 접수를 하는데 report는 split로 구분한 다음 해당 신고자의 동일한 기록이 존재하지 않을 경우 그래프에다가 신고 내역을 추가를 합니다.
+
+그리고 신고 내역의 길이가 k번 이상일때 해당 신고자에게 신고알림 횟수를 추가해서 반환 합니다.

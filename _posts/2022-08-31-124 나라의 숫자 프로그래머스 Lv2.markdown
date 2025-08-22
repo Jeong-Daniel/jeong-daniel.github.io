@@ -1,0 +1,69 @@
+---
+title: 124 나라의 숫자 프로그래머스 Lv2
+date:   2022-08-31 21:00:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/12899](https://school.programmers.co.kr/learn/courses/30/lessons/12899)
+
+
+일단 문자가 들어오면 이를 3진수로 풀어라는 것 까지는 알겠는데 문제는 거기까지였다.
+
+1은 1이고 2은 2고 3은 4고 4는 11이고.....
+
+```py
+def solution(n, q):
+    rev_base = ''
+    while n > 0:
+        n, mod = divmod(n, q)
+        rev_base += str(mod)
+    return rev_base[::-1]
+
+n= int(input())
+print(solution(n, 3))
+```
+
+어떤 진수를 10진수로 변경하는 것과 10진수를 2,8,16진수로 변경하는 것은 있지만 10진수를 특정 진수로 한번에 만드는 것은 없어서 간단하게 함수를 만들었다. 그런데 문제가 있었다.
+
+
+일단 3진수로 만들었는데 3진수는 0,1,2 총 3가지의 글자를 사용한다.  그렇다고 10을 4로 바꾸는 것도 뭔가 맞지 않았다. 11이면? 흠...
+
+```py
+def solution(n):
+    nation = [4, 1, 2]
+    li = []
+    if n > 0:
+        temp = n
+        while temp // 3 > 0:
+            if temp % 3 == 0:
+                li.append(temp % 3)
+                temp = temp - 1
+            else:
+                li.append(temp % 3)
+            temp = temp // 3
+        if temp != 0:
+            li.append(temp)
+
+
+    answer = []
+    for i in li[::-1]:
+        if i == 0:
+            answer.append(str(nation[i]))
+        elif i == 1:
+            answer.append(str(nation[i]))
+        elif i == 2:
+            answer.append(str(nation[i]))
+
+    return ''.join(answer)
+```
+
+일단 사용 가능한 숫자 4,1,2를 넣는다. 그리고 들어온 값에다가 더 이상 3으로 나눈 몫이 없을때까지 진행한다.
+
+만약 3으로 나누었는데 나머지가 없다면 li에다가 0을 추가를 해주고 temp는 1을 빼주자 그게 아니라면 그대로 넣어준다.
+
+그렇게 while문을 돌았을때 temp가 0이 아니라면 그것도 다시 li에 넣어준다.
+
+이제 li의 숫자를 뒤집어야 한다. 그래서 0과 1,2에 따라서 숫자를 변환한 것을 넣어주고 합친다.
+
+다시 말해서 이번 코드는 3진수에서 약간의 변형을 통해 0을 어떻게 처리하는가가 문제

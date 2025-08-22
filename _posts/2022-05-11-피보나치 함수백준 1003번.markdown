@@ -1,0 +1,97 @@
+---
+title: 피보나치 함수 백준 1003번
+date:   2022-05-11 22:50:41 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, dynamic]
+---
+
+[백준 1003번 문제](https://www.acmicpc.net/problem/1003)
+
+fibonacci(3)을 호출하면 다음과 같은 일이 일어난다.
+
+fibonacci(3)은 fibonacci(2)와 fibonacci(1) (첫 번째 호출)을 호출한다.
+fibonacci(2)는 fibonacci(1) (두 번째 호출)과 fibonacci(0)을 호출한다.
+두 번째 호출한 fibonacci(1)은 1을 출력하고 1을 리턴한다.
+fibonacci(0)은 0을 출력하고, 0을 리턴한다.
+fibonacci(2)는 fibonacci(1)과 fibonacci(0)의 결과를 얻고, 1을 리턴한다.
+첫 번째 호출한 fibonacci(1)은 1을 출력하고, 1을 리턴한다.
+fibonacci(3)은 fibonacci(2)와 fibonacci(1)의 결과를 얻고, 2를 리턴한다.
+1은 2번 출력되고, 0은 1번 출력된다. N이 주어졌을 때, fibonacci(N)을 호출했을 때, 0과 1이 각각 몇 번 출력되는지 구하는 프로그램을 작성하시오.
+
+ 
+
+보고나서 피보나치 함수에다가 중간에 0번을 방문할때와 1번을방문할때 카운트를 하면 되겠다는 단순한 생각으로 접근했습니다.
+
+```py
+def recur(num):
+    global count_zero, count_one
+    if num == 0:
+        count_zero+=1
+        return 0
+    elif num == 1:
+        count_one+=1
+        return 1
+    else:
+        y = recur(num-1)+recur(num-2)
+    return y
+    
+n = int(input())
+s = list(map(int, input().split()))
+
+for i in range(n):
+    count_zero = 0
+    count_one = 0
+    recur(s[i])
+    print(count_zero, count_one)
+```
+
+하지만 어림도 없지요 다이나믹입니다. 테스트케이스는 통과했지만 시간초과로 문제가 풀리지 않았습니다. 아마 메모이제이션을 사용해야 하나 봅니다. 다만 이 코드를 가지고 0번부터 9번까지 10개를 돌려보았는데
+
+![img result](https://user-images.githubusercontent.com/85277660/210167380-00c673b6-207a-4942-b10a-dc30edcbe614.png)
+
+어째 0번을 방문할때라 1번을 방문할때의 녀석들이 피보나치 함수 형태를 띄고 있습니다. 그렇다면 차라리 피보나치 함수를 두개 만들어주고 둘다 다이나믹프로그래밍 함수를 두개 만들면 되겠네요
+
+
+```py
+dic_0 = {}
+dic_1 = {}
+
+def fibo_0(n):
+    if n in dic_0: 
+        return dic_0[n]
+    if n == 0:
+        dic_0[0] = 1
+        return 1
+    elif n== 1:
+        dic_0[1] = 0
+        return 0
+    else:
+        dic_0[n] = fibo_0(n-2)+fibo_0(n-1)
+        return dic_0[n]
+    
+def fibo_1(n):
+    if n in dic_1: 
+        return dic_1[n]
+    if n == 0:
+        dic_1[0] = 0
+        return 0
+    elif n== 1:
+        dic_1[1] = 1
+        return 1
+    else:
+        dic_1[n] = fibo_1(n-2)+fibo_1(n-1)
+        return dic_1[n]
+    
+n = int(input())
+#s = list(map(int, input().split()))
+    
+for i in range(n):
+    s = int(input())
+    print(fibo_0(s), fibo_1(s))
+```
+
+피보나치 함수 코드를 두개를 만들었습니다. 하나는 0의 개수를 하나는 1의 개수입니다. return값과 저장하는 값만 바꾸고 그대로 출력하게 했습니다.
+
+ 
+
+자꾸 런타임에러가나서 보니 제가 입력을 잘못 받고 있었네요 ㅜ

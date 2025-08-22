@@ -1,0 +1,80 @@
+---
+title: 설탕과자 뽑기 리스트
+date:   2022-05-10 22:45:41 +0900
+categories: [Coding_Test, Others]
+tags: [coding, python, algorithm, list]
+---
+
+출처: 코드업 6097
+
+문제는 바로 찾아서 보시면 됩니다.
+
+기초 100문제는 사실 문제라기 보다는 파이썬 맛보기로 익히는게 아닌가 싶을 정도였는데, 사실 나도 하면서 얕은복사 실수를 저지른다던가 문제를 잘못 이해하는 거를 보면서 더 어려운거는 어떻게 될까 준비를 많이 해야 겠다는 생각이 들었다.
+
+```pytnon
+a, b = map(int, input().split())
+arr = [[0 for i in range(b)] for j in range(a)]
+```
+
+일단 가장 먼저 배열을 생성하는 방법입니다.
+
+사실 numpy를 사용할 수 있다면 np.zeros((n,n))쓰면 되는데 여기서는 라이브러리를 사용할 수 없으니 for문을 사용합시다.
+
+[파이썬 리스트에서 2x2배열에서 얕은 복사가 일어나는 경우](https://jeong-daniel.github.io/posts/%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EB%A6%AC%EC%8A%A4%ED%8A%B8%EC%97%90%EC%84%9C-2x2%EB%B0%B0%EC%97%B4%EC%97%90%EC%84%9C-%EC%96%95%EC%9D%80-%EB%B3%B5%EC%82%AC%EA%B0%80-%EC%9D%BC%EC%96%B4%EB%82%98%EB%8A%94-%EA%B2%BD%EC%9A%B0/)
+
+리스트에다가 리스트를 곱하는 방법도 있지만 이는 얕은복사 문제가 일어나니 이중for문을 이용해서 만드는 것이 좋습니다.
+
+```python
+num = int(input())
+for i in range(num):
+    l,d,x,y = map(int, input().split())
+    x-=1
+    y-=1
+    if d==0:
+        for j in range(l):
+            arr[x][y]=1
+            y+=1
+    else:
+        for j in range(l):
+            arr[x][y]=1
+            x+=1
+```
+
+num에다가 반복할 횟수를 받고
+
+조건에 따라서 길이,방향,x,y를 받은다음
+
+이 배열에서 1,1이 첫번째가 아니라 0,0을 처음으로 잡아두었으니 각각 1씩 빼서 좌표를 보정한 다음에
+
+if - else문으로 방향을 설정합시다. 세로로 가는 방법은 y축의 값을 1씩 더하는 것이고 가로로 가는 방법은 x축의 값을 1씩 더해나가면 됩니다.
+
+그리고 해당 좌표의 값을 1로 바꾸면 됩니다. 아니면 지난번 처럼 int와 bool값을 이용하셔도 됩니다.
+
+마지막 부분의 코드는 출력하는 것이니 생략하겠습니다.
+
+```python
+a, b = map(int, input().split())
+arr = [[0 for i in range(b)] for j in range(a)]
+
+num = int(input())
+for i in range(num):
+    l,d,x,y = map(int, input().split())
+    x-=1
+    y-=1
+    if d==0:
+        for j in range(l):
+            arr[x][y]=1
+            y+=1
+    else:
+        for j in range(l):
+            arr[x][y]=1
+            x+=1
+
+for i in range(a):
+    for j in range(b):
+        if j!=b:
+            print(arr[i][j], end=' ')
+        else:
+            print(arr[i][j])
+    print()
+```

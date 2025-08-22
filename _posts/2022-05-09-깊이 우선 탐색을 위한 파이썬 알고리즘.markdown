@@ -1,0 +1,96 @@
+---
+title: 깊이 우선 탐색을 위한 파이썬 알고리즘 DFS
+date:   2022-05-08 08:22:41 +0900
+categories: [Languages, Python]
+tags: [python, coding, algorithm, dfs, recursive, stack]
+---
+
+깊이 우선 탐색을 위한 파이썬 알고리즘 재귀,스택, DFS을 위한 포스팅입니다.
+
+DFS Depth First Search 트리나 그래프에서 한 루트로 탐색하다가 특정 상황에서 가장 깊숙히 들어가서 확인한뒤 돌아가 다른 루트로 탐색을 반복하는 방식으로 주로 백트래킹에 사용합니다. 일반적으로 재귀호출을 사용하나 스택으로 구현하기도 합니다. 여기서는 둘다 사용해보도록 합시다.
+
+ 
+
+백트래킹은 해결책에 대한 후보를 구축해서 나아가다가 가능성이 있다고 판단되는 즉시 후보를 포기(백트랙)해 정답을 찾아가는 범용적인 알고리즘으로 제약 충족 문제에 유용합니다.
+
+ 
+
+제약충족문제는 수많은 제약조건을 충족하는 상태를 찾아내는 수학문제 입니다. 대표적인 놀이중 하나로 스도쿠가 있으며  좀더 옆길로 새자면 경영과학에서 다루는 최적화문제가 해당합니다.
+
+![DFS image](https://user-images.githubusercontent.com/85277660/210165814-f5322c95-3f16-4642-abcc-0554cda0e55c.gif)
+
+장점
+* 단지 현 경로상의 노드들만을 기억하면 되므로 저장 공간의 수요가 비교적 적다.
+* 목표 노드가 깊은 단계에 있을 경우 해를 빨리 구할 수 있다.
+
+단점
+* 해가 없는 경로에 깊이 빠질 가능성이 있다. 따라서 실제로는 미리 지정한 임의 깊이까지만 탐색하고 목표 노드를 발견하지 못하면 다음 경로를 따라 탐색하는 방법이 유용할 수 있다.
+* 얻어진 해가 최단 경로가 된다는 보장이 없다. 이는 목표에 이르는 경로가 다수인 문제에 대해 깊이우선탐색은 해에 다다르면 탐색을 끝내버리므로, 이때 얻어진 해는 최적이 아닐 수 있다는 의미이다.
+
+코드를 봅시다.
+
+```py
+def recursive_dfs(v, discovered=[]):
+    discovered.append(v)
+    for w in graph[v]:
+        if not w in discovered:
+            discovered = recursive_dfs(w,discovered)
+    return discovered
+```
+
+일단 가장먼저 v는 시작할 곳을 입력합니다.
+
+![recursive](https://user-images.githubusercontent.com/85277660/210165834-1670ea6e-77fe-44d1-b458-a438309e108d.png)
+
+가령 첫번째 시작점을 1이라고 가정을 합시다.
+
+ 
+
+그러면 graph[1]에는 자신과 연결된 다른 노드가 있을 것인데 여기를 하나씩 방문을 해보게 됩니다. discovered에 없다면 함수를 다시 불러오면서 append를 이용해서 넣어줍니다. 그리고 더 이상 갈 곳이 없다면 discovered로 결과를 돌려주는데 여기에는 깊이순으로 들어간 것을 보여줍니다.
+
+ 
+
+ 
+
+이어서 스택으로 구현한 DFS를 보겠습니다.
+
+```python
+def iterative_dfs(start_v):
+    discovered = []
+    stack = [start_v]
+    while stack:
+        v = stack.pop()
+        if v not in discovered:
+            discovered.append(v)
+            for w in graph[v]:
+                stack.append(w)
+    return discovered
+```
+
+처음에 입력할 값은 시작할 지점입니다. 그리고 탐색하는 리스트를 새로 생성합시다.
+
+stack가 빌때까지 반복을 합시다.
+
+ 
+
+가장 먼저 stack.pop()을 해서 처음에 들어 온것을 뱉어서 v로 넘겨줍시다. 그런다음 v가 discovered에 들어 있는지 본다음 없다면 discovered에 넣어주고 v가 갈수 있는 (처음에는 1) 모든 곳을 stack에다가 추가를 해줍시다.
+
+ 
+
+이 과정을 반복하게 됩니다.
+
+![img1 dfs](https://user-images.githubusercontent.com/85277660/210165838-ef925a9e-dbb8-4cac-a162-3de9173065c6.png)
+
+자 그런데 재귀로 했을때와 스택으로 구현했을때 차이가 있습니다.
+
+ 
+
+재귀는 사전식 순서로 방문한데 반해 반복 스택 DFS는 역순으로 반복하게 됩니다.
+
+ 
+
+스텍으로 구현하다보니 가장 마지막에 삽입된 노드부터 꺼내서 반복하게 되고
+
+ 
+
+인접노드에서 가장 최근에 담긴 노드 즉 가장 마지막 부터 방문하게 됩니다.

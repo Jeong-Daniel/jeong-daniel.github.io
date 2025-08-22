@@ -1,0 +1,69 @@
+---
+title:  AWS 라이트세일에 워드프레스 설정하는 방법
+date:   2023-03-02 21:40:46 +0900
+categories: [Blog, WordPress]
+tags: [blog, aws, lightsail]
+---
+
+미루고 미루다가 휴일을 기념으로 늦저녁에 워드프레스 블로그 만들기를 시작했습니다. AWS 계정을 만들고 워드프레스 블로그를 만드는것은 정말 순식간에 할 수 있고 인터넷에 앞선 분들이 도메인까지 설정하는것을 친절하게 설명을 해두었는데 저도 왜 이제야 시작하나 싶네요 이제 돈빠져 나가기 시작하니까 블로그를 빠르게 만들어 보겠습니다.
+
+[AWS 라이트세일](https://aws.amazon.com/ko/lightsail/)
+
+
+![AWS 메뉴](https://user-images.githubusercontent.com/85277660/222428539-c448a503-73d4-46df-a4cb-00eede8a43ee.png)
+
+AWS 계정을 생성하고 서비스나 lightsail을 검색하면 위 사진 처럼 라이트세일이 나오게 됩니다.
+
+![라이트세일](https://user-images.githubusercontent.com/85277660/222429095-7600d7eb-b123-4094-a116-341038843cef.png)
+
+이제 라이트세일을 시작하기 위해서 반겨주네요
+
+![라이트세일 설정](https://user-images.githubusercontent.com/85277660/222429195-0b0d6eb9-52bc-4e90-a573-d46968ac95c7.png)
+
+플랫폼은 리눅스로 블루프린트는 워드프레스를 바로 사용합시다. 그러면 자동으로 워드프레스를 사용 할 수 있게 됩니다.
+
+![라이트세일 비용](https://user-images.githubusercontent.com/85277660/222429410-fb0afeb8-5a61-48c9-b247-03e4a1302c84.png)
+
+비용을 설정을 합니다. 첫 3개월은 무료라고 하고 이후에는 월비용을 지불하는데 아직 블로그의 규모는 크지 않고 트래픽이 많이 일어나지 않기에 가장 저렴한 것으로 시작하겠습니다. 나중에 서비스 플랜은 변경할 수 있습니다.
+
+![라이트세일 인스턴스생성](https://user-images.githubusercontent.com/85277660/222429692-888bb028-5394-4655-871b-6dbd088b7637.png)
+
+이제 라이트세일을 사용한 인스턴스가 하나 생성되었습니다. 이제 우리도 하나의 가상컴퓨터가 동작을하며 여기서 워드프레스가 작동을 합니다. 지금은 생성한지 얼마 되지 않아서 pending상태이나 몇 분 뒤에 새로고침을하면 작동을 하는 것을 확인 할 수 있습니다.
+
+![라이트세일 IP고정](https://user-images.githubusercontent.com/85277660/222430178-202fb1fc-b217-4d1e-af7a-6f7868a0ff7c.png)
+
+이제 워드프레스에 접근을 하기 위한 고정된 IP가 필요합니다. 바로 옆의 메뉴인 Networking에 들어가서 Create static IP 고정 IP 생성을 해줍시다.
+
+![Cap 2023-03-02 20-49-32-363](https://user-images.githubusercontent.com/85277660/222430406-cf6df57e-cb78-44a4-a83d-f5ff28f8960f.png)
+
+그리고 우리가 생성한 인스턴스을 선택하고 고정 IP 생성을 하면 거의 대부분의 준비가 끝난 것이나 다름 없습니다.
+
+![워드프레스 기본](https://user-images.githubusercontent.com/85277660/222430843-c7e2f2e5-d2e0-4a69-b0f7-ef8650b8d65a.png)
+
+저의 워드프레스가 만들어진것을 확인 할 수 있습니다.
+
+이제 워드프레스 관리자 모드로 들어가봅시다.
+
+![라이트세일 SSH](https://user-images.githubusercontent.com/85277660/222431423-84a4a8f3-729e-4c0a-a544-b7b8b2a3eb4b.png)
+
+라이트세일 인스턴스를 찾아보면 "Connect using SSH"가 있습니다. SSH는 Secure Shell의 줄임말로, 원격 호스트에 접속하기 위해 사용되는 보안 프로토콜입니다. 이것을 클릭하면 우리의 워드프레스가 있는 가상컴퓨터에 접속 할 수 있습니다.
+
+![라이트세일 SSH 터미널](https://user-images.githubusercontent.com/85277660/222431833-47f6151b-770e-4e12-a2a5-157b8bc6f480.png)
+
+그리고 터미널에서
+```bash
+sudo cat /home/bitnami/bitnami_credentials
+```
+이렇게 입력을 하면 유저네임과 패스워드를 확인 할 수 있습니다.
+
+![라이트세일 SSH 패스워드 확인](https://user-images.githubusercontent.com/85277660/222432210-e429963e-883d-420e-a915-658419315c00.png)
+
+이를 저장을 해두고 이제 워드프레스 관리자 페이지로 가봅시다.
+
+아까 라이트세일 고정 아이피에다가 /wp-admin을 입력하면 됩니다. ex) ‘12.123.123.123/wp-admin‘
+
+![워드프레스 관리자 페이지](https://user-images.githubusercontent.com/85277660/222432711-2e789181-96c1-44b2-abdf-273b9354e28e.png)
+
+이제 워드프레스 관리자 페이지를 통해서 자유롭게 커스터마이즈를 할 수 있습니다.
+
+도메인 연결, 플러그인 & 테마적용, 티스토리 게시글 백업 순으로 진행 할 듯 합니다.

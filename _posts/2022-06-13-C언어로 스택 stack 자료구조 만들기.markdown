@@ -1,0 +1,224 @@
+---
+title: C언어로 스택 stack 자료구조 만들기
+date:   2022-06-13 16:06:30 +0900
+categories: [Languages, C]
+tags: [c,coding,stack]
+---
+프로그래밍에서 자료를 저장하기 위한 어떤 구조를 컨테이너 구조라고 하고 리스트나 배열 역시 마찬가지로 어떤 자료를 담는 컨테이너입니다. 보통 많이 사용하는 컨테이너 자료구조는 스택, 큐, 데크(잘안씀) 등이 있는데 스택을 한번 C언어로 만들어보겠습니다. 스택을 만들기 위해서는 동적할당과 포인터의 개념을 가지고 있으셔야 합니다.
+
+[파이썬 스택을 이용한 문자열 역순 출력 프로그램](https://jeong-daniel.github.io/posts/%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EC%8A%A4%ED%83%9D%EC%9D%84-%EC%9D%B4%EC%9A%A9%ED%95%9C-%EB%AC%B8%EC%9E%90%EC%97%B4-%EC%97%AD%EC%88%9C-%EC%B6%9C%EB%A0%A5-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8/)
+
+파이썬으로 스택을 만드는 것이 필요하다면 위 링크를 참고하시면 됩니다.
+
+스택은 선입선출(LIFO: last in first out) 구조로 마지막에 들어온 데이터가 먼저 나가는 구조입니다.
+
+![총알집 구조](https://user-images.githubusercontent.com/85277660/210575697-50560ffb-2d07-4c51-a3e4-6ec61d355630.jpg)
+
+총알집, 탄창 같은것으로 이해하시면 쉬울겁니다. 저도 군대에서 탄창에 탄끼워 넣는일을 했었는데 이게 스택 구조와 동일합니다. 넣으면 마지막으로 쭉 들어가고 마지막에 넣은게 첫번째로 발사됩니다.
+
+스택 연산에서는 크게 4가지가 필요합니다. 삽입,제거,비었는지확인,가득찼는지 확인 이렇게 되겠네요 인터페이스를 구성해봅시다.
+
+```c
+Stack *mkStack(); // 스택을 선언
+void push(Stack *s, int item); // 스택에 자료를 삽입
+int pop(Stack *s) // 스택에 자료를 꺼냄
+int isEmpty(const Stack *s) // 비어있는지 확인
+int isFull(const Stack *s) // 가득찼는지 확인
+```
+이렇게 스택의 인터페이스를 구성했습니다. 가득차있는지 확인하는 이유는 push를 할때 가득차있다면 더 이상 삽입할 수 없으니 확인하는 함수를 만들기 위함이고, 비어있는지 확인하는 이유는 pop를 할때 비어있다면 아무것도 반환할 수 없기 때문입니다.
+
+
+탄창에서도 총알이 가득찬 탄창에 총알을 더 집어넣을 수 없고, 총알이 없다면 더 이상 총을 격발 할 수 없겠지요
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#define _CRT_SECURE_NO_WARNINGS
+#define MAX_SIZE 10
+
+struct _stack {
+	int *data;
+    int top;
+    int size;
+};
+typedef struct _stack Stack;
+
+Stack* mkStack(int size);
+void push(Stack* s, int item);
+int pop(Stack* s);
+int isEmpty(const Stack* s);
+int isFull(const Stack* s);
+
+void error(const char* msg);
+
+void error(const char* msg) {
+	printf("오류: %s ");
+	printf("프로그램을 종료합니다. \n");
+}
+```
+여기서 스택의 크기를 입력받아서 생성하는 동적할당을 구현을 해봅시다. 그리고 구조체를 이용해서 데이터와 top의 위치를 설정합시다. top이 가지는 의미는 나중에 다시 나옵니다. 보시는 것처럼 *data라고 해둔 것도 data역시 동적할당으로 생성하기 위함입니다.
+
+그리고 앞에서 정의한 5개의 인터페이스를 먼저 선언을 하고 에러메세지를 띄울 함수도 하나 정의합시다. 참고로 이렇게 void형으로 아무것도 리턴하지 않는 함수를 프로시저라고 합니다.
+
+### 1. 스택 생성 함수
+```c
+Stack* mkStack(int size){
+	Stack* s = (Stack*)malloc(sizeof(Stack));
+	assert(size > 0);
+	assert(s);
+	s->size = size;
+	s->data = (int*)malloc(sizeof(int) * size);
+	assert(s->data);
+	s->top = 0;
+	return s;
+}
+```
+가장 먼저 스택 자료형을 선언하는 함수를 만들어 줍시다. 함수 앞에 int, double, cahr, void등은 리턴할 자료형을 명시하는 것입니다 여기서는 Stack라는 구조체 자료형을 선언하였고 반환값역시 스택이니 Stack로 시작을 합니다.
+
+ 
+
+1. 구조체의 포인터를 선언을 해줍시다 그 이유는 동적할당을 위해서 입니다.
+
+2. 그리고 size를 입력받을때 음수라던가 0을 입력받으면 안되기 때문에 assert를 이용해서 확인을 합시다.
+
+3. 스택의 size 구조체에 입력한 size를 넣어줍시다.
+
+4. data역시 동적할당을 위해서 생성을 하고 data 역시 정수형이기 때문에 이상한 값이 들어왔는지 체크를 합시다.
+
+5. 처음 생성된 스택의 top는 0번 위치를 가르킵시다. 아직 아무 데이터도 없기 때문입니다.
+
+그리고 s 만든 스택을 반환합시다.
+
+
+### 2. 스택 삽입 함수
+```c
+void push(Stack* s, int item) {
+	if (isFull(s)) error("스택이 가득찼습니다.");
+	s->data[s->top++] = item;
+}
+```
+조금 어려운 개념이 있을 수 있는데 천천히 한번 봅시다. 일단 push는 void형으로 반환하는 값이 없습니다. 지정한 Stack 값만 면경이 됩니다. isFull로 가득차있는지 확인하고 아니라면 값을 추가합시다.
+
+일단 top는 커서라고 생각하시면 됩니다. 일단 아무 데이터도 없다고 가정을 합시다. top은 맨처음에 0으로 초기화가 됩니다. 그렇다면 data[0]에다가 item을 집어 넣게 됩니다.
+
+그리고 top뒤에 ++가 붙어 있는데 이거는 증감연산자의 후치증가입니다. 후치증가는 "코드 한줄이 끝난뒤에 증가"하는 것입니다. data[0]에 데이터를 집어넣고, top는 후치증가를 했으니 1을 가리키게 됩니다. 언제까지? top의 값이 MAX_SIZE가 될때까지 입니다.
+
+그리고 push에 스택 s를 바로 넣는 것이 아니라 포인터로 집어 넣는 이유는 간접참조를 통해서 s를 바로 변경하기 위함입니다. 포인터로 지정을 하지 않고 바로 받게 되면 push안에 임시 매개변수가 생성되어 함수안에서만 작동을 하고 우리가 원하는 스택 s의 값이 변경되지 않는 문제가 있습니다.
+
+### 3. 스택 pop함수
+```c
+int pop(Stack* s) {
+	if (isEmpty(s)) error("스택이 비어있습니다.");
+	return s->data[--s->top];
+}
+```
+pop으로 제거하는 것입니다. 제거를 할때는 제거된 값을 리턴 해줘야 합니다. 여기서는 data가 정수형 자료형이니 int를 받게 됩니다. top의 커서는 마찬가지로 한칸 뒤로 빠지게 됩니다.
+
+### 4. 스택이 가득찼는지 확인 함수 & 스택이 비어있는지 확인 함수
+```c
+int isFull(const Stack* s) {
+	if (s->top == MAX_SIZE) return 1;
+	else return 0;
+}
+int isEmpty(const Stack* s) {
+	if (s->top == 0) return 1;
+	else return 0;
+}
+```
+top의 위치가 MAX_SIZE인지 확인하면 됩니다. 만찬가지로 비어있는지는 0을 반환하는지 확인하면 됩니다. 여기서 Stack변수를 받을때 const가 있습니다.
+
+[C언어에서 const를 사용하는 이유 선언의 의미](https://jeong-daniel.github.io/posts/C%EC%96%B8%EC%96%B4%EC%97%90%EC%84%9C-const%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EC%9D%B4%EC%9C%A0%EC%99%80-%EC%84%A0%EC%96%B8%EC%9D%98-%EC%9D%98%EB%AF%B8/)
+
+앞에서 push나 pop같은 경우에는 Stack를 제어하기 위했습니다 하지만 isFull, isEmpty는 스택의 상태만 확인하는 것이지 직접 변경하지 않습니다. 그러니 만약의 상황을 대비해서 const로 조작을 하지 못하게 고정합니다.
+
+이제 인터페이스가 만들어졌습니다. 이제 전체 코드를 만들어 봅시다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h> // 동적할당을 위한 malloc, free 함수
+#include <assert.h>
+#define _CRT_SECURE_NO_WARNINGS
+
+struct _stack {
+	int* data;
+	int top;
+	int size;
+};
+typedef struct _stack Stack;
+
+Stack* mkStack(int size);
+void push(Stack* s, int item);
+int pop(Stack* s);
+int isEmpty(const Stack* s);
+int isFull(const Stack* s);
+
+void error(const char* msg);
+
+void error(const char* msg) {
+	printf("오류: %s",msg);
+	printf("프로그램을 종료합니다. \n");
+}
+
+Stack* mkStack(int size){
+	Stack* s = (Stack*)malloc(sizeof(Stack));
+	assert(size > 0);
+	assert(s);
+	s->size = size;
+	s->data = (int*)malloc(sizeof(int) * size);
+	assert(s->data);
+	s->top = 0;
+	return s;
+}
+
+void push(Stack *s, int item) {
+	if (isFull(s)) error("스택이 가득찼습니다.");
+	s->data[s->top++] = item;
+}
+
+int pop(Stack* s) {
+	if (isEmpty(s)) error("스택이 비어있습니다.");
+	return s->data[--s->top];
+}
+
+int isFull(const Stack* s) {
+	if (s->top == s->size) return 1;
+	else return 0;
+}
+
+int isEmpty(const Stack* s) {
+	if (s->top == 0) return 1;
+	else return 0;
+}
+
+int main() {
+	int data;
+	int n, i;
+	Stack* s; //스택을 가리킬 포인터
+
+	printf("몇 개의 정수를 입력할 까요? : ");
+	scanf("%d", &n);
+	if (n <= 0)
+		error("정수의 개수를 잘못 입력했습니다.");
+
+	s = mkStack(n);
+
+	printf("%d개의 정수를 입력해주세요 : ", n);
+	for (i = 0; i < n; ++i) {
+		scanf("%d", &data);
+		push(s, data);
+	}
+
+	printf("입력한 정수를 역순으로 출력합니다 : ");
+	while (!isEmpty(s)) {
+		data = pop(s);
+		printf("%d ", data);
+	}
+	printf("\n");
+
+	return 0;
+}
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210576795-2bbd224d-5566-4d6a-bcc3-3a00f783b639.png)
+
+이렇게 C언어로 스택자료구조를 구현해보았습니다. 이정도면 암기할 필요없이 이해만 하신다면 충분히 만들 수 있을 것입니다.

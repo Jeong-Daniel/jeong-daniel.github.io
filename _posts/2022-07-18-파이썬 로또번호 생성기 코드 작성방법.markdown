@@ -1,0 +1,89 @@
+---
+title: 파이썬 로또번호 생성기 코드 작성방법
+date:   2022-07-18 14:59:11 +0900
+categories: [Languages, Python]
+tags: [python, random, module]
+comment: true
+---
+[C언어로 배열에 중복되지 않는 로또수(랜덤수) 출력하기](https://jeong-daniel.github.io/posts/C%EC%96%B8%EC%96%B4%EB%A1%9C-%EB%B0%B0%EC%97%B4%EC%97%90-%EC%A4%91%EB%B3%B5%EB%90%98%EC%A7%80-%EC%95%8A%EB%8A%94-%EB%A1%9C%EB%98%90%EC%88%98(%EB%9E%9C%EB%8D%A4%EC%88%98)-%EC%B6%9C%EB%A0%A5%ED%95%98%EA%B8%B0/)
+
+이번에는 파이썬으로 로또수 출력을 해보겠습니다.
+
+C언어할때는 여러가지 방법을 사용했었는데 파이썬에서는 간단한 한가지만 해볼려고 합니다.
+
+> 1~45 번 까지 숫자를 중복없이 6개를 뽑아야합니다.
+
+```py
+import random
+
+lotto_list = []
+#비어있는 리스트 생성
+while True:
+    temp = random.randrange(1,46)
+    if temp not in lotto_list:
+        lotto_list.append(temp)
+        if len(lotto_list)==6:
+            break
+            
+lotto_list.sort()
+lotto_list
+```
+
+![lotto result](https://user-images.githubusercontent.com/85277660/210787613-4ff54537-8727-4248-990b-dd3a0018ab5d.png)
+
+여러가지 방법이 있는데 저는 간단하게 떠오르는데로 만들었습니다.
+
+```py
+lotto_list = []
+```
+
+일단 로또 번호를 담을 비어있는 리스트를 생성합시다.
+
+```py
+while True:
+    temp = random.randrange(1,46)
+    if temp not in lotto_list:
+        lotto_list.append(temp)
+        if len(lotto_list)==6:
+            break
+```
+
+그리고 당연히 로또번호를 생성할때 6번만 반복설정을 하는 것은 좋지 않습니다. 중복된 숫자가 나올 경우 다시 돌려야하니 6개라는 조건을 만족할때까지 돌리는 것이 좋습니다.
+
+```py
+temp = random.randrange(1,46)
+```
+
+random함수를 사용합시다.
+
+random.randrange는 범위를 지정해서 랜덤하게 숫자를 생성을 합시다. a부터 b까지인데 a는 포함하지만 b는 포함하지 않기에 로또번호는 1부터 45까지이니 random에 들어가는 매개변수는 1부터 46을 지정합시다.
+
+[파이썬 랜덤모듈 사용방법 random](https://jeong-daniel.github.io/posts/%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EB%9E%9C%EB%8D%A4%EB%AA%A8%EB%93%88-%EC%82%AC%EC%9A%A9%EB%B0%A9%EB%B2%95-random/)
+
+나머지는 위 링크를 참고합시다.
+
+```py
+if temp not in lotto_list:
+        lotto_list.append(temp)
+```
+그리고 랜덤으로 받는 숫자를 바로 리스트에 집어 넣는게 아니고 그 숫자가 리스트에 존재하는지 점검을 먼저합시다. 만약에 존재하지 않는 경우 (not in) append로 추가를 합시다.
+
+```py
+if len(lotto_list)==6:
+            break
+```
+집어 넣은 다음에 리스트의 길기아 6인지 확인하고 맞다면 무한루프를 빠져 나옵시다.
+
+```py
+lotto_list.sort()
+```
+덤으로 sort로 정렬을 해주었습니다. inplace=True 같은거 없이 sort()함수를 실행하면 자동으로 정렬이 됩니다.
+
+ 
+
+끗!
+
+
+[https://github.com/Jeong-Daniel/Python_Study](https://github.com/Jeong-Daniel/Python_Study)
+
+앞으로 파이썬 공부는 깃에다가 코드를 같이 올려두도록 하겠습니다.

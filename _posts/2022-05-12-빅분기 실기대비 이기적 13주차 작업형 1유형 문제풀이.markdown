@@ -1,0 +1,216 @@
+---
+title: 빅분기 실기대비 이기적 13주차 작업형 1유형 문제풀이
+date:   2022-05-12 22:14:30 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [bigdata, data, python, pandas]
+---
+
+데이터 출처 :[https://www.data.go.kr/data/15051872/fileData.do](https://www.data.go.kr/data/15051872/fileData.do(참고, 데이터 수정)
+
+데이터 설명 : 서울특별시_공공자전거 시간대별 이용정보
+
+data url = [https://raw.githubusercontent.com/Datamanim/datarepo/main/bicycle/seoul_bi.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/bicycle/seoul_bi.csv)
+
+데이터 상위 5개 컬럼
+
+![table view](https://user-images.githubusercontent.com/85277660/210563870-2850f607-bb74-4379-8907-c9f32a25de58.png)
+
+```py
+import pandas as pd
+df =pd.read_csv('https://raw.githubusercontent.com/Datamanim/datarepo/main/bicycle/seoul_bi.csv')
+```
+
+### Q1.  대여일자별 데이터의 수를 데이터프레임으로 출력하고, 가장 많은 데이터가 있는 날짜를 출력하라
+
+대여일자를 기준으로 개수를 카운트하고 index또는 value로 정렬하면 될거 같습니다.
+
+```py
+df['대여일자'].value_counts().sort_index().to_frame()
+df['대여일자'].value_counts().sort_values().index[-1]
+```
+
+### Q2. 각 일자의 요일을 표기하고 ('Monday' ~'Sunday') 'day_name'컬럼을 추가하고
+
+이를 이용하여 각 요일별 이용 횟수의 총합을 데이터 프레임으로 출력하라
+
+to_datatime을 사용해서 날짜형변환부터 수행을 합시다.
+
+```py
+df['대여일자'] = pd.to_datetime(df['대여일자'])
+df['day_name']  = df['대여일자'].dt.day_name()
+df.day_name.value_counts().to_frame()
+```
+datatime을 가지고 대여일자열의 형변환을 수행을 합니다. 그리고 dt.day_name()를 사용해서 요일별 이름을 만들고 새로운 열을 만듭니다. 그리고 이 열의 개수를 세어보면 됩니다.
+
+[https://pandas.pydata.org/docs/search.html?q=dt#](https://pandas.pydata.org/docs/search.html?q=dt#) 
+
+보시면 아시겠지만 day_name()이외에 day_of_year, day_of_week등도 있습니다. 다만 문제가 그렇게 지엽적으로 처리하는게 나올 것이라고는 생각을 하지 않기 때문에 우리는 판다스를 공부하는 것보다 시험을 통과하는게 목적이니까요
+
+
+### Q3. 각 요일별 가장 많이 이용한 대여소의 이용횟수와 대여소 번호를 데이터 프레임으로 출력하라
+
+일단 여기서 요일과 대여소 번호를 가지고 몇번 들어있는지 숫자를 세어보면 되겠다는 생각이 듭니다.
+
+```py
+df.groupby(['day_name','대여소번호']).size()
+```
+
+![table friday](https://user-images.githubusercontent.com/85277660/210564091-a202da44-db15-48c9-a39f-045f0c4b6e0c.png)
+
+일단 day_name 금요일부터 나옵니다. 0에다가 size라고 이름을 붙이고 이를 기준으로 했으면 좋겠습니다.
+
+```py
+df.groupby(['day_name','대여소번호']).size().to_frame('size').sort_values(['day_name','size'])
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210564158-f0fe3d30-7fc8-49f2-b106-4aaa658f2f29.png)
+
+여기서 우리에게 필요한 것은 각 요일에서 제일 많은 한녀석이 필요합니다. reset_index로 인덱스를 재구성해봅시다.
+
+```py
+df.groupby(['day_name','대여소번호']).size().to_frame('size').sort_values(['day_name','size'],ascending=False).reset_index()
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210564192-a6099271-336b-4024-9c81-8401e85799e5.png)
+
+거의다왔습니다. 여기서 drop_duplicate를 이용하셔서 첫번째를 제외한 중복을 날려버리면 됩니다.
+
+```py
+drop_duplicates('day_name',keep='first').reset_index(drop=True)
+```
+우리는 지금부터 day_name를 드랍할건데 단 첫번째로 나온 녀석을 남기겠다는 의미 입니다. 만약 여러분들이 제일 사용 횟수가 적은 것만 남기고 싶으시다면 first대신에 last를 쓰시면 됩니다. 여기서 index가 그렇다면 또 듬성듬성 비기 때문에 reset을 한번더 돌렸습니다.
+
+
+### Q4. 나이대별 대여구분 코드의 (일일권/전체횟수) 비율을 구한 후 가장 높은 비율을 가지는 나이대를 확인하라.
+
+일일권의 경우 일일권 과 일일권(비회원)을 모두 포함하라
+
+![img1 code](https://user-images.githubusercontent.com/85277660/210564260-8dbcd65c-298a-4c87-be82-1723a3a5b12e.png)
+
+어렵게 생각하실거 없습니다. 모든 것을 포함하는 연령별 수와, 일일권과 비회원을 포함하는 연령별 수를 구할 수 있으면 됩니다.
+
+```py
+daily = df[df.대여구분코드.isin(['일일권','일일권(비회원)'])].연령대코드.value_counts().sort_index()
+total = df.연령대코드.value_counts().sort_index()
+(daily /total).sort_values(ascending=False).index[0]
+```
+먼저 일일권을 가진 사람들을 isin으로 구분한다음 연령대코드에 vlaue_counts로 수를 구합시다. 여기서 sort_index()로 정렬을 해줍시다. 그런다음 전체는 구분하지 않고 모든 것을 더해주고 sort_index()를 사용하면 되겠지요
+
+그리고 나누어서 비융르 구하시면 되는데 ascending=False없이 index에다가 -1을 넣어도 무방합니다.
+
+
+### Q5. 연령대별 평균 이동거리를 구하여라
+
+groupby로 연령대별을 묶고 이동거리에다가 mean()을 적용하면 되겠습니다.
+
+```py
+df[['연령대코드','이동거리']].groupby(['연령대코드']).mean()
+df.groupby(['연령대코드']).이동거리.mean().to_frame()
+```
+둘다 결과는 똑같습니다.
+
+
+### Q6. 연령대 코드가 20대인 데이터를 추출하고, 
+이동거리값이 추출한 데이터의 이동거리값의 평균 이상인 데이터를 추출한다
+최종 추출된 데이터를 대여일자, 대여소 번호 순서로 내림차순 정렬 후 
+1행부터 200행까지의 탄소량의 평균을 소숫점 3째 자리까지 구하여라
+```py
+t_age = df[df.연령대코드 =='20대'].reset_index(drop=True)
+```
+1. 연령대 코드가 20대인 데이터를 먼저 만들고, 20대가 아닌열이 날라가면서 인덱스가 비기 때문에 초기화도 해줍시다.
+```py
+t_mean = t_age[t_age.이동거리 >= t_age.이동거리.mean()].reset_index(drop=True)
+```
+2. 이동거리값을 조건으로 걸어준 다음
+```py
+t_mean['탄소량'] = t_mean['탄소량'].astype('float')
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210564402-99a5783c-9f8b-4e58-bdee-319d1c928a1c.png)
+
+그런데 탄소량이라는 값을 info로 확인해보면 숫자가 아니라 object 문자로 인식을 하고 있습니다. astype를 통해서 형변환을 해줍시다. 나중에 실기 치실때는 귀찮으시더라도 각 컬럼의 데이터 타입을 꼼꼼하게 확인 하셔야 합니다.
+
+```py
+t_mean['탄소량'] = t_mean['탄소량'].astype('float')
+```
+
+3. sort로 대여일자, 대여소번호 순서로 구하고 슬라이싱으로 1~200까지를 꺼내서 평균을 하고 라운드업을 걸어주면 되겠네요
+
+```py
+target =t_mean.sort_values(['대여일자','대여소번호'], ascending=False).reset_index(drop=True).iloc[:200].탄소량
+```
+sort_values로 구한 다음에 내림차순으로 구하고 iloc를 통해서 200개 슬라이싱을 해줍시다.
+
+소수점 몇자리를 출력하는 방법은 다양하게 있습니다.
+
+```py
+round(target.mean(),3)
+print("{:.3f}".format(target.mean()))
+print(f'{target.mean():.3f}')
+```
+위 3개 코드 모두 출력값은 동일합니다.
+
+
+### Q7. 6월 7일 ~10대의 "이용건수"의 중앙값은?
+
+조건이 두가지 입니다 '6월 7일' 그리고 '~10대'입니다. 조건을 두개 걸어주고 이용건수를 뽑은 다음에 median을 쓰면 되겠네요
+
+```py
+df['대여일자']  =pd.to_datetime(df['대여일자'])
+df[(df.연령대코드 =='~10대') & (df.대여일자 ==pd.to_datetime('2021-06-07'))].이용건수.median()
+```
+대여일자에 날짜 형변환이 안되었다면 먼저 해주고 조건걸어서 출력해주시면 됩니다.
+
+ 
+
+### Q8. 평일 (월~금) 출근 시간대(오전 6,7,8시)의 대여소별 
+이용 횟수를 구해서 데이터 프레임 형태로 표현한 후
+각 대여시간별 이용 횟수의 상위 3개 대여소와 이용횟수를 출력하라
+
+일단 월~금 출근 시간대라고 합니다. 리스트로 월~금을 담은 것부터 정의를 한다음 isin으로 물어 봐야 겠네요
+
+```py
+target = df[(df.day_name.isin(['Tuesday', 'Wednesday', 'Thursday', 'Friday','Monday'])) & (df.대여시간.isin([6,7,8]))]
+```
+가장 먼저 평일과 출근 시간대라는 조건을 두개를 걸어서 데이터를 추출합시다.
+
+```py
+result = target.groupby(['대여시간','대여소번호']).size().to_frame('이용 횟수')
+```
+거기서 우리에게 필요한 것은 이용횟수와 대여소(번호)입니다. 이 둘을 기준으로 다시 그룹핑을 합시다.
+
+```py
+result.sort_values(['대여시간','이용 횟수'],ascending=False).groupby('대여시간').head(3)
+```
+그리고 sort_values로 정렬해서 상위 3개의 값을 뽑으면 됩니다. 물론 여기서도 마찬가지로 ascending지우고 head대신 tail을 사용하셔도 됩니다.
+
+### Q9. 이동거리의 평균 이상의 이동거리 값을 가지는 데이터를 추출하여
+
+추출데이터의 이동거리의 표본표준편차 값을 구하여라
+
+앞에서 워낙 이런 문제들을 많이 다루어셔 여러분들도 이정도 문제는 익숙 하실 겁니다. 이동거리에다가 mean조건을 걸어서 보다큰 데이터를 구하고 다시 이동거리 std()를 구하시면 됩니다.
+
+```py
+df[df.이동거리 >= df.이동거리.mean()].이동거리.std()
+```
+
+### Q10. 남성('M' or 'm')과 여성('F' or 'f')의 이동거리값의 평균값을 구하여라
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210564613-9ed7f932-ee10-431b-8d59-41f3aafaa430.png)
+
+성별을 보니 대문자 소문자가 있습니다. 저는 isin으로 값을 나누어서 구하겠습니다.
+
+```py
+df[df['성별'].isin(['F','f'])].이동거리.mean()
+df[df['성별'].isin(['M','m'])].이동거리.mean()
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210564655-f5249188-b439-4ca4-bc75-db294e0a7b83.png)
+
+``py
+df['sex'] = df['성별'].map(lambda x: '남' if x in ['M','m'] else '여')
+df[['sex','이동거리']].groupby('sex').mean()
+```
+map는 말그대로 매핑하는 함수라고 생각하시면 됩니다. 값이 M, m이라면 여라고 하고 아니라면 남으로 반환해서 만드는 방법이기는 한데 파이썬에 익숙하지 않으시다면 lambda함수 쓰기가 힘드실 것이기에 최대한편한 쪽으로 하겠습니다.
+
+오늘 4시 전까지 14주차 보고 - 8~9시 까지 단답형 벼락치기 하고 자기 전까지 작업 2유형 한번더 정리하고 내일 시험 처야겠습니다.

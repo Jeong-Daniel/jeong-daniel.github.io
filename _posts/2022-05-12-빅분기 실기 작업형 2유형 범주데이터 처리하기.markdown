@@ -1,0 +1,109 @@
+---
+title: 빅분기 실기 작업형 2유형 범주데이터 처리하기
+date:   2022-05-12 08:22:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [python, bigdata, data, pandas, ml]
+---
+
+[실기 작업형 2유형 : 모형 구축 및 평가 영역 - 2](https://jeong-daniel.github.io/posts/%EB%B9%85%EB%B6%84%EA%B8%B0-%EC%8B%A4%EA%B8%B0-%EC%9E%91%EC%97%85%ED%98%95-2%EC%9C%A0%ED%98%95-%EB%AA%A8%ED%98%95-%EA%B5%AC%EC%B6%95-%EB%B0%8F-%ED%8F%89%EA%B0%80-%EC%98%81%EC%97%AD-2%ED%8E%B8/)
+
+처음에 진행을 할때는 딱히 높은 성능의 모델을 만들기보다 일단 작동 방법을 보여드리기 위해서 생략한것이 많은데 그중 범주데이터를 다 날린것입니다. 이산형 숫자가 아니라 점포의 이름이나 카테고리등의 경우 처리하는 방법은 좀 다른데요 그것에 대해서 소개하고자 합니다.
+
+## 1. 원핫인코딩(One-Hot-encoding)
+
+```py
+X_train = pd.read_csv("X_train.csv", encoding = 'euc-kr')
+X_train.head()
+```
+
+마찬가지로 데이터를 불러와서 확인을 해봅시다.
+
+![data view](https://user-images.githubusercontent.com/85277660/210171297-f835103e-2f5a-4b2a-878f-618d1d026846.png)
+
+데이터를 보면 주구매상품과 주구매지점이 범주로 나온 것을 확인 할 수 있습니다. 이들을 먼저 원핫인코딩이라는 방법으로 처리하겠습니다. 
+
+![encoding](https://user-images.githubusercontent.com/85277660/210171378-add3c919-e0c1-4909-b3ea-df49f64c356d.jpg)
+
+원핫인코딩은 말그대로 하나만 뜨겁다는 의미입니다. 여러가지 범주가 있다면 이를 특정 범주일때는 1 아니면 0을 반환하는 식으로 만듭니다. 가장 단순하면서 강력하지만 단점은 범주의 개수만큼 열이 늘어나기에 더미데이터가 왕창 증가한다는 것이지요
+
+```py
+X_train = X_train[['주구매상품','주구매지점']]
+```
+범주형 데이터의 열을 따로 뽑아봅시다. 원래 이럴거 없이 바로 해도 큰 상관은 없지만 보기 좋으라고 따로 빼겠습니다.
+
+![encoding result](https://user-images.githubusercontent.com/85277660/210171404-d3dc3ddf-1f67-4bd2-bee2-5b3ce89ccb46.png)
+
+이렇게 데이터가 분리되었네요 원핫인코딩을 바로 적용해보겠습니다.
+
+```py
+X_train = pd.get_dummies(X_train)
+```
+
+사용방법은 판다스의 .get_dummies(데이터프레임)입니다. 이렇게 해둔 결과를 보면
+
+![total vielw](https://user-images.githubusercontent.com/85277660/210171438-d3a65eef-4040-4d75-9bac-a4a62a6975e9.png)
+
+이렇게 2개의 열에서 66개의 열로 쪼개지는 것을 확인 할 수 있습니다. 이렇게 만들어진 값을 학습할때 사용하시면 됩니다.
+
+## 2. 레이블(Label-Encoding)
+
+레이블인코딩은 0과 1대신 범주의 개수만큼 나누는 것입니다. 예를 들면 사과, 바나나, 포도가 있을때 사과열, 바나나열, 포도열을 따로 만드는 것이 아니라 사과에다가 0, 바나나에다가 1, 포도에다가 2를 주는 식으로 범주대신 숫자를 주게 됩니다. 바로 보겠습니다.
+
+```py
+list_item = X_train['주구매상품'].unique()
+print(list_item)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210171450-6c62f260-4bec-4351-b16d-ec1ccaec0f96.png)
+
+일단 가장 먼저 주구매상품에 어떤 범주가 있는지 확인을 해봅시다. unique를 사용하면 추출 할 수 있습니다.
+
+```py
+from sklearn.preprocessing import LabelEncoder
+encoder = LabelEncoder()
+encoder.fit(list_item)
+New_cate = encoder.transform(list_item)
+New_cate
+```
+
+![label encoding](https://user-images.githubusercontent.com/85277660/210171452-8d050d46-039b-4d20-ae8c-62a7dc346f95.png)
+
+두번째로는 sklearn.preprocessing에 라벨인코더를 불러와서 적용을 하면 해당 범주를 값으로 전환해줍니다.
+
+그러면 이렇게 각 범주 대신 숫자로 모든 것을 전환해줍니다. 이제 이 값들을 가지고 적용을 합시다.
+
+```py
+X_train['주구매상품'] = X_train['주구매상품'].replace(list_item, New_cate)
+```
+
+![data](https://user-images.githubusercontent.com/85277660/210171460-485f810c-fbec-4eb8-aa04-3fd2e81fc804.png)
+
+replace를 이용하면 값을 일괄적으로 전환할 수 있습니다.
+
+또 다른 방법으로 pandas에서는 .factorize라는 함수를 제공합니다.
+
+```py
+y_encoded, y_class = pd.factorize(X_train['주구매상품'])
+```
+
+factorize는 두가지 값을 반환하는데 인코딩된 값과, 클래스를 알려줍니다.
+
+![encode result](https://user-images.githubusercontent.com/85277660/210171476-7741151c-97a5-4a1c-8c4c-24fe6010d70f.png)
+
+replace를 사용하는대신 그대로 값을 덮어버리시면 됩니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210171485-94a62826-3a0f-4628-8ceb-5ff2e55dbeda.png)
+
+주구매상품값이 변경된 것을 볼 수 있습니다.
+
+ 
+
+하지만 실기에서 이 방법은 사용하지 않을겁니다. 치명적인 단점으로 범주가 일괄적인 숫자 값으로 변환되면서 예측 성능이 떨어질 수 있습니다. 예를 들면 보석과 골프라는 카테고리와 이를 레이블 인코딩한 4와 10은 다른 의미를 지니게 됩니다. 컴퓨터는 그저 6의 차이를 가진 값으로 인식하는데 실제로 전혀 그렇지 않습니다. 즉 잘못된 결과를 얻을 수 있기 때문이며 선형회귀와 같은 ML알고리즘에는 적용하면 안됩니다.
+
+ 
+
+개인적인 생각으로 원핫인코딩만 알고 가셔도 될겁니다. 쉽고 간단한게 좋지요
+
+ 
+
+다음번에는 결측치 처리와 이상치 처리, merge, concat등의 pandas를 좀더 다뤄보고 다시 머신러닝 부분을 진행해보겠습니다.

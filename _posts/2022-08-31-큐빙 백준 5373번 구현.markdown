@@ -1,0 +1,129 @@
+---
+title: 큐빙 백준 5373번 구현
+date:   2022-08-31 10:30:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, implemnets]
+---
+
+[https://www.acmicpc.net/problem/5373](https://www.acmicpc.net/problem/5373)
+
+문제
+루빅스 큐브는 삼차원 퍼즐이다. 보통 루빅스 큐브는 3×3×3개의 작은 정육면체로 이루어져 있다. 퍼즐을 풀려면 각 면에 있는 아홉 개의 작은 정육면체의 색이 동일해야 한다.
+
+큐브는 각 면을 양방향으로 90도 만큼 돌릴 수 있도록 만들어져 있다. 회전이 마친 이후에는, 다른 면을 돌릴 수 있다. 이렇게 큐브의 서로 다른 면을 돌리다 보면, 색을 섞을 수 있다.
+
+이 문제에서는 루빅스 큐브가 모두 풀린 상태에서 시작한다. 윗 면은 흰색, 아랫 면은 노란색, 앞 면은 빨간색, 뒷 면은 오렌지색, 왼쪽 면은 초록색, 오른쪽 면은 파란색이다.
+
+루빅스 큐브를 돌린 방법이 순서대로 주어진다. 이때, 모두 돌린 다음에 가장 윗 면의 색상을 구하는 프로그램을 작성하시오.
+
+![cube](https://user-images.githubusercontent.com/85277660/211152530-5020444b-c4d7-46a3-9884-8346ebfcff0b.png)
+
+위의 그림은 루빅스 큐브를 푼 그림이다. 왼쪽 면은 시계방향으로 조금 돌려져 있는 상태이다.
+
+여러 구현 문제를 보았지만 큐브돌리는 것도 있네요
+
+```py
+import sys
+
+input = sys.stdin.readline
+
+def cube(side, dir):
+    global u, d, f, b, l, r
+    if side == 'U' or side == 'D':
+        if side == 'U':
+            u = turn(u, dir)
+            i, j = 2, 0
+        else:
+            d = turn(d, dir)
+            i, j = 0, 2
+        temp_l = [list(x) for x in zip(*l)]
+        temp_r = [list(x) for x in zip(*r)]
+        temp = b[i]
+        if (side == 'U' and dir == '+') or (side == 'D' and dir == '-'):
+            b[i] = list(reversed(temp_l[i]))
+            temp_l[i] = f[j]
+            f[j] = list(reversed(temp_r[j]))
+            temp_r[j] = temp
+        else:
+            b[i] = temp_r[j]
+            temp_r[j] = list(reversed(f[j]))
+            f[j] = temp_l[i]
+            temp_l[i] = list(reversed(temp))
+        l = [list(x) for x in zip(*temp_l)]
+        r = [list(x) for x in zip(*temp_r)]
+
+    elif side == 'F' or side == 'B':
+        if side == 'F':
+            f = turn(f, dir)
+            i = 2
+        else:
+            b = turn(b, dir)
+            i = 0
+        temp = u[i]
+        if (side == 'F' and dir == '+') or (side == 'B' and dir == '-'):
+            u[i] = l[i]
+            l[i] = d[i]
+            d[i] = r[i]
+            r[i] = temp
+        else:
+            u[i] = r[i]
+            r[i] = d[i]
+            d[i] = l[i]
+            l[i] = temp
+
+    elif side == 'L' or side == 'R':
+        if side == 'L':
+            l = turn(l, dir)
+            i, j = 0, 2
+        else:
+            r = turn(r, dir)
+            i, j = 2, 0
+        temp_u = [list(x) for x in zip(*u)]
+        temp_d = [list(x) for x in zip(*d)]
+        temp_f = [list(x) for x in zip(*f)]
+        temp_b = [list(x) for x in zip(*b)]
+        temp = temp_b[i]
+        if (side == 'L' and dir == '+') or (side == 'R' and dir == '-'):
+            temp_b[i] = list(reversed(temp_d[j]))
+            temp_d[j] = list(reversed(temp_f[i]))
+            temp_f[i] = temp_u[i]
+            temp_u[i] = temp
+        else:
+            temp_b[i] = temp_u[i]
+            temp_u[i] = temp_f[i]
+            temp_f[i] = list(reversed(temp_d[j]))
+            temp_d[j] = list(reversed(temp))
+        u = [list(x) for x in zip(*temp_u)]
+        d = [list(x) for x in zip(*temp_d)]
+        f = [list(x) for x in zip(*temp_f)]
+        b = [list(x) for x in zip(*temp_b)]
+
+
+def turn(side, dir):
+    if dir == '+':
+        return [list(reversed(x)) for x in zip(*side)]
+    else:
+        side = [list(x) for x in zip(*side)]
+        temp = side[0]
+        side[0] = side[2]
+        side[2] = temp
+        return side
+
+
+tc = int(input())
+for _ in range(tc):
+    u = [['w' for _ in range(3)] for _ in range(3)]
+    d = [['y' for _ in range(3)] for _ in range(3)]
+    f = [['r' for _ in range(3)] for _ in range(3)]
+    b = [['o' for _ in range(3)] for _ in range(3)]
+    l = [['g' for _ in range(3)] for _ in range(3)]
+    r = [['b' for _ in range(3)] for _ in range(3)]
+
+    n = int(input())
+    case = list(input().strip().split())
+    for k in case:
+        side, dir = list(k)
+        cube(side, dir)
+    for s in u:
+        print(''.join(s))
+```

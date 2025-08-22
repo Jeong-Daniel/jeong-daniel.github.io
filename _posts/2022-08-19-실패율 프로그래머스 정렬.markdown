@@ -1,0 +1,117 @@
+---
+title: 실패율 프로그래머스 정렬
+date:   2022-08-19 21:16:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm, sorting]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/42889](https://school.programmers.co.kr/learn/courses/30/lessons/42889)
+
+> 슈퍼 게임 개발자 오렐리는 큰 고민에 빠졌다. 그녀가 만든 프랜즈 오천성이 대성공을 거뒀지만, 요즘 신규 사용자의 수가 급감한 것이다. 원인은 신규 사용자와 기존 사용자 사이에 스테이지 차이가 너무 큰 것이 문제였다.
+> 
+> 이 문제를 어떻게 할까 고민 한 그녀는 동적으로 게임 시간을 늘려서 난이도를 조절하기로 했다. 역시 슈퍼 개발자라 대부분의 로직은 쉽게 구현했지만, 실패율을 구하는 부분에서 위기에 빠지고 말았다. 오렐리를 위해 실패율을 구하는 코드를 완성하라.
+> 
+> 실패율은 다음과 같이 정의한다. 스테이지에 도달했으나 아직 클리어하지 못한 플레이어의 수 / 스테이지에 도달한 플레이어 수
+> 
+> 전체 스테이지의 개수 N, 게임을 이용하는 사용자가 현재 멈춰있는 스테이지의 번호가 담긴 배열 stages가 매개변수로 주어질 때, 실패율이 높은 스테이지부터 내림차순으로 스테이지의 번호가 담겨있는 배열을 return 하도록 solution 함수를 완성하라.
+
+네이버나 카카오의 블라인드 테스트 코테를 치러가면 보통 4~5문제가 나오는데 이런 문제가 1~2번쯤에 나오게 됩니다.
+
+이정도 문제는 코테를 시작한지 얼마 안되신 분들도 굉장히 쉽게 접근할 수 있습니다. 저도 큰 고민 안하고 풀었네요
+
+라고 했는데 몇 케이스를 통과를 하지 못했습니다 ㅠ... 일단 한번 볼게요
+
+```py
+def solution(N, stages):
+    user_num = len(stages)
+    new_list = [0]*(N+2)
+    for i in range(user_num):
+        k = stages[i]
+        new_list[k]=new_list[k]+1
+
+    fail_count = []
+    for j in range(1,N+1):
+        fail_num = new_list[j]/user_num
+        user_num = user_num-new_list[j]
+        fail_count.append((j,fail_num))
+
+    fail_count.sort(key=lambda x:x[1], reverse=True)
+
+    result = []
+    for i in range(N):
+        result.append(fail_count[i][0])
+    
+    return result
+```
+
+일단 전체 유저의 수는 곧 stages의 길이가 됩니다. 그리고 유저가 어느 스테이지에 있는지 관리하기 위해서 새로운 리스트를 만드는데 인덱스를 1번부터 시작함과 스테이지 전체를 통과한 사람을 관리 하기 위해서 인덱스 길이를 2 늘렸습니다.
+
+그리고 stagse에 해당하는 인덱스에 대해서 체크를 했습니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211034587-5062dd14-82e1-446e-957d-c6f1eff545fd.png)
+
+그러면 이렇게 1번 스테이지는 1명 2번 스테이지에는 3명 들어오게 됩니다. 이제 실패율을 확인합시다.
+
+리스트를 하나 더 만들었습니다. 그리고 1번부터 N+1번 까지 쭉 돌리게 되는데
+
+실패율은 현재스테이지에 있는 사람 / 그 스테이지 까지 도달한 사람이 됩니다.
+
+ 
+첫번째 스테이지는 1/8 두번째 스테이지는 3/7 ... 이렇게 쭉 돌아갑니다.
+
+
+그리고 이를 (스테이지 번호, 실패율)로 관리를 하고 실패율을 기준으로 쭉 정렬한다음 스테이지 번호를 받아오는 식이었습니다.
+
+![fail test](https://user-images.githubusercontent.com/85277660/211034622-dc509ea8-b97c-4a78-a0ef-44551e8889ae.png)
+
+그런데 일부 케이스에서 런타임 에러가 발생했습니다.
+
+아마 인덱스에서 문제가 생긴거 같은데.... 잘모르겠네요
+
+```py
+def solution(N, stages):
+    answer = []
+    length = len(stages)
+    
+    #스테이지 번호를 1번부터 N까지 증가시키며
+    for i in range(1,N+1):
+        #해당 스테이지에 머물러 있는 사람의 수 계산
+        count = stages.count(i)
+        
+        #실패율 계산
+        if length == 0:
+            fail = 0
+        else:
+            fail = count / length
+            
+        #리스트에 (스테이지번호, 실패율) 원소 삽입
+        answer.append((i,fail))
+        length -= count
+        
+    #실패율을 기준으로 각 스테이지를 내림차순 정렬
+    answer = sorted(answer, key=lambda t:t[1], reverse=True)
+    
+    #정렬된 스테이지 번호 출력
+    answer = [i[0] for i in answer]
+    return answer
+```
+
+바로 쭉 설명하겠습니다. answer은 정답을 받을 리스트 lenght는 마찬가지로 stages의 길이가 곧 유저수가 됩니다.
+
+
+스테이지 번호를 1부터 N까지 증가시키며 해당 스테이지에 머무럴 있는 사람 수를 계산합니다.
+
+저는 이때 각 리스트에 있는 번호를 보고 확인했는데
+
+s.count(x):	s 등장하는 x 의 총수
+
+여기서는 count라는 매서드를 사용해서 바로 위치에 몇개가 있는지 뽑았습니다. 그리고 저 같은 경우에는 전체를 계산하고 시작을 했는데 이 풀이에서는 하나씩 계산을 하네요
+
+만약 길이가 0이라면(남은 사람이 없다면) 실패율도 0이 될것이니 바로 넘어갑니다. 그게 아니라면 count(해당 스테이지에 있는 사람들)/length(스테이지를 도달한 적이 있는 사람들)로 바로 계산을 하고
+
+이를 answer에 스테이지와 실패율로 넣게 됩니다. 그리고 length는 count만큼 빼게되고 다시 다음 스테이지를 살펴 봅니다.
+
+이렇게 보니 각 스테이지별로 계산해도 될것이었는데 왜였는지 한번에 계산하려다가 인덱스가 꼬인거 같네요
+
+그리고 컴프리헨션을 통해서 answer을 반환합니다.
+

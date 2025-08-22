@@ -1,0 +1,76 @@
+---
+title: 불 백준 5427번 BFS
+date:   2022-10-20 13:23:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, bfs]
+---
+
+[https://www.acmicpc.net/problem/5427](https://www.acmicpc.net/problem/5427)
+
+문제
+상근이는 빈 공간과 벽으로 이루어진 건물에 갇혀있다. 건물의 일부에는 불이 났고, 상근이는 출구를 향해 뛰고 있다.
+
+매 초마다, 불은 동서남북 방향으로 인접한 빈 공간으로 퍼져나간다. 벽에는 불이 붙지 않는다. 상근이는 동서남북 인접한 칸으로 이동할 수 있으며, 1초가 걸린다. 상근이는 벽을 통과할 수 없고, 불이 옮겨진 칸 또는 이제 불이 붙으려는 칸으로 이동할 수 없다. 상근이가 있는 칸에 불이 옮겨옴과 동시에 다른 칸으로 이동할 수 있다.
+
+빌딩의 지도가 주어졌을 때, 얼마나 빨리 빌딩을 탈출할 수 있는지 구하는 프로그램을 작성하시오.
+
+```py
+from collections import deque
+loop = int(input())
+dx = [0,0,1,-1]
+dy = [1,-1,0,0]
+
+for a in range(loop):
+    queue_f = deque()
+    queue_j = deque()
+    n, m = map(int,input().split())
+    map_list = []
+    dist = [[0]*n for _ in range(m)]
+    for y in range(m):
+        check = list(str(input()))
+        for x in range(n):
+            if check[x]!='#':
+                dist[y][x]=-1
+            if check[x]=='*':
+                queue_f.append([y,x])
+                dist[y][x]=0
+            elif check[x]=='@':
+                queue_j.append([y,x])
+        map_list.append(check)
+    
+    while queue_f:
+        cy,cx = queue_f.popleft()
+        for k in range(4):
+            nx = cx + dx[k]
+            ny = cy + dy[k]
+            if nx>=n or nx<0 or ny>=m or ny<0:
+                continue
+            if dist[ny][nx]!=-1 or map_list[ny][nx]=='#':
+                continue
+            dist[ny][nx]=dist[cy][cx]+1
+            queue_f.append([ny,nx])
+            
+    ty, tx = queue_j[-1]
+    dist[ty][tx]=0
+    esecep = False
+    while queue_j and esecep==False:
+        ty, tx = queue_j.popleft()
+        for k in range(4):
+            nx = tx + dx[k]
+            ny = ty + dy[k]
+            if nx>=n or nx<0 or ny>=m or ny<0:
+                print(dist[ty][tx]+1)
+                esecep = True
+                break
+            if map_list[ny][nx]=='#':
+                continue
+            if dist[ny][nx]<dist[ty][tx]+1:
+                continue
+            queue_j.append([ny,nx])
+            dist[ny][nx] = dist[ty][tx] + 1
+    
+    if not esecep:
+        print("IMPOSSIBLE")
+```
+
+이번에도 맞왜틀을 외치면서 테스트케이스는 통과하는데 백준에서는 틀렸습니다가 뜨고 제가 보기에도 뭐가 문제인지는 모르겠고 해서 그냥 넘어가겠습니다.

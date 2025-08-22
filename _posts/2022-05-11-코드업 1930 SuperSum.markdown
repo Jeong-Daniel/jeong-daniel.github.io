@@ -1,0 +1,65 @@
+---
+title: 코드업 1930 SuperSum
+date:   2022-05-11 15:55:41 +0900
+categories: [Coding_Test, Others]
+tags: [coding, python, algorithm, recursive]
+---
+
+
+이번에는 입력 함수가 조금 햇갈리게 나왔습니다.
+
+하나씩 입력을 받는게 아니라 여러줄을 던져주게 되는데 몇 줄인지는 랜덤이라는 거지요
+
+코드업은 기본적으로 입력이 단순했기 때문에 input으로 충분히 처리가 되었지만 여기서부터는 좀더 복잡해 지기 때문에 다른 것을 사용해야 합니다.
+
+[파이썬 여러 줄 입력 받기 stdin.readline](https://jeong-daniel.github.io/posts/%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EC%97%AC%EB%9F%AC-%EC%A4%84-%EC%9E%85%EB%A0%A5-%EB%B0%9B%EA%B8%B0-stdin.readline/)
+
+
+stdin.readline 은 위 게시글에 간단하게 설명을 해두었습니다.
+
+```py
+import sys
+temp = []
+for line in sys.stdin:
+    k, n = map(int, line.split())
+    arr1 = [[-1 for _ in range(n+1)]for _ in range(k+1)]
+    
+    def supersum(k,n):
+        if k==0:
+            arr1[0][n]=n
+            return n
+        
+        if arr1[k][n] == -1:
+            result = 0
+            for i in range(1,n+1):
+                result += supersum(k-1,i)
+            arr1[k][n] = result
+            return result
+        else:
+            return arr1[k][n]
+    
+    temp.append(supersum(k,n))
+    
+for i in range(len(temp)):
+    print(temp[i])
+```
+
+가장 먼저 supersum은 연산량이 급격하게 늘어나기 때문에 메모이제이션이라는 기법을 같이 사용해야 합니다.
+
+ 
+
+마침 n과 k 두개의 변수가 필요하니 2차원 행렬을 하나 준비를 합시다. 여기서 들어오는 변수의 값의 범위는 0과 14로 고정되어 있습니다. 저렇게 해두면 초기값이 -1인 행렬이 생성이 됩니다.
+
+ 
+
+supersum을 재귀로 푸는 것은 여타 다른 재귀함수 문제와 별반 다를게 없습니다.
+
+ 
+
+미리 정의해둔 조건이 있다면 그에 맞추어서 메모를 하고 리턴을 하면 되고
+
+아니라면 조건에 따라서 반복을 돌리면 됩니다. 여기서는 재귀를 쓰지만 반복문사용을 제한하지는 않았으니 for문을 적절하게 이용을 합시다.
+
+ 
+
+그리고 값이 들어올때마다 temp라는 임시 리스트에다가 저장을 해주고 차례대로 출력을 하는 것으로 마무리 했습니다.

@@ -1,0 +1,97 @@
+---
+title: 빅분기 실기 대비 이기적 6주차 예상 문제 풀이
+date:   2022-05-12 16:10:30 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [bigdata, data, python, pandas]
+---
+
+## 작업형 1유형
+
+데이터 출처 :[https://www.kaggle.com/mohansacharya/graduate-admissions](https://www.kaggle.com/mohansacharya/graduate-admissions(참고, 데이터 수정)
+
+데이터 설명 : 대학원 입학 가능성 예측
+
+Data url :[https://raw.githubusercontent.com/Datamanim/datarepo/main/admission/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/admission/train.csv)
+
+​
+데이터 상위 5개 컬럼
+
+![img1 view](https://user-images.githubusercontent.com/85277660/210370608-c96e1fa9-35a5-47ab-b9ee-3caaa861ad41.png)
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/admission/train.csv")
+```
+
+### Q1. Serial No. 컬럼을 제외하고 'Chance of Admit'을 종속변수, 나머지 변수를 독립변수라 할때, 랜덤포레스트를 통해 회귀 예측을 할 떄 변수중요도 값을 출력하라 (시드값에 따라 순서는 달라질수 있음)
+
+![img1 view](https://user-images.githubusercontent.com/85277660/210370654-b22affe2-c296-41ce-b1c6-a29a4c3b54f9.png)
+
+뭔가 이번에도 난이도가 굳이?라는 생각이 드는 문제입니다만. 한번 해봅시다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210370690-c2865146-b39c-4cd1-a640-444a2a202ffb.png)
+
+랜덤포레스트에 help를 쳐서 살펴보시면 featrue_importances라는게 있습니다. 그러니까 변수의 이름을 집어 넣으면
+
+'The impurity-based feature importances.' 불순도를 기반으로 얼마나 중요한지 알려준다고 합니다.
+
+```py
+df_t = df.drop([df.columns[0]],axis=1)
+x = df_t.drop([df.columns[-1]],axis=1)
+y = df_t[df.columns[-1]]
+```
+일단 조건에서 Serial No 컬럼을 제외를 하고 'Chance of Admit'컬럼을 기준으로 나누어라고 했습니다. 조건에 맞춰서 나눠 줍시다.
+
+```py
+pd.DataFrame({'importance':ml.feature_importances_},x.columns).sort_values('importance',ascending=False)
+```
+그런다음 데이터프레임을 만들어 줍시다. 첫번째로는 importance라는 열을 만들고 거기에는 feature_importance의 값을 넣어줍시다. 따로 실행해보시면 아시겠지만 시리얼 값을 반환합니다. 그리고 인덱스는 x.columns가 됩니다. 마지막으로 차례대로 정렬을 해주는 겁니다.
+
+---
+
+## 작업형 2유형
+데이터 출처 :[https://www.kaggle.com/mohansacharya/graduate-admissions](https://www.kaggle.com/mohansacharya/graduate-admissions(참고, 데이터 수정)
+
+데이터 설명 : 대학원 입학 가능성 예측문제 ("Chance of Admit')
+
+​평가지표 : r2 score
+
+trainData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/admission/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/admission/train.csv)
+
+testData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/admission/test.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/admission/test.csv)
+
+데이터 상위 5개 컬럼
+
+![img1dn](https://user-images.githubusercontent.com/85277660/210370953-d89afb3e-b065-4022-bc51-a22b8aa3a629.png)
+
+사실 거진 몰아서 10개 넘개 똑같은거 반복하고 있으니 지겹기는 지겹군요.... 10번까지만 하고 작업1유형만 쭉 보고 단답형이나 벼락치기 해야겠습니다.
+
+```py
+Main_name = 'admission'
+target_col = 'Chance of Admit'
+
+trainData  = f'https://raw.githubusercontent.com/Datamanim/datarepo/main/{Main_name}/train.csv'
+testData  = f'https://raw.githubusercontent.com/Datamanim/datarepo/main/{Main_name}/test.csv'
+subData  = f'https://raw.githubusercontent.com/Datamanim/datarepo/main/{Main_name}/submission.csv'
+
+#데이터로드
+import pandas as pd
+
+train = pd.read_csv(trainData)
+test = pd.read_csv(testData)
+submission = pd.read_csv(subData)
+```
+값은 회귀문제입니다. 이번에는 결측지도 없고 원핫인코딩 할것도 없네요...
+
+```py
+y = train['Chance of Admit']
+train.drop(columns='Chance of Admit',inplace=True)
+
+from sklearn.ensemble import RandomForestRegressor
+ml = RandomForestRegressor()
+ml.fit(train,y)
+summit = pd.DataFrame()
+summit['Chance of Admit'] = ml.predict(test)
+summit.to_csv('Admit_pre.csv',index=False)
+```
+? 데이터전처리 할게 없으니 무슨 모델 학습하고 저장하는게 더 길어보이네요 다음부터는 작업형만 쭉 보고 지나가겠습니다.

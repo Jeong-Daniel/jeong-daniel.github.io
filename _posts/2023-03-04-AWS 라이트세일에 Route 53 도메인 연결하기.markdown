@@ -1,0 +1,59 @@
+---
+title:  AWS 라이트세일에 Route 53 도메인 연결하기
+date:   2023-03-04 20:57:46 +0900
+categories: [Blog, WordPress]
+tags: [blog, aws, lightsail, domain, dns]
+---
+
+워드프레스 블로그를 서비스 해야겠다는 생각과 동시에 이것 저것 설정하기 귀찮다는 생각이 막연하게 들어서 안했는데 막상해보니 정말 간단합니다. 그냥 하루에 하나씩 천천히 해보고 있는데 라이트세일을 생성하고 도메인연결하는데 까지 걸리는데는 15분이면 되겠더라고요... 블로그 레이아웃이나 테마 꾸미고 플러그인 설치하는 것도 넉넉잡아서 하루면 되겠다는 생각이 들고
+
+역시 시작이 반인가 봅니다. 계속해서 생성한 AWS 라이트세일 인스턴스에 도메인을 연결해봅시다.
+
+AWS에서는 가상컴퓨터, 클라우드, NAS 다양한 인터넷 웹서비스의 전반을 제공합니다. 그리고 여기에 도메인 제공도 빠지지 않는데 Route 53이 바로 AWS에서 제공하는 DNS(Domain Name Service)입니다. 우리가 전공 시험을 볼 것은 아니기에 간단하게 알아보자면
+
+일단 기본적으로 인터넷의 주소는 IP 숫자로 이루어져있습니다. 하지만 google, naver, daum 각자 영어로된 주소로 접근을 할 수 있고 아마 예전에는 한글 도메인도 존재했던걸로 기억합니다. 아마 기술적인 문제에다가 한글 도메인이 그렇게 편하지 않아서 거의 살펴볼 수 없지만 지금도 서비스를 하는지는 모르겠네요
+
+아무튼 라이트세일에 이어서 Route 53을 통해서 간단하게 도메인 연결이 가능합니다.
+
+
+![라이트세일 탭](https://user-images.githubusercontent.com/85277660/222901017-62221cfa-2693-45eb-ba16-60135260761c.png)
+
+
+아마존 라이트세일에 들어가면 Domains&DNS 탭이 있습니다. 아직 아무것도 생성한게 없다면 아래처럼 도메인을 생성하게 도와주는 것이 나옵니다.
+
+![도메인 설정](https://user-images.githubusercontent.com/85277660/222900830-0f43d86a-c910-4a2e-af23-7121ad40bec9.png)
+
+내가 원하는 도메인을 입력을할때 규칙이 있습니다. 항상 마지막에 .com, .org, .kr 처럼 이것들은 모두 규칙이기 때문에 이를 지켜야 도메인을 만들 수 있습니다.
+
+
+![gTLDs](https://user-images.githubusercontent.com/85277660/222901036-4812a091-552f-4a8e-965f-26376afd185c.png)
+이를 gTLDs(Generic top-level domains)라고해서 일반적인 최상위 도메인 규약이라고 정해져 있습니다. 다만 ac나 특정 산업군에 있는 도메인을 아무거나 사용 할수는 없으니 사실상 com이나 net으로 선택해야 할 것입니다.
+
+<img width="571" alt="도메인 추천" src="https://user-images.githubusercontent.com/85277660/222901103-8867dade-1d0f-4c4e-b928-94fafea31284.png">
+
+만약 해당하는 도메인이 사용 할 수 없다면 이렇게 도메인 추천이 몇가지 나오게 됩니다. 딱봐도 좋고 희귀할 수록 가격이 높고 그저 그럴수록? 가격은 낮아집니다. 보통 13달러 정도 하는걸로 보이네요 저는 무난한걸로 하나 하겠습니다.
+
+<img width="579" alt="Cap 2023-03-04 20-31-19-578" src="https://user-images.githubusercontent.com/85277660/222901156-ab8ba811-abdf-48a8-ad04-0ea103d666c3.png">
+
+도메인 결제는 연간단위로 할 수 있으며 자동으로 갱신하는 것 역시 가능합니다. 저는 1년 단위로 매년 갱신하도록 하겠습니다.
+
+<img width="522" alt="DNS 생성 완료" src="https://user-images.githubusercontent.com/85277660/222901193-a2810cf4-37e0-46f9-a2e5-67b3e38fae81.png">
+
+도메인 생성이 완료되었습니다. AWS에 연결해둔 계좌로 자동으로 결제가 이루어집니다. 13달러였는데 환율도 비싸고 세금은 미포함인지 1만8천원이 찍히네요 ㄷㄷ
+
+이제 도메인이 만들어졌지 라이트세일에 연결한 것은 아닙니다. 연결을 해줍시다.
+
+<img width="750" alt="Cap 2023-03-04 20-37-26-441" src="https://user-images.githubusercontent.com/85277660/222901261-8ffeecde-e536-47d5-9dd5-439c154f8827.png">
+
+<img width="603" alt="Cap 2023-03-04 20-37-44-817" src="https://user-images.githubusercontent.com/85277660/222901297-aa0ea569-a7fc-4edb-80ab-a83d71b0d925.png">
+
+라이트세일에 들어가서 생성한 domain을 선택하면 됩니다. 이게 끝입니다.
+
+물론 적용한다고 바로 도메인과 고정IP가 연결되는 것은 아니고
+
+<img width="571" alt="Cap 2023-03-04 20-43-58-943" src="https://user-images.githubusercontent.com/85277660/222901306-655496f2-d3ce-460a-88ab-12ed4badb05c.png">
+<img width="397" alt="Cap 2023-03-04 20-55-24-138" src="https://user-images.githubusercontent.com/85277660/222901307-2bc1c2f1-0a45-414a-86a1-29f7248245ad.png">
+
+아마 체감상 5분?정도면 이렇게 Route53에서 연결된 것을 볼 수 있습니다.
+
+cmd 터미널 창에서 ping "도메인주소"를 입력하시면 반응이 오는 것을 확인할 수 있습니다.

@@ -1,0 +1,97 @@
+---
+title: 오프채팅방 프로그래머스 Lv2
+date:   2022-08-31 17:25:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/42888](https://school.programmers.co.kr/learn/courses/30/lessons/42888)
+
+
+```py
+def solution(record):
+    lenght = len(record)
+    name_list={}
+    result = []
+    for i in range(lenght):
+        if len(record[i].split()) !=2:
+            a,b,c = record[i].split()
+            name_list[b]=c
+        else:
+            a,b = record[i].split()
+            name_list[b]=c
+
+        if a == "Enter" or a == "Leave":
+            result.append([a,b])
+
+    answer = []
+    for a,uid in result:
+        str_list = ""
+        str_list += (name_list[uid] + "님이 ")
+        if a=='Enter':
+            str_list+="들어왔습니다."
+        else:
+            str_list+="나갔습니다."
+        answer.append(str_list)
+    return answer
+```
+
+테스트 케이스 일부만 통과를 하고 나머지는 다 틀리던데 왜 그런지 이해를 한동안 하지 못했다.
+
+일단 들어오는 문자는 3가지로 이루어져있다. 행동(입장,변경,퇴장) uid, 그리고 닉네임이다. 그리고 입장하거나 변경이 이루어진다면 uid사전을 갱신한다. 그리고 입장이나 퇴장을 할때는 로그를 출력해야하니 result에 관리
+
+result와 uid사진을 사용해서 출력할 문구를 만들고 이를 answer에 저장한다음 마지막에 반환하는 것이었는데 어느 지점에서 사고가 났는지 잘 모르겠다.
+
+아마 change가 최종적인 닉네임이 아닌데 이를 고려하지 못해서 생긴 문제 같다.
+
+```py
+def solution(record):
+    answer = []
+    userDB = dict()
+    actions = [] # "Enter", "Leave", "Change"
+    
+    for event in record:
+        info = event.split() # action uid [nickname]
+        action, userid = info[0], info[1]
+        if action in ("Enter", "Change"):
+            nickname = info[2]
+            userDB[userid] = nickname
+        actions.append((action, userid))
+        
+    for actionInfo in actions:
+        action, userid = actionInfo[0], actionInfo[1]
+        if action == 'Enter':
+            answer.append(f'{userDB[userid]}님이 들어왔습니다.')
+        elif action == 'Leave':
+            answer.append(f'{userDB[userid]}님이 나갔습니다.')
+    
+    return answer
+```
+
+일단 info에 split를 한다음에 판단을 하는데 uid 사전을 사용하는 부분은 같다.
+
+그리고 여기서 또 새로운 것을 배웠는데 f string 문자열 포멧으로 저장 할 수 있다는 점.... 신기하다.
+
+번외 숏코딩
+
+```py
+def solution(record):
+    user_id = {EC.split()[1]:EC.split()[-1] for EC in record if EC.startswith('Enter') or EC.startswith('Change')}
+    return [f'{user_id[E_L.split()[1]]}님이 들어왔습니다.' if E_L.startswith('Enter') else f'{user_id[E_L.split()[1]]}님이 나갔습니다.' for E_L in record if not E_L.startswith('Change')]
+```
+
+'''
+처음 풀이하는데 있어서 Enter에 대해 먼저 dict를 만들고 Change에 대해 dict를 만들어서 에러가 발생
+다음 반례를 생각해보길,
+1.prodo 입장 ->
+2.prodo에서 ryan으로 Change ->
+3.prodo 퇴장 ->
+4.prodo로 재입장
+
+return ['prodo 입장','prodo 퇴장','prodo 입장']
+
+Change가 최종적인 닉네임이 아님,,
+재입장시에도 닉네임변경이 가능하다는 것을 배제하고 풀어서 틀린 것.
+'''
+
+두줄....?

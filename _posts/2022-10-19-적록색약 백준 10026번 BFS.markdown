@@ -1,0 +1,90 @@
+---
+title: 적록색약 백준 10026번 BFS
+date:   2022-10-19 18:26:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, bfs]
+---
+
+[https://www.acmicpc.net/problem/10026](https://www.acmicpc.net/problem/10026)
+
+문제
+적록색약은 빨간색과 초록색의 차이를 거의 느끼지 못한다. 따라서, 적록색약인 사람이 보는 그림은 아닌 사람이 보는 그림과는 좀 다를 수 있다.
+
+크기가 N×N인 그리드의 각 칸에 R(빨강), G(초록), B(파랑) 중 하나를 색칠한 그림이 있다. 그림은 몇 개의 구역으로 나뉘어져 있는데, 구역은 같은 색으로 이루어져 있다. 또, 같은 색상이 상하좌우로 인접해 있는 경우에 두 글자는 같은 구역에 속한다. (색상의 차이를 거의 느끼지 못하는 경우도 같은 색상이라 한다)
+
+예를 들어, 그림이 아래와 같은 경우에
+
+```
+RRRBB
+GGBBB
+BBBRR
+BBRRR
+RRRRR
+```
+
+적록색약이 아닌 사람이 봤을 때 구역의 수는 총 4개이다. (빨강 2, 파랑 1, 초록 1) 하지만, 적록색약인 사람은 구역을 3개 볼 수 있다. (빨강-초록 2, 파랑 1)
+
+그림이 입력으로 주어졌을 때, 적록색약인 사람이 봤을 때와 아닌 사람이 봤을 때 구역의 수를 구하는 프로그램을 작성하시오.
+
+---
+
+결국 이것도 BFS를 두번 돌리면 될거 같습니다. 그리고 각 BFS에다가 조건을 다르게 걸어주면 되겠네요
+
+```py
+from collections import deque
+queue = deque()
+dx=[0,0,1,-1]
+dy=[1,-1,0,0]
+count_a = 0
+dist = [[-1]*n for _ in range(n)]
+for i in range(n):
+    for j in range(n):
+        if dist[i][j] == -1:
+            dist[i][j] = 0
+            queue.append([i,j])
+            count_a += 1
+            while queue:
+                curr = queue.popleft()
+                now_color = map_list[curr[0]][curr[1]]
+                for k in range(4):
+                    nx = curr[0] + dx[k]
+                    ny = curr[1] + dy[k]
+                    if nx<0 or nx>=n or ny<0 or ny>=n :
+                        continue
+                    if map_list[nx][ny]!=now_color or dist[nx][ny] != -1:
+                        continue
+                    dist[nx][ny] = 0
+                    queue.append([nx,ny])
+
+count_b = 0
+dist = [[-1]*n for _ in range(n)]
+for i in range(n):
+    for j in range(n):
+        if dist[i][j] == -1:
+            dist[i][j] = 0
+            queue.append([i,j])
+            count_b += 1
+            while queue:
+                curr = queue.popleft()
+                now_color = map_list[curr[0]][curr[1]]
+                for k in range(4):
+                    nx = curr[0] + dx[k]
+                    ny = curr[1] + dy[k]
+                    if nx<0 or nx>=n or ny<0 or ny>=n :
+                        continue
+                    if dist[nx][ny] != -1:
+                        continue
+                    if map_list[nx][ny]!=now_color:
+                        if now_color=='R' and map_list[nx][ny]=='G':
+                            pass
+                        elif now_color=='G' and map_list[nx][ny]=='R':
+                            pass
+                        else:
+                            continue
+                    dist[nx][ny] = 0
+                    queue.append([nx,ny])
+                    
+print(count_a, count_b)
+```
+
+그래도 계속풀다보니 BFS, 거리 찾기는 정형화된 틀이있어서 어느정도 속도가 붙기 시작하네요 색맹이 아닌 사람은 색상이 다르다면 넘어갔지만 색맹인 사람은 R다음으로 G 또는 반대로 들어와도 넘어가게 했습니다. BFS를 두번 돌려서 결과물을 출력하면 됩니다.

@@ -1,0 +1,28 @@
+---
+title: CSV파일 한글 깨짐 인코딩 문제 해결 방법
+date:   2022-07-04 16:06:00 +0900
+categories: [Data_Sceince, Pandas]
+tags: [pandas, data, python, csv, encode]
+---
+
+파이썬으로 열어보기 이전에 그냥 엑셀파일로 보았을때 깨질 경우 인코딩 문제를 해결 하는 방법입니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210769229-11c08de5-c229-462e-965f-35ab5b41269a.png)
+
+일단 엑셀로 CSV파일을 여니 위 처럼 한글이 깨져서 나오게 됩니다.
+
+![img1 view](https://user-images.githubusercontent.com/85277660/210769273-64f81ea8-bc26-4e5d-883a-08a63f68a9b9.png)
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210769310-ec5efd04-4a1d-40aa-92bb-64d78a0ab8e3.png)
+
+깨진 CSV파일을 메모장이나 워드패드같은 텍스트 편집기로 여신다음에
+
+![setting](https://user-images.githubusercontent.com/85277660/210769348-6a1963cc-d435-437b-93f0-a2839540680c.png)
+
+![ANSI encoding](https://user-images.githubusercontent.com/85277660/210769395-059dea7d-d973-4e49-acea-8643cc0c1402.png)
+
+다른 이름으로 저장을 해서 기본값이 UTF-8이라면 인코딩을 ANSI로 하시거나 그래도 안된다면 UTF16으로 저장을 새로 해주시면 됩니다.
+
+![encoding fix](https://user-images.githubusercontent.com/85277660/210769469-0db15976-f13c-44c8-96bd-c76473b7481f.png)
+
+이제 한글이 깨지지 않고 나오는 것을 확인 할 수 있습니다.

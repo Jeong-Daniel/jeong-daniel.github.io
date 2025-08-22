@@ -1,0 +1,40 @@
+---
+title: N과 M (6) 백준 15655번 백트래킹
+date:   2022-10-25 13:09:20 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, backtracking]
+---
+
+[https://www.acmicpc.net/problem/15655](https://www.acmicpc.net/problem/15655)
+
+문제
+N개의 자연수와 자연수 M이 주어졌을 때, 아래 조건을 만족하는 길이가 M인 수열을 모두 구하는 프로그램을 작성하시오. N개의 자연수는 모두 다른 수이다.
+
+N개의 자연수 중에서 M개를 고른 수열  
+
+고른 수열은 오름차순이어야 한다.
+
+```py
+n,m = map(int,input().split())
+num_list = list(map(int,input().split()))
+num_list.sort()
+arr = [0]*m
+isused = [False]*(max(num_list)+1)
+def func(k):
+    if k==m:
+        for i in range(m):
+            print(arr[i], end=' ')
+        print()
+        return
+    for j in num_list:
+        if not isused[j]:
+            arr[k]=j
+            isused[0:j+1] = [True]*(j+1)
+            func(k+1)
+            isused[0:j+1] = [False]*(j+1)
+func(0)
+```
+
+[N과 M (4) 백준 15652번 백트래킹](https://jeong-daniel.github.io/posts/N%EA%B3%BC-M-(4)-%EB%B0%B1%EC%A4%80-15652%EB%B2%88-%EB%B0%B1%ED%8A%B8%EB%9E%98%ED%82%B9/)
+
+앞에서 푼 4랑 사실상 같은 문제입니다.

@@ -1,0 +1,46 @@
+---
+title: 판다스 이상치를 최대/최소로 변환하는 방법 clip()
+date:   2022-05-10 18:29:41 +0900
+categories: [Data_Sceince, Pandas]
+tags: [pandas, data, python]
+---
+
+빅데이터분석기사 복원문제에서 상위 10개 값을 특정 값으로 치환해서 계산하는게 있었습니다.
+
+찾아보니 판다스에서 clip라는 함수를 이용하면 간단하게 처리를 할 수 있는 것을 보고 한번 해보겠습니다.
+
+데이터는 집값 예측 문제에서 가져오도록 하겠습니다.
+
+```python
+train['LotArea'].hist()
+```
+
+![house price data](https://user-images.githubusercontent.com/85277660/210139292-951ded24-c160-46c8-bc5e-5cb16ae08088.png)
+
+LotArea의 데이터 분포를 살펴보면 위와 같습니다.
+
+```python
+upper = train['LotArea'].quantile(0.8)
+lower = train['LotArea'].quantile(0.2)
+print(upper, lower)
+```
+
+![result upper lower](https://user-images.githubusercontent.com/85277660/210139300-c6bdfe0b-cd9a-4989-a9e0-36b529bbb101.png)
+
+quantile를 통해서 백분위 80%과 20%의 정보를 저장을 합시다 그리고 clip 함수를 사용해보겠습니다.
+
+```python
+train['LotArea'] = train['LotArea'].clip(lower,upper)
+```
+
+clip에다가 lower과 upper을 적용을 해주시면 lower보다 작은 값은 lower로 upper보다 큰 값은 upper로 고정이 됩니다.
+
+[https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.clip.html](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.clip.html)
+더 자세한 것은 위 링크 판다스 공식문서를 참고해주시길 바랍니다.
+
+
+![clip result](https://user-images.githubusercontent.com/85277660/210139368-c751c297-c37b-486a-babc-6c218826a1c2.png)
+
+이렇게 처리를 하면 하한값은 7078로 상한값은 12200으로 고정이 된것을 확인할 수 있습니다. 이것을 이용하면 간단하게 상하한 값을 대체할 수 있습니다.
+
+이거를 해보니 드는 생각인데 아마 요구하는 것은 R/Python에 다 내장된 함수에서 나오지 않을까합니다.

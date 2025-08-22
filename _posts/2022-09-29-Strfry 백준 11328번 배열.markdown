@@ -1,0 +1,59 @@
+---
+title: Strfry 백준 11328번 배열
+date:   2022-09-29 15:41:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, array]
+---
+
+[https://www.acmicpc.net/problem/11328](https://www.acmicpc.net/problem/11328)
+
+문제
+C 언어 프로그래밍에서 문자열(string)은 native한 자료형이 아니다. 사실, 문자열은 그저, 문자열의 끝을 표시하기 위한 말단의 NULL이 사용된, 문자들로 이루어진 문자열일 뿐이다. 하지만 프로그래밍 언어에서 문자열을 다루는 것은 매우 중요하기 때문에, C 표준 라이브러리는 문자열을 다루는 데에 매우 유용한 함수들을 제공하고 있다 : 그들 중에는 strcpy, strcmp, strtol, strtok, strlen, strcat 가 있다.
+
+하지만, 잘 알려져 있지 않으며, 잘 사용되지도 않는 함수가 하나 있다 : strfry 함수다. strfry 함수는 입력된 문자열을 무작위로 재배열하여 새로운 문자열을 만들어낸다. (역자 주 : 여기에서 입력된 문자열과 새로 재배열된 문자열이 다를 필요는 없다.)
+
+두 개의 문자열에 대해, 2번째 문자열이 1번째 문자열에 strfry 함수를 적용하여 얻어질 수 있는지 판단하라.
+
+
+문자열을 두개주고 두 문자열의 구성이 같은지 물어보는 문제다.
+
+이전처럼 알파벳 배열을 만들어서 계산을 하고 배열이 같다면 가능 아니면 불가능을 출력할려고 했다.
+
+```py
+num = int(input())
+
+for i in range(num):
+    first, second = map(str,input().split())
+    
+    first_list = [0]*26
+    second_list = [0]*26
+    
+    for j in range(len(first)):
+        first_list[ord(first[j])-97]+=1
+        second_list[ord(second[j])-97]+=1
+    
+    if first_list==second_list:
+        print('Possible')
+    else:
+        print('Impossible')
+```
+
+조건에서 알파벳 소문자만 들어간다고 했고 알파벳의 크기는 26이다. ord로 아스키코드로 변환해서 찍어보면 a가 97이고 z에다가 97을 빼면 25(0부터 25 26개) 값도 정상적으로 나오는데 이유는 모르겠는데 인덱스 에러가 뜬다.
+
+사실 소문자가 아닌 테스트 케이스라도 들어 있나 싶은데 안알려주니 모르겠고
+
+맞왜틀을 외치다가 그냥 저거 문자열을 통째로 정렬할 수 없나 했다.
+
+```py
+num = int(input())
+for i in range(num):
+    first, second = map(str,input().split())
+    if sorted(list(second))==sorted(list(first)):
+        print('Possible')
+    else:
+        print('Impossible')
+```
+
+문자열 들어온거 그대로 list로 변환해서 정렬해서 비교했다.
+
+되게 사소한거기는 한데 이런 문제를 풀면서 조금이나마 성장할 수 있을 거라 믿는다.

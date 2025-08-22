@@ -1,0 +1,57 @@
+---
+title: 소인수분해 백준 11653번 수학
+date:   2022-11-11 16:23:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, math]
+---
+
+[https://www.acmicpc.net/problem/11653](https://www.acmicpc.net/problem/11653)
+
+문제는 어떤 수를 입력받을때 소인수분해한 값을 출력하면 됩니다.
+
+```py
+import math
+
+def func(x):
+    if x==1:
+        return False
+    temp = int(math.sqrt(x))
+    for i in range(2,temp+1):
+        if x%i == 0:
+            return False
+    return True
+
+num = int(input())
+for i in range(2, int(math.sqrt(num))+1):
+    if func(i):
+        while True:
+            if num%i==0:
+                num = int(num/i)
+                print(i)
+            else:
+                break
+                
+if num!=1:
+    print(num)
+```
+
+소인수분해의 특징은 소수로 이루어진 숫자입니다.
+
+그래서 2는 소수이니 한번 나누어보고 나누어지면 2를 출력하고 숫자를 2로 나눈 값으로 갱신을 합니다. 그러다가 나누어지지 않으면 다음 소수로 넘어갑니다. 마지막에 값이 1이 아니라면 역시 소수이니 출력을 했습니다.
+
+... 다만 여기서 나누어지는 순간 소수임은 자동으로 증명되기에 소수 확인 과정을 거칠 필요가 없습니다.
+
+```py
+import math
+num = int(input())
+for i in range(2, int(math.sqrt(num))+1):
+    while num%i==0:
+        num = int(num/i)
+        print(i)
+if num!=1:
+    print(num)
+```
+
+그래서 소수 확인 과정을 생략하고 이렇게해도 문제가 풀립니다.
+
+다만 걸리는 시간은 80ms에서 76ms로 약간 낮아졌는데 5%의 속도가 향상되었다고 생각하면 유의미합니다.

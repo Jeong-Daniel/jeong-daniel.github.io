@@ -1,0 +1,211 @@
+---
+title: 자물쇠와 열쇠 프로그래머스 구현문제
+date:   2022-08-14 22:32:01 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm, simulation]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/60059](https://school.programmers.co.kr/learn/courses/30/lessons/60059)
+
+> 고고학자인 "튜브"는 고대 유적지에서 보물과 유적이 가득할 것으로 추정되는 비밀의 문을 발견하였습니다. 그런데 문을 열려고 살펴보니 특이한 형태의 자물쇠로 잠겨 있었고 문 앞에는 특이한 형태의 열쇠와 함께 자물쇠를 푸는 방법에 대해 다음과 같이 설명해 주는 종이가 발견되었습니다.
+>  
+>  잠겨있는 자물쇠는 격자 한 칸의 크기가 1 x 1인 N x N 크기의 정사각 격자 형태이고 특이한 모양의 열쇠는 M x M 크기인 정사각 격자 형태로 되어 있습니다.
+> 
+> 자물쇠에는 홈이 파여 있고 열쇠 또한 홈과 돌기 부분이 있습니다. 열쇠는 회전과 이동이 가능하며 열쇠의 돌기 부분을 자물쇠의 홈 부분에 딱 맞게 채우면 자물쇠가 열리게 되는 구조입니다. 자물쇠 영역을 벗어난 부분에 있는 열쇠의 홈과 돌기는 자물쇠를 여는 데 영향을 주지 않지만, 자물쇠 영역 내에서는 열쇠의 돌기 부분과 자물쇠의 홈 부분이 정확히 일치해야 하며 열쇠의 돌기와 자물쇠의 돌기가 만나서는 안됩니다. 또한 자물쇠의 모든 홈을 채워 비어있는 곳이 없어야 자물쇠를 열 수 있습니다.
+> 
+> 열쇠를 나타내는 2차원 배열 key와 자물쇠를 나타내는 2차원 배열 lock이 매개변수로 주어질 때, 열쇠로 자물쇠를 열수 있으면 true를, 열 수 없으면 false를 return 하도록 solution 함수를 완성해주세요.
+
+* key는 M x M(3 ≤ M ≤ 20, M은 자연수)크기 2차원 배열입니다.
+* lock은 N x N(3 ≤ N ≤ 20, N은 자연수)크기 2차원 배열입니다.
+
+제한사항으로 최대 크기는 20x20이라고 했다.
+
+열쇠를 적당히 이동시켜서 자물쇠에 딱 맞게 끼워 넣는 것이고 20x20리스트에 모두 접근하는데는 400만큼의 연산이 필요하다.
+
+일반적인 코딩테스트 채점 환경에서 1초에 2000만에서 1억 정도의 연산을 처리할 수 있다. (C++의 경우 1초당 1~3억 연산) 그러니 완전 탐색을 이용해서 열쇠를 이동이나 회전을 시켜서 자물쇠에 모두 끼워보는 작업을 시도해 볼 수 있다.
+
+탐색을 위해서 공간을 3배인 새로운 리스트를 만들면된다. 예를 들어 3x3인 경우 9x9로 확장시키는 것이다.
+
+그리고 왼쪽 위부터해서 이동, 회전등을 수행하면서 열쇠 크기가 1을 만족하는지 확인한다.
+
+### 풀이방법 1
+
+```py
+def rotate_a_matrix_by_90_degree(a):
+    n = len(a) #행 길이
+    m = len(a[0]) #열 길이
+    result = [[0]*n for _ in range(m)] #결과 리스트
+    for i in range(n):
+        for j in range(m):
+            result[j][n-i-1] = a[i][j]
+    return result
+
+#자물쇠의 중간 부분이 모두 1인지 확인
+def check(new_lock):
+    lock_length = len(new_lock)//3
+    for i in range(lock_length, lock_length*2):
+        for j in range(lock_length, lock_length*2):
+            if new_lock[i][j] != 1:
+                return False
+    return True
+
+def solution(key, lock):
+    n = len(lock)
+    m = len(lock[0])
+    #자물쇠의 크기를 기준의 3배로 변환
+    new_lock = [[0]*(n*3) for _ in range(n*3)]
+    #새로운 자물쇠의 중앙 부분에 기존의 자물쇠 넣기
+    for i in range(n):
+        for j in range(m):
+            new_lock[i+n][j+m] = lock[i][j]
+    
+    #4가지 방향에 대해서 확인
+    for rotation in range(4):
+        key = rotate_a_matrix_by_90_degree(key)#열쇠 회전
+        for x in range(n*2):
+            for y in range(n*2):
+                #자물쇠에 열쇠를 끼워 넣기
+                for i in range(m):
+                    for j in range(m):
+                        new_lock[x+i][y+j] += key[i][j]
+                #새로운 자물쇠에 열쇠가 정확히 들어맞는지 검사
+                if check(new_lock) == True:
+                    return True
+                #자물쇠에서 열쇠를 다시 빼기
+                for i in range(m):
+                    for j in range(m):
+                        new_lock[x+i][y+j] -= key[i][j]
+    return False
+```
+
+일단 for문이 5번 중첩되는것 부터..... 문제가 있다고 생각을 했는데(거기에 check중첩까지 들어가면 6중 for문) 실제로 프로그래머스에서는 일부만 통과하는 모습을 보여준다. 아무래도 이런식으로는 풀어서는 안되는거 같다.
+
+그래도 코드를 보자
+
+```py
+def rotate_a_matrix_by_90_degree(a):
+    n = len(a) #행 길이
+    m = len(a[0]) #열 길이
+    result = [[0]*n for _ in range(m)] #결과 리스트
+    for i in range(n):
+        for j in range(m):
+            result[j][n-i-1] = a[i][j]
+    return result
+```
+
+일단 위 코드는 시계방향으로 90도 돌리는 코드이다. 행은 위치를 변경하고 열은 빼넣어주면 된다.
+
+```py
+#자물쇠의 중간 부분이 모두 1인지 확인
+def check(new_lock):
+    lock_length = len(new_lock)//3
+    for i in range(lock_length, lock_length*2):
+        for j in range(lock_length, lock_length*2):
+            if new_lock[i][j] != 1:
+                return False
+    return True
+```
+
+맞는지 확인을 해주는 것이다. 해당 범위에 대해서 하나라도 0이 있다면 False로 빠져나오고 마지막까지 돌았다면 True로 나오게 된다.
+
+이제 solution 코드를 보자
+
+```py
+def solution(key, lock):
+    n = len(lock)
+    m = len(lock[0])
+    #자물쇠의 크기를 기준의 3배로 변환
+    new_lock = [[0]*(n*3) for _ in range(n*3)]
+    #새로운 자물쇠의 중앙 부분에 기존의 자물쇠 넣기
+    for i in range(n):
+        for j in range(m):
+            new_lock[i+n][j+m] = lock[i][j]
+```
+
+일단 lock의 크기를 받아와서 새로운 자물쇠 크기를 새로 만든다. 그리고 정중앙부분에다가 기존 자물쇠를 넣었다.
+
+```py
+ #4가지 방향에 대해서 확인
+    for rotation in range(4):
+        key = rotate_a_matrix_by_90_degree(key)#열쇠 회전
+        for x in range(n*2):
+            for y in range(n*2):
+                #자물쇠에 열쇠를 끼워 넣기
+                for i in range(m):
+                    for j in range(m):
+                        new_lock[x+i][y+j] += key[i][j]
+                #새로운 자물쇠에 열쇠가 정확히 들어맞는지 검사
+                if check(new_lock) == True:
+                    return True
+                #자물쇠에서 열쇠를 다시 빼기
+                for i in range(m):
+                    for j in range(m):
+                        new_lock[x+i][y+j] -= key[i][j]
+    return False
+```
+
+일단 처음부터 돌리지 말고 일단 하고 그 다음부터 3번 돌리면 좋을거 같지만 그냥 4번 돌리는게 코드가 줄어서 그렇게 한건데 메모리와 시간을 조금이라도 아끼고 싶다면 따로 분리하는게 맞는거 같다.
+
+일단 열쇠를 돌려놓고 시작을 한다. new_lock에 key를 싹 더한다음 True인지 확인하고 맞다면 Treu를 반환 아니라면 다시 빼고 한칸씩 이동시켜 본다. 내 생각에는 더하고 빼기보다 하나 원본을 만들고 카피해서 확인하고 덮어 쓰는 편이 좋을걸로 보인다.
+
+
+### 풀이방법 2
+
+```py
+#키값 회전
+def rotate(key):
+    m = len(key)
+    result = [[0] * m for _ in range(m)]
+    for i in range(m):
+        for j in range(m):
+            result[j][m - 1 - i] = key[i][j]
+    return result
+
+#키가 자물쇠에 맞는지 확인
+def check(lock_padding):
+    lock_length = len(lock_padding) // 3
+    for i in range(lock_length, lock_length*2):
+        for j in range(lock_length, lock_length*2):
+            if lock_padding[i][j] != 1:
+                return False
+    return True
+
+#키를 자물쇠에 넣었을때
+def keyIn(lock_padding, key):
+    n = len(lock_padding) // 3
+    for x in range(n*2):
+        for y in range(n*2):
+            for i in range(len(key)):
+                for j in range(len(key)):
+                    lock_padding[x + i][y + j] += key[i][j]
+            if check(lock_padding) == True:
+                return True
+            for i in range(len(key)):
+                for j in range(len(key)):
+                    lock_padding[x + i][y + j] -= key[i][j]
+    return False
+
+def solution(key, lock):
+    n = len(lock)
+    rotate_count = 0
+    lock_padding = [[0] * (n*3) for _ in range(n*3)] #새로운 자물쇠 만들기
+    for i in range(n):
+        for j in range(n):
+            lock_padding[i + n][j + n] = lock[i][j]
+    while True:
+        answer = keyIn(lock_padding, key)
+        if answer or rotate_count == 3:
+            break
+        else:
+            key = rotate(key)
+            rotate_count += 1
+    return answer
+```
+
+다른 것은 다 똑같지만 solution부분이 약간 다르다.
+
+자물쇠를 넣는 부분까지는 같지만 while을 이용해서 무한 반복을 돌리는데 rotate_count를 이용해서 3번까지만 돌려본다.
+
+크게 코드는 차이가 없지만 이거는 통과를 한다.
+
+나도 코드를 짤때 최대한 반복되는 부분은 함수로 빼놓아서 따로 구현하는 연습을 해야겠다. 단순히 풀이1에 비해서 풀이2는 맞는지 확인하는거를 밖으로 빼놓은거 뿐인데 코드가 훨씬 보기 편해졌다.

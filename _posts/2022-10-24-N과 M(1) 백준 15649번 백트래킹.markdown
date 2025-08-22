@@ -1,0 +1,57 @@
+---
+title: N과 M(1) 백준 15649번 백트래킹
+date:   2022-10-24 16:34:20 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, backtracking]
+---
+
+[https://www.acmicpc.net/problem/15649](https://www.acmicpc.net/problem/15649)
+
+백트래킹은 재귀와 유사하게 작동을 합니다. 주어진 조건을 따라서 공간을 탐색하게 되는데 조건을 어떻게 정할지 봅시다.
+
+```py
+def init():
+    n, m = map(int,input().split())
+    arr = [0]*m
+    isused = [False]*(n+1)
+    def func(k):
+        if k==m:
+            for i in range(m):
+                print(arr[i], end=' ')
+            print()
+            return
+        for j in range(1,n+1):
+            if not isused[j]:
+                arr[k] = j
+                isused[j] = True
+                func(k+1)
+                isused[j] = False
+    func(0)
+init()
+```
+
+위 코드를 설명하면 일단 1부터 n개의 자연수와 그중 m개의 문자를 선택할 수 있습니다.
+
+
+그래서 조건에 따라서 1\<n\<=m 으로 나와 있습니다. 자연수 1개를 중복없이 두번 선택하루는 없으니까요
+
+해당 자연수를 사용했는지 체크하는 issued 배열과 arr이라는 조건에 맞으면 출력하는 배열이 있습니다.
+
+처음에는 아무것도 들어있지 않으니 바로 for문으로 갑시다. 그러면 첫번째 문자는 아무도 사용하지 않았으니 True로 체크를 하고 다음으로 넘어가게 됩니다.
+
+```py
+n,m = list(map(int,input().split()))
+s = []
+def dfs():
+    if len(s)==m:
+        print(' '.join(map(str,s)))
+        return
+    for i in range(1,n+1):
+        if i not in s:
+            s.append(i)
+            dfs()
+            s.pop()
+dfs()
+```
+
+결국 원리는 유사하지만 다른 풀이도 있습니다. 해당 자연수가 없으면 추가를 하고 나오면 빼버리는 식으로 재귀를 이루는 것도 있습니다.

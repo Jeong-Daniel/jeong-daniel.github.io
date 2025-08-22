@@ -1,0 +1,60 @@
+---
+title: 큐 백준 10845번
+date:   2022-10-08 10:25:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, queue]
+---
+
+[https://www.acmicpc.net/problem/10845](https://www.acmicpc.net/problem/10845)
+
+문제
+정수를 저장하는 큐를 구현한 다음, 입력으로 주어지는 명령을 처리하는 프로그램을 작성하시오.  
+
+명령은 총 여섯 가지이다.  
+
+* push X: 정수 X를 큐에 넣는 연산이다.  
+* pop: 큐에서 가장 앞에 있는 정수를 빼고, 그 수를 출력한다. 만약 큐에 들어있는 정수가 없는 경우에는 -1을 출력한다.  
+* size: 큐에 들어있는 정수의 개수를 출력한다.  
+* empty: 큐가 비어있으면 1, 아니면 0을 출력한다.  
+* front: 큐의 가장 앞에 있는 정수를 출력한다. 만약 큐에 들어있는 정수가 없는 경우에는 -1을 출력한다.  
+* back: 큐의 가장 뒤에 있는 정수를 출력한다. 만약 큐에 들어있는 정수가 없는 경우에는 -1을 출력한다.  
+
+드디어... 스택을 지나 큐를 왔습니다. 바킹독의문제에서는 큐는 3문제 정도로 짧게 다루고 주로 DFS/BFS문제에서 다루게 되는 군요 이번에는 간단한 구현 문제이니 쭉 해봅시다.  
+
+```py
+from collections import deque
+queue = deque()
+num = int(input())
+for i in range(num):
+    oper = list(map(str,input().split()))
+    if len(oper)==2:
+        queue.append(int(oper[1]))
+    elif oper[0]=='front':
+        if queue:
+            print(queue[0])
+        else:
+            print(-1)
+    elif oper[0]=='back':
+        if queue:
+            print(queue[-1])
+        else:
+            print(-1)
+    elif oper[0]=='size':
+        print(len(queue))
+    elif oper[0]=='empty':
+        if not queue:
+            print(1)
+        else:
+            print(0)
+    elif oper[0]=='pop':
+        if queue:
+            print(queue.popleft())
+        else:
+            print(-1)
+```
+
+파이썬으로 큐를 구현할때는 deque를 사용합니다. list는 append와 pop를 지원하기에 바로 스택으로 사용할 수 있지만 popleft는 deque에만 지원하기 때문입니다.
+
+다만 위 코드는 시간초과가 나오지만 특별히 알고리즘 문제는 아니기에 넘어가겠습니다.
+
+아마 deqeu를 사용하는 대신 class로 직접 모듈을 짜면 될거 같기는 합니다.

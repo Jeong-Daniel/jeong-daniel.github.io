@@ -1,0 +1,70 @@
+---
+title: 파이썬 스택을 이용한 문자열 역순 출력 프로그램
+date:   2022-05-08 23:43:41 +0900
+categories: [Languages, Python]
+tags: [python, coding, algorithm, stack]
+---
+
+### 문제 : 사용자로부터 문자열을 받고 역순으로 출력하는 프로그램을 작성하여라. 단 스택을 이용해야 한다.
+
+스택의 경우 리스트와 유사하지만 다릅니다. 리스트의 경우에는 어느 곳이든 접근할 수 있지만, 스택의 경우 선입선출(Last In Last Out)을 따르기에 Top에 있는 것만 확인 할 수 있습니다.
+
+그런 상황에서 파이썬으로 문자열을 입력받고 역순으로 출력을 해보겠습니다.
+
+```python
+class Stack:
+    def __init__(self):
+        self.top=[]
+    def isEmpty(self): return len(self.top)==0
+    def size(self): return len(self.top)
+    def claer(self): self.top=[]
+    
+    def push(self,item):
+        self.top.append(item)
+        
+    def pop(self):
+        if not self.isEmpty():
+            return self.top.pop(-1)
+    
+    def peek(self):
+        if not self.isEmpty():
+            return self.top[-1]
+        
+    def __str__(self):
+        return str(self.top[::-1])
+    
+StackA=Stack()
+string = str(input("단어를 입력하세요 : "))
+lenstring = len(string)
+
+for i in range(0,lenstring):
+    StackA.push(string[i])
+    
+print("역순으로 출력 : ", end='')
+for i in range(0,lenstring):
+    print(StackA.pop(), end='')
+```
+
+Stack 클래스는 기존의 것을 가져옵시다.
+
+ 
+
+다만 여기서 push와 pop의 경우 리스트로 본다면 가장 마지막의 것을 볼 수 있는데 시간 복잡도 때문입니다.
+
+append를 사용하면 마지막에 넣으면 시간 복잡도는 상수 1에서 끝나지만
+
+insert(0,내용)으로 해버리면 스택에 있는 것들을 전부다 한칸씩 밀어야 하기 때문에 시간복잡도가 n으로 급격하게 증가를 하지요
+
+ 
+
+이번 문제 같은 경우에는 쉽게 풀립니다. 스택으로 순서대로 집어넣고 pop로 순서대로 빼버리면 됩니다.
+
+ 
+
+'안녕하세요'를 입력한다면 '안' 부터 한개씩 삽입을 합시다. 그러면 마지막에 삽입된것은 '요' 이겠지요
+
+차례대로 pop로 빼내면 끝납니다.
+
+![문자열 역순 출력 결과](https://user-images.githubusercontent.com/85277660/210135722-23f1ed5a-d17a-44cf-a7b5-a6e42b693f36.png)
+
+스택이나 큐를 이용하면 DFS나 BFS같은 탐색문제를 푸는 것도 용이해서 알아두면 좋습니다.

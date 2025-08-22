@@ -1,0 +1,60 @@
+---
+title:  AWS 라이트세일 파일질라 FTP 접속 방법
+date:   2023-03-03 20:20:46 +0900
+categories: [Blog, WordPress]
+tags: [blog, aws, lightsail, ftp]
+---
+
+라이트세일도 역시 하나의 컴퓨터라고 했습니다. 그렇다면 저장공간이 있을 것이고 역시 우리가 컴퓨터를 사용하는 것처럼 접속을 할 수 있습니다. 그리고 컴퓨터간 파일이동이 가능하게 하는 것을 FTP(File Transfer Protocol)라고 부르게 됩니다.
+
+파일질라를 가지고 어떻게 라이트세일로 만든 가상컴퓨터에 접근하는지 보겠습니다.
+
+![라이트세일 계정](https://user-images.githubusercontent.com/85277660/222731135-735344d2-4d10-4b1d-9bc9-32dcf864469f.png)
+
+라이트세일에 접속한 다음 계정을 봅시다.
+
+![라이트세일 SSH](https://user-images.githubusercontent.com/85277660/222731166-4bd37084-4536-41f2-8254-03efe9f73557.png)
+
+그리고 SSH keys를 들어가봅시다. SSH는 Secure Shell의 줄임말로, 원격 호스트에 접속하기 위해 사용되는 보안 프로토콜입니다.
+
+![Deafult keys](https://user-images.githubusercontent.com/85277660/222731977-5a5f0fe6-5d1a-48bf-8812-6786717bb135.png)
+
+기본 키에서 국기 옆에 있는 다운버튼을 누르면 파일이 하나 다운받아집니다.
+
+![pem](https://user-images.githubusercontent.com/85277660/222732094-ae65e1a8-13f7-40ab-bf22-02f1d272de9d.png)
+
+이제 확장자명이 pem이라는 키파일이 하나 생성이 됩니다.
+
+파일질라를 설치해봅시다.
+
+[파일질라](https://filezilla-project.org/download.php?platform=win64)
+
+여기로 들어가서 파일 질라를 다운 받아서 설치하신 다음 실행을 합시다.
+
+![파일 질라](https://user-images.githubusercontent.com/85277660/222732448-0839b1f8-2757-4ee1-b74d-71f4689624dc.png)
+
+파일 - 사이트 관리자에 들어가셔서
+
+![새 사이트](https://user-images.githubusercontent.com/85277660/222732577-f9d8fa11-424d-434a-b1ea-98b6886f55b4.png)
+
+새 사이트를 선택한 다음 내가 원하는 데로 이름을 지어두고
+
+<img width="190" alt="키파일" src="https://user-images.githubusercontent.com/85277660/222732802-3d335bd1-008e-464f-8706-3112143bdda3.png">
+
+1. 프로토콜은 SFTP
+2. 호스트는 도메인 또는 지난번에 받았던 고정 IP를 입력합시다. 아직 도메인을 설정하지 않았으니 고정 IP를 지정합시다.
+3. 로그온유형은 키파일
+4. 사용자 bitnami로 하면 되는거 같습니다.
+5. 키파일은 우리가 SSH다운 받았던 파일 
+
+![Cap 2023-03-03 22-13-38-571](https://user-images.githubusercontent.com/85277660/222732882-fe7a47a4-f5f5-4231-8cb9-9138354dd332.png)
+
+파일을 받을때 확장자를 모든파일 또는 pem을 선택합시다.
+
+![Cap 2023-03-03 22-14-02-268](https://user-images.githubusercontent.com/85277660/222733299-5931e9b1-98b3-48df-9bd0-76eb6cb00401.jpg)
+
+신뢰하고 캐시를 등록에 체크하고 확인을 쭉 누르면 연결이 끝납니다.
+
+![Cap 2023-03-03 22-14-21-506](https://user-images.githubusercontent.com/85277660/222733310-1017c415-5faf-4976-b42c-cbf737d1b048.png)
+
+이렇게 라이트세일의 폴더트리를 확인 할 수 있으며 파일을 옮길 수 있습니다. 저는 티스토리에 있는 게시글을 백업하기 위해서 사용합니다.

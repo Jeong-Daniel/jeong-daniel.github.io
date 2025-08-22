@@ -1,0 +1,190 @@
+---
+title: 깃허브(Git-hub)블로그 만들어보기 (윈도우환경) 2편
+date:   2022-05-09 10:29:41 +0900
+categories: [Tech, Git]
+tags: [blog, git, github, ruby]
+---
+
+* 깃 블로그를 설치하는 과정은 테마마다 약간 다르기도 합니다. 기본적인 깃 블로그는 아래 게시글을 따라서 설치 할 수 있지만 내가 원하는 테마를 발견 했을 경우 설명서를 꼼곰하게 읽고 적용해보시기를 바랍니다.
+
+![깃 레포지토리](https://user-images.githubusercontent.com/85277660/210136325-824b56b7-e51c-4f12-ada5-96adf72e3eaf.png)
+
+ 가장먼저 Repository를 만드는 것입니다.
+
+ ![깃 레포지토리 생성](https://user-images.githubusercontent.com/85277660/210136352-048c4c2d-7527-457c-9391-175d3994b746.png)
+
+ {username}.github.io 이런식으로 Repository name를 설정해줍시다.
+
+본인의 이름을 ABC라고 설정했으면 ABC.github.io처럼요
+
+그러면 일단 전체 레포주소는 ABC/ABC.github.io가 되는게 맞습니다.
+
+만들어 졌다면 해당 레포로 들어간다음 주소를 따서 컴퓨터상에 clone을 해줍시다.
+
+![깃 블로그 주소](https://user-images.githubusercontent.com/85277660/210136362-f9cbcb10-db31-4c7f-a128-4bed6c68bfa2.png)
+
+Code를 누르면 이렇게 Clone를 위한 주소가 생성이 됩니다. 복사를 해주시고
+
+![로컬 깃](https://user-images.githubusercontent.com/85277660/210136366-b393a621-4b1d-4ed0-85e8-1c2c00d816e7.png)
+
+로컬네트워크에 블로그를 연동하기 위해서 원하시는 폴더에다가 Git Bash Here를 클릭해서 깃을 실행시켜준다음
+
+git clone 복사한 주소를 입력해줍시다.
+
+![깃 clone](https://user-images.githubusercontent.com/85277660/210136386-cdcbf062-2051-44b9-a14a-410df77e79ae.png)
+
+이렇게 입력하시면 됩니다. 아마 붙여넣기 단축키가 안먹을건데, 그냥 오른쪽 마우스 클릭하고 paste하면 됩니다.
+
+ 
+
+그러면 디렉토리가 생성된것을 볼 수 있습니다.
+
+ 
+
+그러면 cd 설정한이름.github.io를 입력하셔서 디렉토리를 이동하시고
+
+ 
+
+echo "Hello Wolrd" > index.html를 입력합시다.
+
+ 
+
+귀찮아서 캡쳐를 안했는데 디렉토리안에 index.html이라는 파일이 생성이 되고 안에는 Hello World라고 있을 겁니다.
+
+ 
+
+그러면 여기에서
+
+
+```shell
+git add --all
+git commit -m "My first website"
+git push -u origin main
+```
+
+이렇게 입력을해줍시다.
+
+ 
+
+참고로 -m뒤에 들어가는 문구는 아무거나 쓰시면됩니다. 단 한글이랑 공란은 안됩니다.
+
+ 
+
+git push는 디렉토리에 생성된 것을 깃허브로 푸쉬한다는 뜻입니다.
+
+ 
+
+그리고 본인의이름.github.io로 들어가봅시다.
+
+![초기화면](https://user-images.githubusercontent.com/85277660/210136401-ea52a066-96f9-417c-8f5d-a20519e234fd.png)
+
+뭐가 되게 허접한게 생성이 되었군요
+
+ 
+
+이제 지난편에 있던 말이 이해하시는 분도 있을 겁니다. index.html이 웹사이트의 역할을 하는 것이고 이제 이것들을 꾸미면 뭔가 만들어 지겠구나를요
+
+ 
+
+index파일은 더 이상 쓸 일이 없으니 삭제해주고 다음을 봅시다.
+
+ 
+
+하지만 다행스럽게 모든것을 처음부터 할 것도 없이 테마나 여러가지 만들어진 것들을 잘 가져와서 쓰면 됩니다.
+
+
+![루비](https://user-images.githubusercontent.com/85277660/210136408-080893e9-0169-4a62-bd77-273cd5a77bee.jpg)
+
+이번에는 깃 말고 Ruby를 켜줍시다. 찾아모시면 Start Command Prompt with Ruby를 클릭해서 루비를 켜주신다음
+
+![jekyll](https://user-images.githubusercontent.com/85277660/210136413-f4fdcab8-df33-4968-8c42-5e30f000a310.png)
+
+gem install jekyll bundler
+
+입력해줍시다. 대충 눈치채신분도 있을 건데 gem은 파이썬의 pip처럼 패키지매니저입니다.
+
+리눅스에서 yum치고 아나콘다에서는 conda로 하고
+
+아무튼 이 명령어는 지금 정적웹페이지 생성을 위한 라이브러리 jekyll을 추가하는 것입니다. 이제 이걸로 블로그를 만들게 됩니다.
+
+![설치 과정](https://user-images.githubusercontent.com/85277660/210136434-5c084f99-151a-46a8-a52a-985b09498b88.png)
+
+![설치 끝](https://user-images.githubusercontent.com/85277660/210136437-1a6fb907-4d76-4038-9bc4-ceb21bc4ddca.png)
+
+대충 설치가 끝났군요 깃으로 돌아갑시다.
+
+ 
+
+자 다시 Git Bash를 켜서 우리가 작업할 폴더를 열어줍시다.
+
+ 
+
+그리고 'jekyll new ./' 을 입력해줍시다.
+
+ 
+
+그러니까 ./이 여기 현재 디렉토리를 뜻합니다. 여기에다가 jekyll을 만들겠다는 거지요
+
+ 
+
+학교랑 이름나와서 모자이크했는데 귀찮네요 어자피 공개할 생각이었는데 그냥 해야겠습니다.
+
+![jekyll 생성](https://user-images.githubusercontent.com/85277660/210136448-b4754bfc-744e-46e7-b677-dbb7cc1fe028.png)
+
+그런데 막상 입력을하면 Confilict 충돌문제가 발생했다고 합니다. 덮어쓰기를 해야하는데 혹시나 중요한 파일이 손상될 수 있다는 거지요 하지만 안에는 처음부터 뭐 아무것도 안들어 있었는데 임시로 html파일을 하나 만들어서 그렇습니다. 무시해도 되니 강제로 진행을 해봅시다.
+
+ 'jekyll new ./ --force' 라고 뒤에 뭘 붙여주면 이렇게 진행이 됩니다.
+
+![jekyll git](https://user-images.githubusercontent.com/85277660/210136462-edf7868e-b1ce-4d16-b13c-8f8f39bd6c6d.png)
+
+또는 폴더내에 메모장이나 html파일을 지우고 git폴더만 남기신 다음에 커맨드를 입력해보시면 됩니다.
+
+그렇게 이어서 bundle install을 입력해주시고
+
+![budnle install](https://user-images.githubusercontent.com/85277660/210136467-5edc6449-190f-4ad5-a1f1-a6d28294c0dd.png)
+
+bundle exec jekyll serve를 입력해주시면 됩니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210136477-2704a220-ff8a-4204-af87-70a488c49bd3.png)
+
+그런데 아마 간단하게 jekyll s만 해도 될겁니다.
+
+자 그러면 블로그 서버가 로컬상에서 작동이 되는 것을 볼 수 있습니다. 여기서 로컬서버주소인
+
+http://127.0.0.1:4000/ (뒤에 낯선게 붙어있는데 4000은 포트번호입니다)
+
+![에러 예시](https://user-images.githubusercontent.com/85277660/210136495-be5fa317-ecae-41c4-9a31-b814ee296ed6.png)
+
+혹시라도 bundle exec jekyll serve 명령어를 입력했을때 Dependency Error이 발생한다면 의존성 문제가 생겼다는 의미 입니다. 혹시라고 추가한 라이브러리나 Jekyll기능이 있다면 지우시거나 아니면 gemfile을 수정하여 추가하셔야 합니다. 이부분은 나중에 포스팅을 하겠습니다.
+
+ ![깃 로컬 페이지 생성](https://user-images.githubusercontent.com/85277660/210136506-bb3eca15-aad8-4f1f-bf9a-c391abebde71.png)
+
+ 네 뭔가 생겼습니다. 이거는 로컬에서 생성되고 있으니
+
+ 이거를 깃, 웹 페이지 상에서 띄울 수 있는지 봅시다.
+
+ ```bash
+git add --all
+git commit -m "My new jeklly website"
+git push
+```
+
+추가를 하고 커밋을 하고 푸시를 해준다음에 내 깃허브 블로그 주소로 들어가면
+
+![라이브 페이지 생성](https://user-images.githubusercontent.com/85277660/210136535-7ded2758-b56a-4d84-a993-7e803e88ab72.png)
+
+이제 감을 잡으신 분들이 있을 겁니다. 로컬에서 작업하고 띄워지는 것을 확인 한다음에 깃에다가 올리면 딱 좋겠네요
+
+아무튼 이렇게 Helloworld나오던게 바뀌었습니다.
+
+그러면 이제 간단하게 테마나 적용해봅시다.
+
+[ttps://jekyllthemes.io/](https://jekyllthemes.io/)  
+
+[http://jekyllthemes.org/](http://jekyllthemes.org/)  
+
+[https://jekyll-themes.com/](https://jekyll-themes.com/)  
+
+[https://jamstackthemes.dev/ssg/jekyll/](https://jamstackthemes.dev/ssg/jekyll/)  
+
+꼭 제가 할 테마를 따라서 찾을 필요없이 여기서 마음에드는 페이지를 찾고 진행을 해도 됩니다.

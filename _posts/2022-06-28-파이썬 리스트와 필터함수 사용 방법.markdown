@@ -1,0 +1,42 @@
+---
+title: 파이썬 리스트와 필터함수 사용 방법
+date:   2022-06-28 14:41:36 +0900
+categories: [Languages, Python]
+tags: [python,list,func]
+comment: true
+---
+
+[파이썬 내장함수 공식 문서](https://docs.python.org/ko/3/library/functions.html#filter)
+
+파이썬은 내장함수를 지원하는데 그중에서 리스트와 함께 사용할 수 있는 필터로 참을 돌려주는 이터레이터를 구축한다고 합니다.
+
+여기서 이터레이터(Iterator)이란 컨테이너(리스트, 튜플, 셋, 딕셔너리, 문자열)같은 여러개의 요소를 가지는 반복자입니다.
+
+사용방법은 다음과 같습니다.
+
+```py
+filter(function, iterable)
+```
+필터에 함수와 리스트를 넣으면 됩니다.
+
+예를 들어서 0부터 9까지 들어 있는 수에서 홀수만 뽑아보겠습니다.
+
+```py
+def odd_num(x):
+    return x%2!=0
+result = list(filter(odd_num, range(10)))
+print(result)
+```
+필터를 리스트로 감싸주는 이유는 
+
+![filter list](https://user-images.githubusercontent.com/85277660/210756361-cca26ecb-7aea-46fe-b4d1-93da6a41cf58.png)
+
+이렇게 필터라는 객체로 반환되기 때문에 리스트로 감싸야 값을 볼 수 있습니다.
+
+![odd num example](https://user-images.githubusercontent.com/85277660/210756441-e56322be-c85d-4d93-bd6d-03891fb922d1.png)
+
+아무튼 필터를 통해서 값을 확인 할 수 있었습니다. 마찬가지로 필터의 함수부분을 람다 함수로 넣을 수 있습니다.
+
+여기서 이터레이터가 들어갈 자리에 range도 들어간 것을 보고 궁금해 하실지 모르겠는데 range 역시 마찬가지로 list, tuple와 마찬가지로 시퀸스 형태로 취급합니다.
+
+[https://docs.python.org/ko/3/library/stdtypes.html#typesseq](https://docs.python.org/ko/3/library/stdtypes.html#typesseq)

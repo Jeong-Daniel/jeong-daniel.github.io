@@ -1,0 +1,61 @@
+---
+title: 색종이 만들기 백준 2630번 재귀
+date:   2022-10-22 16:56:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, recursive]
+---
+
+[https://www.acmicpc.net/problem/2630](https://www.acmicpc.net/problem/2630)
+
+문제
+
+아래 <그림 1>과 같이 여러개의 정사각형칸들로 이루어진 정사각형 모양의 종이가 주어져 있고, 각 정사각형들은 하얀색으로 칠해져 있거나 파란색으로 칠해져 있다. 주어진 종이를 일정한 규칙에 따라 잘라서 다양한 크기를 가진 정사각형 모양의 하얀색 또는 파란색 색종이를 만들려고 한다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211186887-8a3d96bd-636a-41b2-8a8f-473c7929ed7c.png)
+
+전체 종이의 크기가 N×N(N=2k, k는 1 이상 7 이하의 자연수) 이라면 종이를 자르는 규칙은 다음과 같다.
+
+전체 종이가 모두 같은 색으로 칠해져 있지 않으면 가로와 세로로 중간 부분을 잘라서 <그림 2>의 I, II, III, IV와 같이 똑같은 크기의 네 개의 N/2 × N/2색종이로 나눈다. 나누어진 종이 I, II, III, IV 각각에 대해서도 앞에서와 마찬가지로 모두 같은 색으로 칠해져 있지 않으면 같은 방법으로 똑같은 크기의 네 개의 색종이로 나눈다. 이와 같은 과정을 잘라진 종이가 모두 하얀색 또는 모두 파란색으로 칠해져 있거나, 하나의 정사각형 칸이 되어 더 이상 자를 수 없을 때까지 반복한다.
+
+위와 같은 규칙에 따라 잘랐을 때 <그림 3>은 <그림 1>의 종이를 처음 나눈 후의 상태를, <그림 4>는 두 번째 나눈 후의 상태를, <그림 5>는 최종적으로 만들어진 다양한 크기의 9장의 하얀색 색종이와 7장의 파란색 색종이를 보여주고 있다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211186892-6c992dd3-9930-4f0d-9038-61f12b559de8.png)
+
+입력으로 주어진 종이의 한 변의 길이 N과 각 정사각형칸의 색(하얀색 또는 파란색)이 주어질 때 잘라진 하얀색 색종이와 파란색 색종이의 개수를 구하는 프로그램을 작성하시오.
+
+결국 바로 앞에 풀었던 재귀 문제와 비슷해 보입니다.
+
+[종이의 개수 백준 1780번 재귀](https://jeong-daniel.github.io/posts/%EC%83%89%EC%A2%85%EC%9D%B4-%EB%A7%8C%EB%93%A4%EA%B8%B0-%EB%B0%B1%EC%A4%80-2630%EB%B2%88-%EC%9E%AC%EA%B7%80/)
+
+여기서는 9개로 쪼개서 보았지만 여기서는 4개로 쪼개서 본다는 점이 달라보입니다.
+
+```py
+global count
+count = [0,0]
+num = int(input())
+paper = []
+for i in range(num):
+    paper.append(list(map(int,input().split())))
+    
+def check(x,y,n):
+    for i in range(x,x+n):
+        for j in range(y,y+n):
+            if paper[x][y]!=paper[i][j]:
+                return False
+    return True
+
+def solve(x,y,z):
+    if check(x,y,z):
+        count[paper[x][y]] += 1
+        return
+    n = int(z/2)
+    for i in range(2):
+        for j in range(2):
+            solve(x+i*n, y+j*n, n)
+            
+solve(0,0,num)
+for i in range(2):
+    print(count[i])
+```
+
+진짜 앞에 코드에서 3번 도는거 2번으로 바꾸고 count 배열 3개에서 2두개로하고 3으로 나누는거 2로 그대로 숫자만 바꾸고 통과되었습니다.

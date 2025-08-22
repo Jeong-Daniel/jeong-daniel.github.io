@@ -1,0 +1,39 @@
+---
+title: 럭키 스트레이트 구현문제
+date:   2022-08-13 16:11:30 +0900
+categories: [Coding_Test, Others]
+tags: [coding, python, algorithm, simulation]
+---
+
+> 럭키 스트레이트는 기술 이름입니다.
+> 
+> 스킬을 사용하기 위한 조건이란 캐릭터 점수를 N이라고 할 때 자릿수를 기준으로 점수 N을 반으로 나누어 왼쪽 부분의 각 자릿수의 합과 오른쪽 부분의 각 자릿수의 합을 더한 값이 동일한 상황을 의미합니다.
+> 
+> 예시
+> 현재 점수가 123,402라면 왼쪽 부분의 자리수 합은 1+2+3, 오른쪽 부분은 4+0+2이므로 두 합이 6으로 동일하여 러키 스트레이트를 사용할 수 있습니다.
+> 
+> 점수 N이 주어지면 럭키 스트레이트를 사용할 수 있는지 판단을 합니다. 단 정수 N의 자리수는 짝수이며 홀수(12,345)는 들어오지 않습니다.
+
+```py
+a = input()
+
+length = int(len(a)/2)
+left = a[0:length]
+right = a[length:]
+
+left_sum=0
+right_sum=0
+
+for i in range(length):
+    left_sum += int(left[i])
+    right_sum += int(right[i])
+    
+if left_sum==right_sum:
+    print("LUCKY")
+else:
+    print("READY")
+```
+
+크게 생각할 것도 없다. 자리수는 짝수단위라고 주었기에 검증하지도 않아도 되고
+
+왼쪽/오른쪽으로 나누고 더해주면 된다. 다만 입력 받을때 str로 받았고 형변환을 하지 않았기에 더할때는 int로 맞춰야 한다.

@@ -1,0 +1,37 @@
+---
+title: 단어 정렬 백준 1181번 정렬
+date:   2022-10-30 17:17:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, sorting]
+---
+
+[https://www.acmicpc.net/problem/1181](https://www.acmicpc.net/problem/1181)
+
+문제
+알파벳 소문자로 이루어진 N개의 단어가 들어오면 아래와 같은 조건에 따라 정렬하는 프로그램을 작성하시오.
+
+길이가 짧은 것부터  
+
+길이가 같으면 사전 순으로  
+
+---
+```py
+num = int(input())
+word_list = []
+for i in range(num):
+    temp = str(input())
+    lenght = len(temp)
+    if [lenght,temp] not in word_list:
+        word_list.append([lenght,temp])
+    
+word_list.sort(key=lambda x:(x[0],x[1]))
+
+for i in range(len(word_list)):
+    print(word_list[i][1])
+```
+
+시간과 메모리 제한 최대 입력도 널널해서 그대로 진행을 봅시다.
+
+문자의 길이와 문자순으로 정렬을 합니다. 그런데 중복되지 않게 출력을하니 없을때만 추가를 합니다.
+
+조건에 따라서 정렬을 하고 출력을 하면 끝입니다.

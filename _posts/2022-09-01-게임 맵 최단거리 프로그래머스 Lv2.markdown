@@ -1,0 +1,39 @@
+---
+title: 게임 맵 최단거리 프로그래머스 Lv2
+date:   2022-09-01 14:42:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/1844](https://school.programmers.co.kr/learn/courses/30/lessons/1844)
+
+전형적인 BFS문제다. (참고로 DFS는 최소단위 길이를 구할 수 없기 때문에 오직 BFS만 가능하다) 여태 허겁지겁본다고 BFS는 큐를 사용한다고만 기억하고 이번에 제대로 천천히 짚어 보았네요
+
+```py
+from collections import deque
+def solution(maps):
+    q = deque()
+    start = (0,0)
+    n_number = len(maps)
+    v_number = len(maps[0])
+    visited = [[-1]*v_number for _ in range(n_number)]
+    visited[0][0] = 0
+    q.append(start)
+    dy = [0,1,0,-1]
+    dx = [1,0,-1,0] 
+    while q:
+        now = q.popleft()
+        for i in range(4):
+            nx = now[0] + dx[i]
+            ny = now[1] + dy[i]
+            if n_number > nx >= 0 and v_number > ny >= 0 and maps[nx][ny]==1 and visited[nx][ny] == -1:
+                q.append((nx,ny))
+                visited[nx][ny]=visited[now[0]][now[1]]+1
+                
+    if visited[n_number-1][v_number-1] != -1:
+        answer = visited[n_number-1][v_number-1]+1
+        return answer
+    return -1
+```
+
+어차피 먼저 도달하는 것은 제일 짧은 것이니 나중에 도달했을 경우는 고려하지 않아도 됩니다. 그리고 이번 문제는 갈 수 있는지 구하는 것이 아니라 도달했는지 물어보는 문제입니다. 그러니 이전 visited값에서 1을 더한 값을 갱신하면서 나가면 됩니다. 이렇게 마지막까지 돌았을때 목표하는 곳을 방문했는지 확인하고 방문을 했다면 거리를 그렇지 않다면 -1을 리턴합니다.

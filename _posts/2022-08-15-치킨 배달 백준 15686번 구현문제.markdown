@@ -1,0 +1,240 @@
+---
+title: 치킨 배달 백준 15686번 구현문제
+date:   2022-08-15 21:01:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, simulation]
+---
+
+[https://www.acmicpc.net/problem/15686](https://www.acmicpc.net/problem/15686)
+
+> 크기가 N×N인 도시가 있다. 도시는 1×1크기의 칸으로 나누어져 있다. 도시의 각 칸은 빈 칸, 치킨집, 집 중 하나이다. 도시의 칸은 (r, c)와 같은 형태로 나타내고, r행 c열 또는 위에서부터 r번째 칸, 왼쪽에서부터 c번째 칸을 의미한다. r과 c는 1부터 시작한다.
+> 
+> 이 도시에 사는 사람들은 치킨을 매우 좋아한다. 따라서, 사람들은 "치킨 거리"라는 말을 주로 사용한다. 치킨 거리는 집과 가장 가까운 치킨집 사이의 거리이다. 즉, 치킨 거리는 집을 기준으로 정해지며, 각각의 집은 치킨 거리를 가지고 있다. 도시의 치킨 거리는 모든 집의 치킨 거리의 합이다.
+> 
+> 임의의 두 칸 (r1, c1)과 (r2, c2) 사이의 거리는 |r1-r2| + |c1-c2|로 구한다.
+> 예를 들어, 아래와 같은 지도를 갖는 도시를 살펴보자.
+
+일단 치킨집의 위치와 집의 위치를 분리를 합니다.
+
+그리고 각 치킨집을 기준으로 집과의 거리를 구하고 전체 집과의 거리의 합을 구해서 짧은 순서로 정렬을 합니다.
+
+마지막으로 각 치킨집의 거리중 짧은 값만 갱신해서 넣고 sum으로 반환하면 되겠다는 생각인데
+
+문제는 이렇게 적어보니 for문을 되게 많이 돌아야 겠다는 생각이 먼저든다.
+
+일단 치킨집과 집을 구하기 위해서 for문을 돌고, 각 치킨집과 집과의 거리를 구하고 마지막으로 이를 정렬한다음 짧은 순서로 빼낸다고 거리를 구해야할거 같다.... 일단 한번 해보자
+
+```py
+n, m = map(int,input().split())
+
+ch_map = []
+for i in range(n):
+    ch_map.append(list(map(int, input().split())))
+    
+house_list = []
+ch_list = []
+for i in range(n):
+    for j in range(n):
+        if ch_map[i][j]==1:
+            house_list.append([i,j])
+        elif ch_map[i][j]==2:
+            ch_list.append([i,j])
+        else:
+            continue
+            
+#두 거리를 구하는 함수
+def dist(a,b):
+    distn = abs(a[0]-b[0]) + abs(a[1]-b[1]) 
+    return distn
+
+count = 0
+jumpo = [[]*x for x in range(len(ch_list))]
+for i in range(len(ch_list)):
+    for j in range(len(house_list)):
+        jumpo[i].append(dist(ch_list[i],house_list[j]))
+
+sorted(jumpo, key=lambda x : sum(x))
+jumpo[0:m]
+
+final_jumpo = []
+min_num = 99
+for i in range(len(jumpo[0])):
+    for j in range(len(jumpo)):
+        min_num = min(jumpo[j][i],min_num)
+    final_jumpo.append(min_num)
+    
+print(sum(final_jumpo))
+```
+
+* 해당 코드는 일부 테스트케이스를 통과하지 못했다. 그래도 내 생각을 정리해볼겸 적어본다.
+
+```py
+n, m = map(int,input().split())
+
+ch_map = []
+for i in range(n):
+    ch_map.append(list(map(int, input().split())))
+```
+
+입력받는거야 뭐 늘 똑같고
+
+```py
+house_list = []
+ch_list = []
+for i in range(n):
+    for j in range(n):
+        if ch_map[i][j]==1:
+            house_list.append([i,j])
+        elif ch_map[i][j]==2:
+            ch_list.append([i,j])
+        else:
+            continue
+```
+
+일단 치킨가게와 집을 정리를 쭉 했다. 그러면 각 리스트에는 집과 치킨의 위치가 들어간다.
+
+```py
+#두 거리를 구하는 함수
+def dist(a,b):
+    distn = abs(a[0]-b[0]) + abs(a[1]-b[1]) 
+    return distn
+```
+그리고 abs 내장 함수를 이용해서 거리를 구하는 함수를 하나 만들었다.
+
+```py
+count = 0
+jumpo = [[]*x for x in range(len(ch_list))]
+for i in range(len(ch_list)):
+    for j in range(len(house_list)):
+        jumpo[i].append(dist(ch_list[i],house_list[j]))
+```
+일단 각 점포와 가게의 거리를 쭉 구했다. 그러면 각 치킨집마다 집의 거리를 구하는 리스트가 생성이 된다.
+
+```py
+sorted(jumpo, key=lambda x : sum(x))
+jumpo[0:m]
+```
+그리고 점포를 lambda함수를 이용해서 합으로 정렬을 한다. 그러면 거리의 합이 가장 작은 순서대로 치킨가게가 정렬이되고 폐업하지 않을 나머지 치킨집만 남기고
+
+```py
+final_jumpo = []
+min_num = 99
+for i in range(len(jumpo[0])):
+    for j in range(len(jumpo)):
+        min_num = min(jumpo[j][i],min_num)
+    final_jumpo.append(min_num)
+    
+print(sum(final_jumpo))
+```
+
+각 리스트에서 가장 거리가 짧은 것만 따로 뽑아내서 합으로 했는데 안됬다...!
+
+답을 찾아보자
+
+
+다시 정리를 하면 기존에 존재하는 치킨집을 최대 M개로 유지하면서 일반 집들로부터 M개의 치킨 집과의 거리를 줄이는 것이 목표다 이후 도시의 치킨 거리 합의 최솟값을 구하면 된다.
+
+
+기본적으로 입력이 들어오는 치킨집의 개수(범위)를 생각해보자. 치킨집의 개수 범위는 M <= 치킨 집의 개수 <= 13이다. 만약 치킨집 중에서 M개를 고르는 조합을 고려한다면 경우의 수가 얼마나 될지 생각을 해보자. 최대 13개에서 M개를 선택하는 조합이니 13CM의 값은 100,000을 넘지 않는다. 집의 개수 또한 최대 100개이기 때문에 모든 경위 수를 계산하더라도 허용 범위 내이다.
+
+
+파이썬에서는 조합 라이브러리를 제공하므로 이를 이용하면 모든 경우를 간단히 계산할 수 있다. 따라서 치킨집 중에서 M개를 고르는 모든 경우에 대해서 치킨 거리의 합을 계산하여(완전탐색) 치킨 거리의 최솟값을 구해 출력하면 된다.
+
+```py
+from itertools import combinations
+
+n, m = map(int, input().split())
+chicken, house  = [], []
+
+for r in range(n):
+    data = list(map(int,input().split()))
+    for c in range(n):
+        if data[c]==1:
+            house.append((r,c)) #일반 집
+        elif data[c]==2:
+            chicken.append((r,c)) #치킨 집
+
+#모든 치킨집 중에서 m개의 치킨집을 뽑는 조합 계산
+candidates = list(combinations(chicken,m))
+
+#치킨 거리의 합을 계산하는 함수
+def get_sum(candidate):
+    result = 0
+    #모든 집에 대하여
+    for hx, hy in house:
+        #가장 가까운 치킨집을 찾기
+        temp = 1e9
+        for cx,cy in candidate:
+            temp = min(temp, abs(hx-cx) + abs(hy-cy))
+        #가장 가까운 치킨집까지의 거리를 더하기
+        result += temp
+    #치킨 거리의 합 반환
+    return result
+
+#치킨 거리의 합의 최소를 찾아 출력
+result = 1e9
+for candidate in candidates:
+    result = min(result,get_sum(candidate))
+    
+print(result)
+```
+전체 코드 입니다. 이번에도 천천히 한번 보겠습니다.
+
+```py
+from itertools import combinations
+
+n, m = map(int, input().split())
+chicken, house  = [], []
+
+for r in range(n):
+    data = list(map(int,input().split()))
+    for c in range(n):
+        if data[c]==1:
+            house.append((r,c)) #일반 집
+        elif data[c]==2:
+            chicken.append((r,c)) #치킨 집
+```
+
+일단 조합 라이브러리를 위해서 itertools를 사용합니다.
+
+[Python itertools 내장 모듈 정리](https://jeong-daniel.github.io/posts/Python-itertools-%EB%82%B4%EC%9E%A5-%EB%AA%A8%EB%93%88-%EC%A0%95%EB%A6%AC/)
+
+```py
+#모든 치킨집 중에서 m개의 치킨집을 뽑는 조합 계산
+candidates = list(combinations(chicken,m))
+```
+
+candidates는 조건에 따른 치킨집의 조합을 계산을 합니다.
+
+저는 처음에 그냥 치킨집과의 거리를 계산해서 가장 값이 큰거를 뺐는데 지금 생각하니 일부는 운좋게 통과하지만 꼭 아닐 수 있겠다는 생각이 드네요
+
+```py
+#치킨 거리의 합을 계산하는 함수
+def get_sum(candidate):
+    result = 0
+    #모든 집에 대하여
+    for hx, hy in house:
+        #가장 가까운 치킨집을 찾기
+        temp = 1e9
+        for cx,cy in candidate:
+            temp = min(temp, abs(hx-cx) + abs(hy-cy))
+        #가장 가까운 치킨집까지의 거리를 더하기
+        result += temp
+    #치킨 거리의 합 반환
+    return result
+```
+
+치킨 거리 합을 계산하게 됩니다. 일단 집에 대한 수는 변동사항이 없으니 house에 들어있고
+
+제가 했던거 처럼 temp에 임의의 값을 주고 min함수를 이용해서 보다 작은 값을 받아오게 되고 이를 저장을 합니다.
+
+```py
+#치킨 거리의 합의 최소를 찾아 출력
+result = 1e9
+for candidate in candidates:
+    result = min(result,get_sum(candidate))
+    
+print(result)
+```
+
+마지막으로 가능한 조합을 따라서 가장 작은 결과값을 받아오는 걸로 마무리 합니다.

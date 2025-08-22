@@ -1,0 +1,48 @@
+---
+title: 파이썬 2차원 행렬 상하좌우 반전하기
+date:   2022-08-29 19:42:41 +0900
+categories: [Languages, Python]
+tags: [python, coding, algorithm, list, array]
+---
+
+여러 코딩테스트를 풀어보니 행렬을 90도 회전해야한다거나 행렬을 상하좌우 뒤집어야 하는 일이 종종 보입니다.
+
+```py
+n = 3
+m = 3
+first_list = [[1,2,3],[4,5,6],[7,8,9]]
+result = [[0]*n for _ in range(m)]
+
+# 1. 반복문
+for i in range(n):
+    result[i] = first_list[n-1-i]
+    
+#2. 문자열 슬라이싱
+first_list = first_list[::-1]
+
+print(first_list, result)
+```
+
+![img1](https://user-images.githubusercontent.com/85277660/211150354-14106e9f-4f64-43da-bd2a-f29765b75755.png)
+
+결국 [0] [1] [2] 한줄단위로 들어 있는 것이기 때문에 이를 뒤집으면 [2] [1] [0]이 되고 2차원 행렬로 배열해서 보면 상하를 뒤집은게 됩니다.
+
+```py
+n = 3
+m = 3
+first_list = [[1,2,3],[4,5,6],[7,8,9]]
+result = [[0]*n for _ in range(m)]
+
+# 1. 반복문
+for i in range(n):
+    for j in range(m):
+        result[i][j] = first_list[i][m-1-j]
+
+# 2. 문자열 슬라이싱
+for i in range(n):
+    first_list[i] = first_list[i][::-1]
+```
+
+![img2](https://user-images.githubusercontent.com/85277660/211150359-7b598c94-d7f1-4d33-8094-262643c282f2.png)
+
+이번에는 좌우반전입니다. 각 줄에 있는 숫자를 뒤집어서 넣어주면 됩니다.

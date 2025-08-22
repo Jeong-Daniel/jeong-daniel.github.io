@@ -1,0 +1,87 @@
+---
+title: 파이썬 문자열 회문 확인 프로그램 만들기
+date:   2022-05-08 23:42:41 +0900
+categories: [Languages, Python]
+tags: [python, coding, algorithm, stack]
+---
+
+문제 : 회문(Palindrome)이란 앞뒤 어느 쪽에서 읽어도 같은 말과 구문을 뜻한다. "eye", "madam", "I'm Adam", "race car"등은 모두 회문이라고 할 수 있다. 물론 구두점, 스페이스(공백), 대소문자등을 무시를 해야한다.
+
+앞의 게시물의 클래스를 이용하고 회문을 검증하는 프로그램을 만들어 봅시다.
+
+```python
+def stringcheck(string):
+    lenstring = len(string)
+    osf=0
+    check=0
+    
+    StackA=Stack()
+    StackB=Stack()
+    
+    for i in range(0,lenstring):
+        if string[i].isalnum and string[i]!=' ':
+            StackA.push(string[i].lower())
+        
+    if StackA.size()%2==0:
+        count = int(StackA.size()/2)
+    else:
+        count = int(StackA.size()/2)
+        osf=1
+        
+    for i in range(0,count):
+        StackB.push(StackA.pop())
+        
+    if osf==1:
+        StackA.pop()
+        
+    for i in range(0,count):
+        if StackA.pop()!=StackB.pop():
+            check=1
+            
+    if check==0:
+        print("이 문장은 회문입니다.")
+    else:
+        print("이 문장은 회문이 아닙니다.")
+        
+string = str(input("단어를 입력하세요 : "))
+stringcheck(string)
+```
+
+지금보니 그냥 함수안에다가 다 구현해두고 함수만 호출해도 되겠네요 어쩌다보니 저렇게 됬습니다.
+
+lenstring는 문자열의 길이, osf는 문자열의 길이가 홀수/짝수인지 체크를 하고, check는 회문인지 확인하기 위해서 두었습니다. 스택은 두개가 필요를 합니다.
+
+ 
+
+제가 처음에 이거를 풀면서 하나 착각했던 것은 스택을 가지고 푸는 거였습니다. 리스트였다면 쪼갤것도 없이 그냥 바로바로 확인들어가면 되지만 스택은 구조의 특성상 top만 확인할수 있기에 다 꺼내 봐야 한다는 거지요
+
+ 
+
+일단 조건에서 문자열의 공백과 다른 첨자는 제외 하라고 했습니다. isalnum은 문자가 숫자인지, 글자인지 그리고 공백인지 확인하고 조건을 만족할때만 넣게되는데 또 조건은 대소문자 구분을 하면 안됩니다. A와 a는 다르니까요
+
+ 
+
+그래서 lower()를 이용해서 모두 소문자로 만들었습니다.
+
+ 
+
+그 다음은 짝수/홀수 구분입니다. 짝수라면 그냥 절반을 때면 그만이지만 홀 수라면 단어를 0.5개만 쪼갤 수는 없으며 정중앙에 있는 단어는 뭐든지 상관없이 회문이 결정되니 그냥 무시해버리기 위해서입니다.
+
+ 
+
+count 횟수만큼 A스택에 집어넣었던 문자열을 하나씩 B스택으로 옮기는데 이때 문장의 길이가 홀수라면 그냥 A에서 하나더 빼버립시다. 버려도 상관없으니
+
+ 
+
+다왔습니다. 이제 아에 A스택이랑 B스택에서 한개씩 꺼내면서 비교를 해봅시다. 이 과정에서 단 하나라도 불일치가 나오면 check의 숫자를 1로 바꾸었습니다.
+
+ 
+
+마지막에서 check가 0 그대로라면 회문, 아니라면 회문이 아니라는 메세지를 출력하게 됩니다.
+
+ 
+
+좀더 코드를 깔끔하게 만들어 볼법도 한데, 아직은 실력이 미숙해서 지저분해지는군요 ㅎㅎ...
+
+
+![회전문 확인 결과](https://user-images.githubusercontent.com/85277660/210135661-b2e85e51-0ff9-417c-806e-4496f45c2c44.png)

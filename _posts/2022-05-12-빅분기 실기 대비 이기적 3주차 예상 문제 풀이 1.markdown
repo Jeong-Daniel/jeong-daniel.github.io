@@ -1,0 +1,111 @@
+---
+title: 빅분기 실기 대비 이기적 3주차 예상 문제 풀이 1
+date:   2022-05-12 11:10:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [bigdata, data, python, pandas]
+---
+
+## 작업형 1유형
+
+데이터 출처 :[https://www.kaggle.com/anmolkumar/health-insurance-cross-sell-prediction](https://www.kaggle.com/anmolkumar/health-insurance-cross-sell-prediction)(참고, 데이터 수정)
+
+데이터 설명 : 자동차 보험 가입 예측
+
+Data url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/insurance/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/insurance/train.csv)
+
+
+데이터 상위 5개 컬럼
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210366229-01c6bc46-f617-4ed3-80b9-8ab0a2ccde62.png)
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/insurance/train.csv")
+```
+### Q1. Vehicle_Age 값이 2년 이상인 사람들만 필터링 하고 그중에서 Annual_Premium 값이 전체 데이터의 중간값 이상인 사람들을 찾고, 그들의 Vintage값의 평균을 구하여라
+
+Vehicle_Age을 먼저 구분하고 Annual_Premium을 .median을 걸어서 분류를 하고 Vintage에다가 mean을 걸어주면 되겠네요 거의 판다스 다루는 문제가 조건을 걸어서 어떤 것을 찾아보거나 처리를 해보는 것이 문제가 내기가 좋습니다. 그런데 조금 이기적 문제가 실망스러운 점은 복원문제나 예시 문제에서는 데이터를 조작을 하는데 여기서 조건을 걸어서 구하는거 밖에 없네요 나중에 좀더 살펴봐야 겠습니다.
+
+```py
+df['Vehicle_Age'].value_counts()
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210366295-0ea082c1-dd0b-4d94-b40c-ddd32f1205d0.png)
+
+value_counts로 살펴보니 2년 이상이면 '> 2 Years'만 가져오면 되겠습니다. 
+
+```py
+df.loc[(df['Vehicle_Age']=='> 2 Years')&(df['Annual_Premium']>df['Annual_Premium'].median())].Vintage.mean()
+```
+가독성이 좀 엉망이기는 한데 한줄로 해결이 됩니다. df.loc[조건1&조건2]에서 Vintage의 평균이 되겠네요
+
+ 
+### Q2. vehicle_age에 따른 각 성별(gender)그룹의 Annual_Premium값의 평균을 구하여 아래 테이블과 동일하게 구현하라
+
+개인적으로는 groupby를 이용해서 값을 재구성 하는게 나올지 모르겠네요 print문으로 단답형으로 나오는게 대부분일거 같기는 한데 아무튼 해봅시다. feature 3개가 있습니다. vehicle_age, gender, Annual_Premium입니다.
+```py
+New_feature = df.groupby(['Vehicle_Age','Gender'],as_index = False).Annual_Premium.mean()
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210366402-b456d703-ec87-4048-bd86-8f624324f847.png)
+
+as_index 설정을 안하면 시리즈형태로 값만 나오기 때문에 False를 설정해줍시다. 그리고 pivot로 나머지 열을 잡아봅시다.
+
+```py
+New_feature.pivot(index='Vehicle_Age',columns='Gender',values='Annual_Premium')
+```
+
+index, columns, values를 통해서 조절 할 수 있습니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210366444-033edabc-da4b-4323-9397-0764c0c24fdc.png)
+
+## 작업형 2유형
+
+데이터 출처 :[https://www.kaggle.com/ronitf/heart-disease-uci](https://www.kaggle.com/ronitf/heart-disease-uci) (참고, 데이터 수정)
+
+데이터 설명 : 심장질환예측
+
+문제타입 : 분류유형
+
+평가지표 : f1-score
+
+trainData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/heart/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/heart/train.csv)
+
+testData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/heart/test.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/heart/test.csv)
+
+subData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/heart/submission.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/heart/submission.csv)
+
+
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210366586-86c5c7e3-2bbe-4949-b4f3-3ddd379a49cf.png)
+
+이번에는 target 심장질환을 분류해보겠습니다. 
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210366618-ece0c452-ddaa-4420-90ad-212add191a2e.png)
+
+describe로 간단하게 살펴보니 trestbps와 chol, thalach 만 스케일링을 적용해주면 될거 같습니다. 
+
+```py
+feature =  ['trestbps', 'chol', 'thalach']
+from sklearn.preprocessing import StandardScaler
+Salcer = StandardScaler()
+Salcer.fit(train[feature])
+train[feature] = Salcer.transform(train[feature])
+test[feature] = Salcer.transform(test[feature])
+y = train.pop('target')
+```
+스케일링을 하고 목적변수 y는 따로 뺏습니다.
+
+```py
+from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier()
+model.fit(train,y)
+```
+귀찮아서 스코어 확인하는 것도 뺏습니다...
+
+```py
+summit = pd.DataFrame()
+summit['target'] = model.predict(test)
+summit.to_csv('predict_target.csv',index=False)
+```
+데이터 저장하는 것도 익숙하실 겁니다.

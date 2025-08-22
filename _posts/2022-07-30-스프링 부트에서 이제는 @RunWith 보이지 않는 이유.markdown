@@ -1,0 +1,29 @@
+---
+title: 스프링 부트에서 이제는 @RunWith 보이지 않는 이유
+date:   2022-07-30 12:33:10 +0900
+categories: [Tech, Spring]
+tags: [java, srping, server]
+---
+
+[Junit5에서 import org.junit.Test / org.junit.runner.RunWith 문제 해결 방법](https://jeong-daniel.github.io/posts/Junit5%EC%97%90%EC%84%9C-import-org.junit.Test-org.junit.runner.RunWith-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-%EB%B0%A9%EB%B2%95/)
+
+한 2~3년전 스프링부트 책을 보다보면 지금과는 코드가 달라서 난감한데 그중에서도 @RunWith가 있다. 주로 테스트 코드에서 사용하는 것인데 @RunWith이 무엇이고 이제는 어떻게 달라졌는지 보자
+
+Junit4에서는 테스트의 러너(Runner)를 확장하는 방법으로 @RunWith 어노테이션에 커스텀 테스트 러너를 설정해주는 방법이 있다. 그래서 예전 스프링 강의와 코드를 살펴보면 테스트코드를 작성할 때 주로 @RunWith(SpringRunner.class) 같은 코드를 볼 수 있다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210803124-2d302ddb-6f50-4ab8-88ed-8b8da56e9414.png)
+
+하지만 Junit5에서는 @RunWith가 아닌 Extension이라는 일관된 방법을 통해 테스트를 실행한다. 마찬가지로 @ExtendWith(MyExtension.class)처럼 구현체를 지정할 수 있는데 이때 달라진 점이 있다.
+
+* 메타 애노테이션을 지원한다. @ExtendWith(SpringExtension.class)를 생략
+* 여러번 중복 사용할 수 있다.
+
+```java
+@SpringBootTest
+@AutoConfigureMockMvc
+class PostControllerTest {
+...
+}
+```
+
+위 코드에서는  @RunWith나 @ExtendWith가 없지만 사실 @ExtendWith(SpringExtension.class)를 가지고 있는것과 같다. @SpringBootTest가 이미 그 코드를 가지고 있기 때문

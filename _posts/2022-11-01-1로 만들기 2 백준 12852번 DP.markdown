@@ -1,0 +1,49 @@
+---
+title: 1로 만들기 2 백준 12852번 DP
+date:   2022-11-01 15:50:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, dp, dynamic]
+---
+
+[https://www.acmicpc.net/problem/12852](https://www.acmicpc.net/problem/12852)
+
+문제
+정수 X에 사용할 수 있는 연산은 다음과 같이 세 가지 이다.
+
+* X가 3으로 나누어 떨어지면, 3으로 나눈다.
+* X가 2로 나누어 떨어지면, 2로 나눈다.
+* 1을 뺀다.
+
+정수 N이 주어졌을 때, 위와 같은 연산 세 개를 적절히 사용해서 1을 만들려고 한다. 연산을 사용하는 횟수의 최솟값을 출력하시오.
+
+---
+
+X에서 1까지 도달하는 3가지 방법이 있습니다. 3으로 나누거나 2로 나누거나 1을 빼거나. 그러면 1부터 X까지 쭉 최단 경로를 찾고 X값을 출력하면 됩니다.
+
+```py
+num = int(input())
+dp = [0]*(num+1)
+pre = [0]*(num+1)
+dp[1] = 0
+for i in range(2,num+1):
+    dp[i] = dp[i-1] + 1
+    pre[i] = i-1
+    if i%2==0 and dp[i]>(dp[int(i/2)]+1):
+        dp[i] = dp[int(i/2)] + 1
+        pre[i] = i/2
+    if i%3==0 and dp[i]>(dp[int(i/3)]+1):
+        dp[i] = dp[int(i/3)]+1
+        pre[i] = i/3
+        
+print(dp[num])
+curr = num
+while True:
+    print(curr, end=' ')
+    if (curr==1):
+        break
+    curr = int(pre[curr])
+```
+
+그래서 dp와 pre라는 두가지 배열을 가지고 찾아갑니다. dp는 최소값을 구하고 pre는 이 값이 어디서부터 왔는지 체크하기 위해서 찾기 위해서 기록을 합니다. 만약 조건에서 출력하는 순서를 물어보지 않는다면 pre는 없어도 되겠네요
+
+다만 나눗셈을 할때 자동으로 float 실수형으로 형변환이 일어나는데 인덱스 참조할때 에러가 날 수 있으니 인덱스 참조는 int형으로 명시적으로 정해줘야 합니다.

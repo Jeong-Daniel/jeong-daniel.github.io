@@ -1,0 +1,108 @@
+---
+title: 정렬된 시퀸스를 탐색할때 이진탐색 bisect 사용방법
+date:   2022-08-20 15:22:30 +0900
+categories: [Languages, Python]
+tags: [python, module, library, bisect]
+comment: true
+---
+
+일반적으로 정렬되었다는 가정하에 어떤 원소를 가장 빠르게 찾는 방법은 이진탐색을 수행하는 것이고 이 이진 탐색을 위해서 파이썬 내장함수로 준비된게 bisect입니다. 
+
+프로그램이 구체적으로 어떤 것을 처리해야하는지 유형에 관계없이 리스트에서 index함수를 사용해 특정값을 찾아내려면 리스트 길이에 선형적으로 비례를 합니다.
+
+운이 좋아서 첫번째에 있다면 O(1)이지만 재수없게 마지막에 있다면 O(n)의 시간복잡도가 필요하고 이를 평균으로 내면 O(n)의 시간복잡도를 지니게 됩니다.
+
+```py
+data = list(range(10**5))
+index = data.index(91234)
+assert index == 91234
+```
+
+찾는 값이 리스트 안에 들어 있는지 모른다면 원하는 값과 같거나 그보다 큰 값의 인덱스 중 가장 작은 인덱스를 찾고 싶을 것입니다. 가장 간단한 방법은 리스트를 앞에서 부터 선형으로 읽으면서 원소를 찾는 것이고 이때 시간복잡도는 O(n)이겠지요 
+
+```py
+def find_closet(sequence,goal):
+    for index, value in enumerate(sequence):
+        if goal < value:
+            return index
+    raise ValueError(f'범위를 벗어남 : {goal}')
+    
+index = find_closet(data,91234.56)
+assert index == 91235
+```
+
+전체 과정을 0부터 for문을 돌리는 방법입니다.
+
+여기서 사용할 파이썬 내장 bisect 모듈은 순서가 정해져 있는 리스트에 대해 이런 유형의 검사를 더 효과적으로 수행합니다. bisect_left 함수를 사용하면 정렬된 원소로 이뤄진 시퀸스에 대해 이진 검색을 효율적으로 수행할 수 있습니다.
+
+bisect_left가 반환하는 인덱스는 리스트에 찾는 값의 원소가 존재하는 경우 이 원소의 인덱스이며, 리스트에 찾는 값의 원소가 존재하지 않는 경우 정렬 순서상 해당 값을 삽입해야할 자리의 인덱스 입니다.
+
+```py
+from bisect import bisect_left
+
+index = bisect_left(data, 91234) #정확히 일치
+assert index == 91234
+
+index = bisect_left(data, 91234.56) #근접한 값과 일치
+assert index == 91235
+
+index = bisect_left(data, 91234.23) #근접한 값과 일치(찾는값 이상에서 근접한 것을 찾음)
+assert index == 91235
+```
+
+left대신 right도 있습니다.
+
+bisect 이진탐색이 사용하는 복잡도는 로그복잡도 입니다. timeit를 이용해서 확인하면 실제 성능을 확인 할 수 있습니다.
+
+```py
+bisect.bisect_left(a, x, lo=0, hi=len(a), *, key=None)
+
+bisect.bisect_right(a, x, lo=0, hi=len(a), *, key=None)
+
+bisect.insort_left(a, x, lo=0, hi=len(a), *, key=None)
+
+bisect.insort_right(a, x, lo=0, hi=len(a), *, key=None)
+```
+
+bisect는 이렇게 4가지의 매서드가 있습니다. left는 찾는 값의 왼쪽을 기준 right는 찾는 값의 오른쪽을 기준으로 합니다.
+
+![bisect_left](https://user-images.githubusercontent.com/85277660/211037651-e1bdca4c-ceb4-4583-a3d6-58dc60029934.png)
+
+left와 right의 위치를 정리하면 위와 같습니다. 어떤 것을 사용하더라도 찾고자하는 인덱스보다 같거나 큰값을 기준으로 반환을 합니다.
+
+91234라는 인덱스가 존재하니 left는 그자리를 반환하지만 right는 그보다 한칸 큰 값을 반환합니다.
+
+![bisect_right](https://user-images.githubusercontent.com/85277660/211037737-97ec0ed2-d106-48e3-896e-ab54a66cd517.png)
+
+이 경우에는 left와 right의 값이 같게 나옵니다.
+
+```py
+bisect.insort_left(a, x, lo=0, hi=len(a), *, key=None)
+
+bisect.insort_right(a, x, lo=0, hi=len(a), *, key=None)
+```
+
+bisect.insrot는 먼저 biset_left를 수행해서 인덱스를 찾고 거기에다가 값을 삽입을 합니다.
+
+그리고 inseort_right도 위와 마찬가지 입니다.
+
+![insort_left](https://user-images.githubusercontent.com/85277660/211037857-a184ddd9-9017-4456-8e39-d4b4c0eb3860.png)
+
+둘이 작동을 하면 사실 비슷하게 작동을 하지만 역시 미묘한 차이가 있습니다.
+
+
+left의 경우 x가 a에 이미 있으면, 삽입 위치는 기존 항목 앞(왼쪽)이 됩니다. 반환 값은 a가 이미 정렬되었다고 가정할 때 list.insert()의 첫 번째 매개 변수로 사용하기에 적합합니다.
+
+
+right는 bisect_left()와 비슷하지만, a에 있는 x의 기존 항목 뒤(오른쪽)에 오는 삽입 위치를 반환합니다.
+
+
+즉 다시 말해서 1(a) 2(a) 3(a)가 있을때
+
+bisect left는 1(a) 왼쪽에다가 삽입을 하고1(b) 1(a) 2(a) 3(a)
+
+bisect right는 1(a) 오른쪽에 넣게 됩니다.
+
+1(a) 1(b) 2(a) 3(a)
+
+어떤 인덱스를 찾거나 삽입을할때 굉장히 유용하게 사용할 수 있습니다.

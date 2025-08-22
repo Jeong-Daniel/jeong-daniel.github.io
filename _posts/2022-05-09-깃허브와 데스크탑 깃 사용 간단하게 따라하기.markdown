@@ -1,0 +1,127 @@
+---
+title: 깃허브와 데스크탑 깃 사용 간단하게 따라하기
+date:   2022-05-09 14:29:41 +0900
+categories: [Tech, Git]
+tags: [git, github]
+---
+
+데스크탑용 깃을 사용하는 방법을 간단하게 적어볼려고 합니다. 준비물은 깃허브는 가입이 되어 있으셔야 합니다.
+
+[https://git-scm.com/downloads](https://git-scm.com/downloads)
+
+![git 다운로드 페이지](https://user-images.githubusercontent.com/85277660/210137252-6c7bc2a2-aecf-4da1-8dae-34cf5dd72de3.png)
+
+윈도우 기준으로 설명을 드리겠습니다. 요즘 기준으로 나오는 윈도우는대부분 64bit로 나오니 딱히 확인 할 것도 없이 64bit standalone 버전을 다운받으시면 됩니다.
+
+애초에 32bit는 램4GB이상 지원을 하지 못하는데 요즘은 기본값이 8GB로 나오는 세상이라....
+
+![git 설치](https://user-images.githubusercontent.com/85277660/210137258-74a0cf2f-ee18-40d0-a140-68e9e1a1ed8f.png)
+
+쭉 넘기시면 됩니다.
+
+![설치 과정](https://user-images.githubusercontent.com/85277660/210137274-59b1ba53-e70e-471c-b222-d8162a334bb4.png)
+
+이제 에디터 테마를 결정하는 것인데 특히 선호하는 테마가 없다면 vim으로 합시다.
+
+![설치 과정 2](https://user-images.githubusercontent.com/85277660/210137279-6cdfb7fa-5fed-4017-84a5-385123b7066e.png)
+
+이제 git을 어디에서 사용할 것인가 설정하는건데 Recommended로 합시다.
+
+거의 기본값으로 두고 설치하시면 됩니다.
+
+![git bash](https://user-images.githubusercontent.com/85277660/210137286-daea022d-ece8-476e-a336-bcc33336d22d.png)
+
+
+따로 exe파일이 있는게 아니고 어떤 폴더 시작점, 경로가 지정되어야 하기 때문에 아무 폴더나 드라이브에서 오른쪽 마우스 클릭하고 Git Bash Here를 선택해봅시다.
+
+ ![git 화면](https://user-images.githubusercontent.com/85277660/210137296-dc056e5b-7114-403a-bfd0-767ff8408095.png)
+
+깃 버전을 간단하게 확인 해볼 수 있습니다. 이제 깃에다가 사용자 환경을 등록해봅시다.
+
+```bash
+git config --global user.name "본인 이름"
+git config --global user.email "사용 이메일"
+```
+
+본인 이름 앞의 부분은 똑같이 사용하시고 본인 이름이랑 사용 이메일을 본인 것으로 해줍시다.
+
+이름은 깃허브에 등록하신 기준으로 하면 될 것입니다.
+
+![깃 설정](https://user-images.githubusercontent.com/85277660/210137300-c0ab4b07-4f2a-4332-b7f3-dc10dce6dfbb.png)
+정확히는 첫줄에 나온게 이름이고 둘째줄에 있는게 아이디인데 둘째줄 기준으로 하겠습니다.
+당연히 첫줄에 있는 이름은 수정이 가능하고 다른 사람과 중복이 가능합니다.
+
+![git config](https://user-images.githubusercontent.com/85277660/210137311-b19d16c4-c8cb-49c6-821b-54126e138b94.png)
+
+이제 깃에 이름과 이메일 설정이 완료되었습니다.
+
+![git list](https://user-images.githubusercontent.com/85277660/210137318-c8f18fdb-a77b-479e-8fb7-805445d202b0.png)
+
+
+정상적으로 적용이 된 것을 확인 할 수 있습니다.
+
+이제 깃허브에 올라온 것중에 필요한 레포지티를 데스크탑으로 받아 옵시다.
+
+![git local folder](https://user-images.githubusercontent.com/85277660/210137328-a090aa76-fb00-415f-8eff-ea8e61a26406.png)
+
+방금 git bash에서 cd명령어로 경로를 이동하면 되는데 귀찮으니..
+
+그냥 원하는 폴더에다가 오른쪽 마우스 클릭하고 불러 옵시다.
+
+![git clone https](https://user-images.githubusercontent.com/85277660/210137335-95621ada-7a2e-41c8-9079-82967dadd546.png)
+
+레포지티에 들어가면 초록색 창 Code가 있는데 Clone아래 있는 HTTPS주소를 복사합시다.
+
+저기 복사 아이콘을 누르면 간단하게 복사가 됩니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210137340-f49a1328-a7b1-42da-90ec-1a4b2ab1a962.png)
+
+그리고 git clone 복사한 주소 그대로 붙여 넣고 엔터를 치시면
+
+![git floder](https://user-images.githubusercontent.com/85277660/210137343-5b7ee40f-a1a8-4047-bd4b-44be64e5e0de.png)
+
+이렇게 깃 디렉토리가 생성이 되었습니다.
+
+![img1 git](https://user-images.githubusercontent.com/85277660/210137356-da4d6ff6-4f01-42ef-828e-a619bcea6e77.png)
+
+다만 이번에도 git을 다시 켜면서 경로를 이동시켜 봅시다.
+
+![img1 git](https://user-images.githubusercontent.com/85277660/210137366-100f8387-81f0-4e85-8009-4601aabd2251.png)
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210137372-e827e9b2-12d6-4e91-afc4-605d3934c3fa.png)
+
+그러면 불러온 상태에서 데스크탑에있는 파일이 수정이 일어 났다고 가정을 합시다. 수정이나 삭제 코드 수정등
+
+여기서는 텍스트 파일을 하나 추가해봅시다.
+
+![commit](https://user-images.githubusercontent.com/85277660/210137377-0ebefa2b-d01f-4288-8ff3-748baaa56740.png)
+
+git add --all 명령어로 깃에다가 추가를 할 수 있고
+
+git commit -m "메세지(영어로 쓰셔야 합니다)"
+
+커밋으로 완성할 수 있습니다. 메세지는 비워두지 마시고 쓰셔야 합니다.
+
+![img git push](https://user-images.githubusercontent.com/85277660/210137385-366dbd5d-7104-49f8-b463-8538669acd38.png)
+
+git push는 데스크탑에 있는 파일을 깃허브에다가 밀어 넣는다고 생각하시면 됩니다.
+
+이 과정이 끝나면 깃에 업로드가 끝나게 됩니다.
+
+![git hub](https://user-images.githubusercontent.com/85277660/210137395-24692723-f7be-43d2-bdb7-344cb3c5ecf9.png)
+
+맨처음에 이름과 이메일을 적었는데 비밀번호는 모르지요
+
+브라우저에 로그인이 되어 있다면 Sign in with your browser을 클릭하시면 자동으로 적용이 됩니다.
+
+![terminal git push](https://user-images.githubusercontent.com/85277660/210137405-7496d02b-7f5f-4007-bc1b-5788355ba569.png)
+
+git에 적용되었다는 것을 확인 할 수 있으며
+
+![git text](https://user-images.githubusercontent.com/85277660/210137413-60094943-361f-4184-a000-62ad40db55f9.png)
+
+git에서 역시 파일이 업로드 된것을 확인 할 수 있습니다.
+
+반대로 깃에 수정사항이 생긴 것을 컴퓨터로 불러올 수 있습니다.
+
+git pull 명령어를 사용하시면 git에 있는 내용을 가져오게 됩니다! 끝

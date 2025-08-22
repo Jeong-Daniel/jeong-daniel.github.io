@@ -1,0 +1,43 @@
+---
+title: RGB거리 백준 1149번 DP
+date:   2022-10-31 14:10:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, dp, dynamic]
+---
+
+[https://www.acmicpc.net/problem/1149](https://www.acmicpc.net/problem/1149)
+
+문제
+RGB거리에는 집이 N개 있다. 거리는 선분으로 나타낼 수 있고, 1번 집부터 N번 집이 순서대로 있다.
+
+집은 빨강, 초록, 파랑 중 하나의 색으로 칠해야 한다. 각각의 집을 빨강, 초록, 파랑으로 칠하는 비용이 주어졌을 때, 아래 규칙을 만족하면서 모든 집을 칠하는 비용의 최솟값을 구해보자.
+
+* 1번 집의 색은 2번 집의 색과 같지 않아야 한다.
+* N번 집의 색은 N-1번 집의 색과 같지 않아야 한다.
+* i(2 ≤ i ≤ N-1)번 집의 색은 i-1번, i+1번 집의 색과 같지 않아야 한다.
+* N개의 집이 있는데 연속해서 색이 같으면 안된다는 조건이 들어갑니다.
+
+```py
+num = int(input())
+dp = [[0]*3 for _ in range(num+1)]
+map_list = []
+for i in range(num):
+    map_list.append(list(map(int,input().split())))
+
+dp[1][0] = map_list[0][0]
+dp[1][1] = map_list[0][1]
+dp[1][2] = map_list[0][2]
+    
+for i in range(2,num+1):
+    dp[i][0] = min(dp[i-1][1],dp[i-1][2]) + map_list[i-1][0]
+    dp[i][1] = min(dp[i-1][0],dp[i-1][2]) + map_list[i-1][1]
+    dp[i][2] = min(dp[i-1][0],dp[i-1][1]) + map_list[i-1][2]
+
+print(min(dp[num][0],dp[num][1],dp[num][2]))
+```
+
+dp[i]는 해당하는 집의 위치가 되고 0,1,2는 결국 R,G,B를 각각 칠할때의 비용을 구하게 됩니다.
+
+빨간색과 초록색을 칠한 것중 최솟 값 그리고 파란색을 칠한 값 이렇게 색상에 대해서 3가지 경우의 수를 담을 수 있고
+
+마지막에서는 어느 색으로 칠할때 가장 적은 비용이 드는가를 보게 됩니다.

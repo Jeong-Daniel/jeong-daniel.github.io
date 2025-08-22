@@ -1,0 +1,51 @@
+---
+title: 성격 유형 검사하기 프로그래머스 Lv1
+date:   2022-08-31 13:03:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/118666](https://school.programmers.co.kr/learn/courses/30/lessons/118666)
+
+이제 풀지도 못하는 삼성 SW 빡구현 문제 대신 프로그래머스 기초 문제부터 쭉 정주행 해볼까 합니다.
+
+```py
+def solution(survey, choices):
+    grade = {'R':0,'T':0,'C':0,'F':0,'J':0,'M':0,'A':0,'N':0}
+    length = len(survey)
+    for i in range(length):
+        temp = choices[i]-4
+        left_c = survey[i][0]
+        right_c = survey[i][1]
+        print(temp, left_c, right_c)
+        if temp>0:
+            grade[right_c]+=temp
+        elif temp<0:
+            grade[left_c]+=abs(temp)
+    answer = ''
+    if grade['R']>=grade['T']:
+        answer+='R'
+    else:
+        answer+='T'
+    if grade['C']>=grade['F']:
+        answer+='C'
+    else:
+        answer+='F'
+    if grade['J']>=grade['M']:
+        answer+='J'
+    else:
+        answer+='M'
+    if grade['A']>=grade['N']:
+        answer+='A'
+    else:
+        answer+='N'
+    return answer
+```
+
+효율성은 모르겠고 간단하게 하드코딩
+
+1부터 7까지의 범위인데 일괄적으로 4를 빼버렸습니다. 그러면 전체 범위는 -3~3까지가 되네요
+
+그래서 왼쪽과 오른쪽에 어떤게 있는지 확인을 하고 각 사전에다가 더해줍니다. 그리고 지표에 따라서 문자열을 출력합니다.
+
+사실 코테 수준이 다 이러면... 이제 공부 안해도 되겠지요

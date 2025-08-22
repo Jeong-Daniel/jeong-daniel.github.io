@@ -1,0 +1,57 @@
+---
+title: 스택 백준 10828번
+date:   2022-09-28 12:49:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, stack]
+---
+
+[https://www.acmicpc.net/problem/10828](https://www.acmicpc.net/problem/10828)
+
+문제를 설명할 것도 없고 그 자체 스택을 만들어 보는 것인데
+
+아마 파이썬으로 하면 안풀릴거다
+
+```py
+from collections import deque
+
+stack_list = deque([])
+loop = int(input())
+for i in range(loop):
+    string = list(input().split())
+    if len(string)==1:
+        order = str(string[0])
+        if order == 'pop':
+            if len(stack_list) != 0:
+                print(stack_list.pop())
+            else:
+                print(-1)
+        elif order == 'size':
+            print(len(stack_list))
+        elif order == 'empty':
+            if len(stack_list)==0:
+                print(1)
+            else:
+                print(0)
+        elif order == 'top':
+            if len(stack_list) != 0:
+                print(stack_list[-1])
+            else:
+                print(-1)
+    else:
+        order = string[0]
+        number = int(string[1])
+        stack_list.append(number)
+```
+
+사실 큐가 아니라서 deque를 사용하지 않아도 된다. pop와 append 모두 left를 기준으로 하기 때문이다.
+
+그래서 pop, size, empty, top, push 조건에 따라서 구현을 하고 해당하는 출력은 명령어가 입력될때 맞춰서 진행하면 되는데
+
+![result](https://user-images.githubusercontent.com/85277660/211178239-d141a515-68d3-4179-903f-5af508381717.png)
+
+문제는 시간 제한이 0.5초로 엄격하다보니 Pypy로 해도 시간초과가 걸린다.
+
+.....
+
+
+이거는 이대로 넘어갈려고 한다.

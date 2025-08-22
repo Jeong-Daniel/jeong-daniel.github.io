@@ -1,0 +1,70 @@
+---
+title: 두 큐 합 같게 만들기 프로그래머스 Lv2
+date:   2022-08-31 16:36:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/118667](https://school.programmers.co.kr/learn/courses/30/lessons/118667)
+
+분명 접근방법은 다른 사람들과 크게 다를거는 없었다.
+
+각 큐의 크기를 비교를 하고 큰쪽에 있는 것을 빼서 작은 쪽에 넣고 이를 반복하는데 일정 이상 답이 안나온다면 바로 빠져나와서 -1 출력하기
+
+그런데 한끝 차이로 생각하지 못한 부분때문에 계속 통과를 하지 못했던거 같다.
+
+```py
+from collections import deque
+def solution(queue1, queue2):
+    answer = 0
+    queue1, queue2 = deque(queue1), deque(queue2)
+    sum1, sum2 = sum(queue1), sum(queue2)
+    for _ in range(3*len(queue1)):
+        if sum1 > sum2:
+            sum1 -= queue1[0]
+            sum2 += queue1[0]
+            queue2.append(queue1.popleft())
+        elif sum1 < sum2:
+            sum1 += queue2[0]
+            sum2 -= queue2[0]
+            queue1.append(queue2.popleft())
+        else:
+            return answer
+        answer += 1
+    return -1
+```
+
+일단 먼저 각 큐는 리스트 형태로 주어집니다. 하지만 리스트에서 빼고 더하는데는 시간복잡도가 O(n)이 걸리니 이를 deque 자료형으로 변환을 합시다. 그리고 각 큐의 합을 구합니다.
+
+
+큐의 길이의 3배가 되는 동안 더하고 빼는 동작을 수행하는데 이동안에 답을 구하지 못하면 없는 것으로 판단하고 빠져나옵니다.
+
+
+그리고 이제 각 큐의 합을 기준으로 빼고 더하는 것을 반복합니다. for문이 한번 돌때마다 answer을 추가해줍시다.
+
+
+내 답은 왜 안되나하고 봤더니
+
+```py
+from collections import deque
+def solution(queue1, queue2):
+    queue1 = deque(queue1)
+    queue2 = deque(queue2)
+    answer = 0
+    lenght = len(queue1)*3
+    for i in range(lenght):
+        if sum(queue1) == sum(queue2):
+            return answer
+        if sum(queue1) > sum(queue2):
+            queue2.append(queue1.popleft())
+            answer+=1
+        else:
+            queue1.append(queue2.popleft())
+            answer+=1
+    
+    return -1
+```
+
+sum이 말썽을 일으켰다. 그러니까 if문에서 sum을 하기 위해서 각 큐를 한번 순회를 해야하는데 여기서 O(n)의 시간복잡도가 발생하는데 결국 시간초과로 이어졌다. 이것 대신에 sum변수를 따로 관리하면 O(1)으로 해결 할 수 있다.
+
+이렇게 또 하나 배워간다...

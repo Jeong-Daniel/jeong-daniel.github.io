@@ -1,0 +1,49 @@
+---
+title: 여행경로 프로그래머스 Lv3 그래프
+date:   2022-09-02 18:17:20 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm, dfs]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/43164](https://school.programmers.co.kr/learn/courses/30/lessons/43164)
+
+풀다가 역시.. BFS만 주구장창하니 DFS에 약한 것을 알았다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211158046-4db78754-4812-4c67-85c9-485aea2565e2.png)
+
+DFS인데 여기서 알파벳 순으로 정렬을 하고 뭐뭐뭐하면서 이거를 사전으로 만들었다가 뭘 뺐다가 난리가 나는 것을 보았다.
+
+결국 다른 DFS깔끔한 풀이를 보았다.
+
+```py
+import collections
+answer = []
+graph = collections.defaultdict(list)
+
+def dfs(s):
+    while graph[s]:
+        dfs(graph[s].pop(0))
+
+    if not graph[s]:
+        answer.append(s)
+        return
+
+def solution(tickets):
+    
+    for a,b in tickets:
+        graph[a].append(b)
+    for a, b in graph.items():
+        graph[a].sort()
+        
+    dfs("ICN")
+
+    return answer[::-1]
+```
+
+티켓으로 들어온거는 모조리 graph에다가 넣어주고
+
+graph[a].sort()는 예를 들어서 인천공항에서 여러 곳으로 갈 수 있을때 저렇게 솔트를 하면 각각 갈 수 있는 곳이 알파벳 순으로 정렬된다. 이게 끝이었다.....
+
+그리고 깔끔하게 dfs로 마무리. 결국 graph에서 빠져나온게 다음 목적지가 되고 그렇게 쭉 가게 되는데 조건에서 모순이 발생하지 않고 무조건 여행이 가능하다고 했으니 도달하는 곳은 무조건 여행이 마무리 되는 곳이다. 그리고 답의 역순으로 출력 끝!
+
+ㄷㄷ..

@@ -1,0 +1,55 @@
+---
+title: 고정점 찾기 이진팀색
+date:   2022-05-10 11:55:41 +0900
+categories: [Coding_Test, Others]
+tags: [coding, python, algorithm, bisect]
+---
+
+> 고정점(Fixed Point)란 수열의 원소 중에서 그 값이 인덱스와 동일한 원소를 의미 합니다. 예를 들어서 [-15,-4,2,8,13]이 있을때 a[2]=2이므로 고정점은 2가 됩니다.
+> 
+> 모든 원소는 오름차순으로 정렬되어 있으며 고정점이 없을 경우 -1을 반환합니다.
+> 
+> 단 시간복잡도는 로그로 설계를 해야 합니다.
+
+늘 그렇듯이 가장 간단한(시간복잡도를 고려하지 않는) 방법은 모든 원소의 인덱스 번호와 인덱스 값이 같은 지 비교를 하면 찾을 수 있을지 모릅니다. 다만 이 방법은 순차적으로 모든 값을 비교해야하기 때문에 더 빠른 방법을 찾고 싶지요
+
+역시 이진 탐색으로 문제를 해결할 수 있습니다.
+
+첫번째로 이 수열은 오름차순으로 정렬이 되어있습니다. 즉 원소가 작다면 제일 작고 원소가 크다면 제일 큰 순서를 이룰 수 있습니다.
+
+```py
+#이진 탐색 소스코드 구현(재귀함수)
+def binary_search(array, start, end):
+    if start > end:
+        return None
+    mid = (start+end)//2
+    #고정점을 찾은 경우 인덱스 반환
+    if array[mid] == mid:
+        return mid
+    #중간점이 가리키는 위치의 값보다 중간점이 작은 경우 왼쪽 확인
+    elif array[mid] > mid:
+        return binary_search(array, start, mid-1)
+    #중간점이 가리키는 위치의 값보다 중간점이 큰 경우 오른쪽 확인
+    else:
+        return binary_search(array, mid+1, end)
+    
+n = int(input())
+array = list(map(int,input().split()))
+
+#이진 탐색(Binary Search) 수행
+index = binary_search(array,0,n-1)
+
+#고정점이 없는 경우 -1출력
+if index == None:
+    print(-1)
+#고정점이 있는 경우 해당 인덱스 출력
+else:
+    print(index)
+```
+
+함수부분을 살펴 봅시다. 일단 배열과 시작지점, 끝지점 이렇게 시작을 하는데 처음 초기화 할때는 0부터 n-1까지입니다.(1부터 n까지 대신)  start와 end 인덱스의 위치가 바뀐다면 종료를 합니다.
+
+
+mid를 시작으로 탐색을 시작합니다. mid와 같을 경우 그대로 정답을 반환
+
+아니라면 중간점의 위치 값 보다 중간점이 작은 경우 왼쪽 크다면 오른쪽을 확인하는 것으로 움직이면 됩니다.

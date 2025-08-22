@@ -1,0 +1,57 @@
+---
+title: 쿼드트리 백준 1992번 재귀
+date:   2022-10-24 12:04:20 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, recursive]
+---
+
+[https://www.acmicpc.net/problem/1992](https://www.acmicpc.net/problem/1992)
+
+문제
+흑백 영상을 압축하여 표현하는 데이터 구조로 쿼드 트리(Quad Tree)라는 방법이 있다. 흰 점을 나타내는 0과 검은 점을 나타내는 1로만 이루어진 영상(2차원 배열)에서 같은 숫자의 점들이 한 곳에 많이 몰려있으면, 쿼드 트리에서는 이를 압축하여 간단히 표현할 수 있다.
+
+주어진 영상이 모두 0으로만 되어 있으면 압축 결과는 "0"이 되고, 모두 1로만 되어 있으면 압축 결과는 "1"이 된다. 만약 0과 1이 섞여 있으면 전체를 한 번에 나타내지를 못하고, 왼쪽 위, 오른쪽 위, 왼쪽 아래, 오른쪽 아래, 이렇게 4개의 영상으로 나누어 압축하게 되며, 이 4개의 영역을 압축한 결과를 차례대로 괄호 안에 묶어서 표현한다
+
+위 그림에서 왼쪽의 영상은 오른쪽의 배열과 같이 숫자로 주어지며, 이 영상을 쿼드 트리 구조를 이용하여 압축하면 "(0(0011)(0(0111)01)1)"로 표현된다.  N ×N 크기의 영상이 주어질 때, 이 영상을 압축한 결과를 출력하는 프로그램을 작성하시오.
+
+무슨 문제인지 처음에는 이해를 못했는데 결국
+
+[색종이 만들기 백준 2630번 재귀](https://jeong-daniel.github.io/posts/%EC%83%89%EC%A2%85%EC%9D%B4-%EB%A7%8C%EB%93%A4%EA%B8%B0-%EB%B0%B1%EC%A4%80-2630%EB%B2%88-%EC%9E%AC%EA%B7%80/)
+
+앞에 색종이 만들기처럼 동일하다면 해당하는 숫자를 넣고 아니라면 4개로 쪼개서 넣고 반복하는데 단지 여기에 괄호가 들어가면 됩니다.
+
+```py
+loop = int(input())
+global map_list
+map_list = []
+comm = ''
+for i in range(loop):
+    temp = list(map(str,input().split()))
+    check = []
+    for j in range(loop):
+        check.append(int(temp[0][j]))
+    map_list.append(check)
+    
+def cck(x,y,n):
+    for i in range(x,x+n):
+        for j in range(y,y+n):
+            if map_list[x][y]!=map_list[i][j]:
+                return False
+    return True
+
+def solve(x,y,z):
+    global comm
+    if cck(x,y,z):
+        comm += str(map_list[x][y])
+        return
+    n = int(z/2)
+    comm += "("
+    for i in range(2):
+        for j in range(2):
+            solve(x+i*n, y+j*n, n)
+    comm += ")"        
+solve(0,0,loop)
+print(comm)
+```
+
+지난번과 비슷해서 설명은 따로 하지 않고 넘어가겠습니다.

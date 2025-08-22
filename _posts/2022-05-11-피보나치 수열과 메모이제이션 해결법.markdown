@@ -1,0 +1,72 @@
+---
+title: 피보나치 수열과 메모이제이션 해결법
+date:   2022-05-11 13:20:41 +0900
+categories: [Coding_Test, Others]
+tags: [coding, python, algorithm, recursive]
+---
+
+어떤 C언어든 파이썬이든 언어에 상관없이 재귀함수를 다루게되면 단골로 나오는게 피보나치 수열입니다.(히노이 탑 처럼 다양한게 기다리고 있지요)
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210166249-45d6ca46-0175-4642-bb51-2ec1b5ff5fbe.jpg)
+
+자연에서 나타는 패턴이나 뭔가 있다고 하지요
+
+```py
+n = int(input())
+
+def recur(num):
+    if num == 0:
+        return 0
+    elif num == 1:
+        return 1
+    else:
+        y = recur(num-1)+recur(num-2)
+    return y
+
+print(recur(n))
+```
+
+피보나치 수열도 지난번과 유사하게 풀립니다.
+
+ 
+
+피보나치 수열은 1부터 시작해서 n번째 숫자는 n-1과 n-2번째 숫자를 더한 숫자인데 쭉 구하시면 됩니다.
+
+ 
+
+하지만 피보나치 수열 역시 숫자가 커지면 커질수록 연산량이 급격하게 늘어나게 되는데
+
+ 
+
+이럴때 필요한게 동적프로그래밍(DP)나 미리 연산한 것을 꺼내 쓴다는 뜻에서 메모이제이션을 사용하게 됩니다.
+
+```py
+n = int(input())
+dic = {}
+
+def fibo_2(n):
+    if n in dic: 
+        return dic[n]
+    
+    if n == 0:
+        dic[0] = 0
+        return 0
+    elif n== 1:
+        dic[1] = 1
+        return 1
+    else:
+        dic[n] = fibo_2(n-2)+fibo_2(n-1)
+        return dic[n]
+
+print(fibo_2(n)%10009)
+```
+
+지난번과 달리 dic라는 사전형태의 변수가 추가 되었습니다.
+
+ 
+
+간단합니다. 계산을 할때마다 사전에 값을 저장하게 되고, 연산을하다가 사전에 들어 있는 것이라면 추가로 연산을 하지 않고 그대로 꺼내 쓰면 됩니다.
+
+ 
+
+단순하게 하드코딩하다보면 코딩테스트를 칠때 시간초과로 문제를 못푸는 경우가 많습니다. 특히 C와 C++보다 느린 파이썬으로는 잘못하면 정답은 맞추어도 시간초과로 점수를 얻지 못할때가 많습니다. 그래서 메모이제이션과 같이 효율적인 코딩도 익혀두셔야 합니다.

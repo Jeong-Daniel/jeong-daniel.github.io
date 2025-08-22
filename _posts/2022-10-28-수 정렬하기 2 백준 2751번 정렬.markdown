@@ -1,0 +1,23 @@
+---
+title: 수 정렬하기 2 백준 2751번 정렬
+date:   2022-10-28 14:15:20 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, sorting]
+---
+
+[https://www.acmicpc.net/problem/2751](https://www.acmicpc.net/problem/2751)
+
+```py
+num = int(input())
+num_list = []
+for i in range(num):
+    num_list.append(int(input()))
+    
+num_list = sorted(num_list)
+for i in range(num):
+    print(num_list[i])
+```
+
+reverse로 오름차순/내림차순을 선택할 수 있습니다 기본값은 True일겁니다.
+
+pypy로 해야 통과합니다. 파이썬은 시간초과나오네요

@@ -1,0 +1,15 @@
+---
+title: 파이토치 쿠다 버전 확인(작성중)
+date:   2022-07-21 13:48:10 +0900
+categories: [Machine_Learning, Pytorch]
+tags: [pytorch]
+---
+
+[https://pytorch.org/get-started/previous-versions/](https://pytorch.org/get-started/previous-versions/)
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210798963-cbadeec8-bdf8-4a81-9a70-bd1cfd3b9ca3.png)
+
+
+```py
+conda install pytorch==1.8.0 torchvision==0.9.0 torchaudio==0.8.0 cudatoolkit=11.1 -c pytorch -c conda-forge
+```

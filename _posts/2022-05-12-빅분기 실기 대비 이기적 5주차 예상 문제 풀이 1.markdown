@@ -1,0 +1,86 @@
+---
+title: 빅분기 실기 대비 이기적 5주차 예상 문제 풀이 1
+date:   2022-05-12 14:10:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [bigdata, data, python, pandas]
+---
+
+## 작업형 1유형
+데이터 출처 :[https://www.kaggle.com/mirichoi0218/insurance/code](https://www.kaggle.com/mirichoi0218/insurance/code)(참고, 데이터 수정)
+
+데이터 설명 : 의료비용 예측문제
+
+Data url :[https://raw.githubusercontent.com/Datamanim/datarepo/main/MedicalCost/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/MedicalCost/train.csv)
+
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210369783-bf9cd3b6-a43c-4037-9a34-962a7cfa8f60.png)
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/MedicalCost/train.csv")
+```
+
+### Q1. 흡연자와 비흡연자 각각 charges의 상위 10% 그룹의 평균의 차이는? 
+
+상위10%를 구하라고 합니다 quantile를 이용해서 특정 값보다 큰 그룹을 구한 다음에 평균을 구하고 빼면 되겠습니다. 흡연자는 smoker에서 no와 yes로 구분하는 군요
+```py
+smoker = df.loc[(df['smoker']=='yes')].charges.quantile(0.9)
+non_smoker = df.loc[(df['smoker']=='no')].charges.quantile(0.9)
+
+A = df.loc[(df['charges']>=smoker)&(df['smoker']=='yes')].charges.mean()
+B = df.loc[(df['charges']>=non_smoker)&(df['smoker']=='no')].charges.mean()
+print(A-B)
+```
+한줄로 만드는 것도 가능은 한데 가독성이 박살날겁니다. 
+
+## 작업형 2유형
+데이터 출처 :[https://www.kaggle.com/mirichoi0218/insurance/code](https://www.kaggle.com/mirichoi0218/insurance/code(참고, 데이터 수정)
+
+데이터 설명 : 의료비용 예측문제
+
+​평가지표 : r2 score
+
+trainData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/MedicalCost/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/MedicalCost/train.csv)
+
+testData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/MedicalCost/test.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/MedicalCost/test.csv)
+
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210369916-4c544dfd-e426-4175-b990-1b17e7a909e8.png)
+
+
+```py
+Main_name = 'MedicalCost'
+
+trainData  = f'https://raw.githubusercontent.com/Datamanim/datarepo/main/{Main_name}/train.csv'
+testData  = f'https://raw.githubusercontent.com/Datamanim/datarepo/main/{Main_name}/test.csv'
+subData  = f'https://raw.githubusercontent.com/Datamanim/datarepo/main/{Main_name}/submission.csv'
+
+
+#데이터로드
+import pandas as pd
+
+train = pd.read_csv(trainData)
+test = pd.read_csv(testData)
+submission = pd.read_csv(subData)
+```
+계속 분류만 나오다가 이번에는 회귀가 나오네요 charges 의료비용 예측 문제입니다. 제 생각에는 이번에는 스케일 처리할 것도 없고 결측치만 확인하고 바로 원핫인코더 쓰고 진행하겠습니다.
+
+```py
+y = train['charges']
+train.drop(columns='charges', inplace=True)
+train = pd.get_dummies(train)
+test = pd.get_dummies(test)
+```
+charges 부분만 빼버리고 나머지는 원핫인코딩을 적용을 해줍시다.
+
+```py
+from sklearn.ensemble import RandomForestRegressor
+model = RandomForestRegressor()
+model.fit(train,y)
+summit = pd.DataFrame()
+summit['charges'] = model.predict(test)
+summit.to_csv('charges_pre.csv', index=False)
+```
+따로 성능평가는 없이 마찬가지로 회귀로 가격을 측정하고 저장을 했습니다.

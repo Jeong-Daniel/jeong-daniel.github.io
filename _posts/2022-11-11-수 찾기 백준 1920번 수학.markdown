@@ -1,0 +1,56 @@
+---
+title: 수 찾기 백준 1920번 이진탐색
+date:   2022-11-11 19:43:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, bisect]
+---
+
+[https://www.acmicpc.net/problem/1920](https://www.acmicpc.net/problem/1920)
+
+
+문제
+N개의 정수 A[1], A[2], …, A[N]이 주어져 있을 때, 이 안에 X라는 정수가 존재하는지 알아내는 프로그램을 작성하시오.
+
+
+숫자를 찾는 문제입니다. 다만 파이썬에서 숫자 in 리스트를 하면 시간초과가 나오기에 이진탐색으로 문제를 풀어야 합니다.
+
+```py
+from bisect import *
+
+def count_by_range(array, left_value, right_value):
+    right_index = bisect_right(array, right_value)
+    left_index = bisect_left(array, left_value)
+    return right_index - left_index
+```
+
+원래라면 한땀한땀 짜야겠지만 그거는 다른 분들이 이미 해주셨을 것이니
+
+bisect 내장함수를 사용해서 간단하게 만드는 방법이 있습니다.
+
+사실 이거는 범위를 구하는 것이기는 한데 어떤 값의 오른쪽 인덱스와 왼쪽 인덱스를 뺀 것을 반환합니다.
+
+이진탐색의 원리를 보셨다면 아시겠지만 왼쪽 인덱스와 오른쪽 인덱스가 교차하는 시점에 종료를 하게 되는데 이때 인덱스의 차는 0이 됩니다.
+
+```py
+from bisect import *
+
+n = int(input())
+num_list = list(map(int,input().split()))
+num_list.sort()
+b = int(input())
+find_num = list(map(int,input().split()))
+
+def count_by_range(array, left_value, right_value):
+    right_index = bisect_right(array, right_value)
+    left_index = bisect_left(array, left_value)
+    return right_index - left_index
+
+for i in range(b):
+    count = count_by_range(num_list,find_num[i],find_num[i])
+    if count == 0:
+        print(0)
+    else:
+        print(1)
+```
+
+어차피 구하는 수는 1개이니 이렇게 풀면 됩니다. 

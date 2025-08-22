@@ -1,0 +1,78 @@
+---
+title: 스티커 붙이기 백준 18808번 시뮬레이션
+date:   2022-10-25 20:07:20 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, simulation]
+---
+
+[https://www.acmicpc.net/problem/18808](https://www.acmicpc.net/problem/18808)
+
+문제
+혜윤이는 최근에 다양한 대회를 참여하면서 노트북에 붙일 수 있는 스티커들을 많이 받았다. 스티커는 아래와 같이 사각 모눈종이 위에 인쇄되어 있으며, 스티커의 각 칸은 상하좌우로 모두 연결되어 있다. 또한 모눈종이의 크기는 스티커의 크기에 꼭 맞아서, 상하좌우에 스티커가 포함되지 않는 불필요한 행이나 열이 존재하지 않는다.
+
+아래는 올바른 모눈종이의 예시이다. 주황색 칸은 스티커가 붙은 칸을, 하얀색 칸은 스티커가 붙지 않은 칸을 나타낸다.
+
+```py
+def pastable(x,y):
+    for i in range(r):
+        for j in range(c):
+            if note[y+i][x+j]==1 and paper[i][j]==1:
+                return False
+            #겹치는게 있으면 Flase를 리턴
+    for i in range(r):
+        for j in range(c):
+            if paper[i][j] == 1:
+                note[y+i][x+j] = 1   
+            #통과 했다면 해당하는 스티커위치를 1로 덮음
+    return True
+    
+    import copy
+global note
+note = [[0]*42 for _ in range(42)]
+#노트 크기는 42로 맞춰줌
+n,m,num = map(int,input().split())
+#노트북의 세로(y)와 가로(x)길이 그리고 스티커의 개수
+
+for k in range(num):
+    r,c = map(int,input().split())
+    #스티커의 행(y)의 개수와 열(x)의 개수
+    paper = []
+    for i in range(r):
+        paper.append(list(map(int,input().split())))
+    #스티커의 크기를 입력을 받음
+    
+    for rot in range(4):
+    #이제 4가지 방향으로 돌아가면서 확인하는데
+    #중간에 통과되는 것이 있다면 나옴
+        is_paste = False
+        #아직은 스티커를 붙이지 못함
+        for y in range(n-r+1):
+        #노트북의 세로크기 - 스티커의 세로크기 만큼 반복
+            if is_paste:
+                break
+            for x in range(m-c+1):
+            #노트북의 가로크기 - 스티커의 가로크기 만큼 반복
+                if pastable(x,y):
+                    is_paste = True
+                    break
+        if is_paste:
+            break
+        
+        roate_paper = copy.deepcopy(paper)
+        paper = list(map(list, zip(*roate_paper[::-1])))
+        r,c = c,r
+        #조건을 만족하지 못하면 종이를 돌려서 다시 확인
+    
+count = 0
+for i in range(n):
+    for j in range(m):
+        count += note[i][j]
+print(count)
+```
+
+
+주석을 다 달아놓았으니 생략하도록 하겠습니다.
+
+원래라면 시뮬레이션 문제를 몇개 더 풀고 넘어가야하는데....
+
+그냥 바로 다음 단원으로 넘어갈려고 합니다. 빡구현 문제 하루종일 붙잡고 있으니 힘드네요

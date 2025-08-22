@@ -1,0 +1,72 @@
+---
+title: 숨바꼭질 백준 1697번 BFS
+date:   2022-10-19 16:05:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, bfs]
+---
+
+[https://www.acmicpc.net/problem/1697](https://www.acmicpc.net/problem/1697)
+
+문제
+수빈이는 동생과 숨바꼭질을 하고 있다. 수빈이는 현재 점 N(0 ≤ N ≤ 100,000)에 있고, 동생은 점 K(0 ≤ K ≤ 100,000)에 있다. 수빈이는 걷거나 순간이동을 할 수 있다. 만약, 수빈이의 위치가 X일 때 걷는다면 1초 후에 X-1 또는 X+1로 이동하게 된다. 순간이동을 하는 경우에는 1초 후에 2*X의 위치로 이동하게 된다.
+
+수빈이와 동생의 위치가 주어졌을 때, 수빈이가 동생을 찾을 수 있는 가장 빠른 시간이 몇 초 후인지 구하는 프로그램을 작성하시오.
+
+마찬가지 입니다. 1차원 BFS라고 보면 됩니다.
+
+```py
+from collections import deque
+n, m = map(int,input().split())
+map_list = [0]*200001
+map_list[n] = 1
+queue = deque([n])
+
+while queue:
+    curr = queue.popleft()
+    nx = curr-1
+    ny = curr+1
+    nz = curr*2
+    if nx == (m) or ny == (m) or nz == (m):
+        print(map_list[curr])
+        break
+    if map_list[nx]==0 and nx>=0:
+        queue.append(nx)
+        map_list[nx] = map_list[curr]+1
+    if map_list[ny]==0 and ny>=0:
+        queue.append(ny)
+        map_list[ny] = map_list[curr]+1
+    if map_list[nz]==0 and nz>=0:
+        queue.append(nz)
+        map_list[nz] = map_list[curr]+1
+```
+
+그런데 인덱스 에러나 틀렸다고 하는데..... 이유는 잘 모르겠습니다. 범위는 100,000까지라고 했지만 x2를 하기 때문에 100,000을 넘을수가 있고 배열은 0부터 계산을 하기 때문에 200,001로 했습니다. (실제로 200,000을하면 인덱스 에러가 납니다)
+
+결국 한번 돌때마다 나보다 1작은 것 1보다 큰것 2를 곱한 값이 들어가는데 -1로 가게 되면 배열에서는 오히려 제일 큰것을 건드리는 위험이 있고 논리적으로 0보다 작은 값이 나올때 제대로된 값을 얻을 수 없습니다. 
+
+```py
+from collections import deque
+n, m = map(int,input().split())
+map_list = [-1]*200001
+map_list[n] = 0
+queue = deque([n])
+
+def oper(num):
+    return [num-1,num+1,num*2]
+
+while map_list[m]==-1:
+    curr = queue.popleft()
+    for i in oper(curr):
+        if i < 0 or i > 100000:
+            continue
+        if map_list[i] != -1:
+            continue
+        map_list[i] = map_list[curr]+1
+        queue.append(i)
+        
+print(map_list[m])
+```
+
+이번에도 바킹독의 C++정답을 파이썬으로 고쳤습니다. 확실히 종료조건은 큐가 중요한게 아니라 찾았는가로두고 반복문도 따로 3가지를 두는게 아니라 이렇게 리스트로 빼버리니 훨씬 보기 좋아졌네요
+
+그런데 제 답은 왜틀렸는지는 아직 잘 모르겠네요 나중에 다시한번 봐야겠습니다.

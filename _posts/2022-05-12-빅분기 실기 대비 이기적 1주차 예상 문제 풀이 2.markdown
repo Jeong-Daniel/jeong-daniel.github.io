@@ -1,0 +1,140 @@
+---
+title: 빅분기 실기 대비 이기적 1주차 예상 문제 풀이 2
+date:   2022-05-12 10:00:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [bigdata, data, python, pandas]
+---
+
+## 작업형 1유형
+데이터 출처 : [https://www.kaggle.com/shubh0799/churn-modelling](https://www.kaggle.com/shubh0799/churn-modelling) 에서 변형
+
+데이터 설명 : 고객의 신상정보 데이터를 통한 회사 서비스 이탈 예측 (종속변수 : Exited)
+
+Data url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/churn/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/churn/train.csv)
+
+데이터 상위 5개 컬럼
+
+![table view](https://user-images.githubusercontent.com/85277660/210361356-c5ef95d3-7457-4fc0-a571-3da47e77d83f.png)
+
+### Q1. 남성 이탈(Exited)이 가장 많은 국가(Geography)는 어디이고 이탈 인원은 몇명인가?
+키워드가 3가지 입니다. 남성, 국가, 이탈입니다. 일단 조건은 남성인 열을 먼저 뽑으셔야 겠네요 그리고 국가를 묶은 다음 Exited의 개수를 확인해야 합니다.
+
+```py
+df.loc[df['Gender']=='Male'].groupby(['Geography']).sum().Exited
+```
+
+![data geography](https://user-images.githubusercontent.com/85277660/210361429-ebadd1bc-18bf-4c03-8597-010bdc97530c.png)
+
+Germany가 제일 많으며 287입니다. Exited를 빼면
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210361475-c78daae5-4be2-4db6-a145-4b92168d64d2.png)
+
+이렇게 모든 것을 다 더해버립니다. Exited도 바로 볼 수는 있네요
+
+ 
+
+### Q2. 카드를 소유(HasCrCard ==1)하고 있으면서 활성멤버(IsActiveMember ==1) 인 고객들의 평균나이는?
+
+카드를 소유하고 있으면서 활성멤버인 사람들인 열을 조건을 걸어서 구한다음 Age에다가 mean을 걸어주면 되겠네요
+
+```py
+df.loc[(df['HasCrCard']==1)&(df['IsActiveMember']==1)].Age.mean()
+```
+정답 : 39.6
+
+ 
+
+### Q3. Balance 값이 중간값 이상을 가지는 고객들의 CreditScore의 표준편차를 구하여라
+
+마찬가지입니다. median을가지고 조건을 걸어주고 CreditScore의 std를 구하면 됩니다.
+
+```py
+df.loc[(df['Balance']>df['Balance'].median())].CreditScore.std()
+```
+정답 : 97.3
+
+## 작업형 2유형
+
+데이터 출처 : [https://archive.ics.uci.edu/ml/datasets/Breast%20Cancer%20Wisconsin%20(Diagnostic)](https://archive.ics.uci.edu/ml/datasets/Breast%20Cancer%20Wisconsin%20(Diagnostic)에서 변형
+
+데이터 설명 : 유방암 발생여부 예측 (종속변수 diagnosis : B(양성) , M(악성) )
+
+문제타입 : 분류유형
+
+평가지표 : f1-score
+
+trainData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/cancer/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/cancer/train.csv)
+
+testData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/cancer/test.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/cancer/test.csv)
+
+subData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/cancer/submission.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/cancer/submission.csv)
+
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210361789-3770af98-a64b-4f02-99aa-7f68eda34adf.png)
+
+​목표변수는 diagnosis로 설정이 되어 있는데 일단 거슬립니다. B와 M이니까요, 일단 전략으로 B는 1로 M은 0으로 변환을 하고 시작을 합시다. 그리고 1의 값이될 확률을 구하는게 곧 유방암의 발생 여부가 되겠네요
+
+```py
+trainData  = 'https://raw.githubusercontent.com/Datamanim/datarepo/main/cancer/train.csv'
+testData  = 'https://raw.githubusercontent.com/Datamanim/datarepo/main/cancer/test.csv'
+subData  = 'https://raw.githubusercontent.com/Datamanim/datarepo/main/cancer/submission.csv'
+
+train = pd.read_csv(trainData)
+test = pd.read_csv(testData)
+submission = pd.read_csv(subData)
+summit = pd.DataFrame(test['id'])
+```
+
+데이터를 불러옵시다. 그리고 제출용 데이터는 먼저 틀을 만들어 두었습니다. (submission은 발생확률만 있었지만 여기서는 id도 넣는걸로 하겠습니다)
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210361902-409a0b07-ff97-41ab-87bb-08cf09f48ff9.png)
+
+범주형데이터를 확인하자 diagnosis만 나오고 나머지는 이산형에다가 결측값도 없습니다. 이산값은 싹다 표준화 처리를 하겠습니다. 일단 B와 M부터 변경하고 시작하겠습니다.
+
+```py
+train['diagnosis'] = train['diagnosis'].replace(['B','M'],[1,0])
+```
+replace를 이용해서 변환을 해줍시다.
+
+```py
+y = train.pop('diagnosis')
+train.drop(columns='id',inplace=True)
+test.drop(columns='id',inplace=True)
+```
+그런다음 목표변수 y에다가 diagnosis를 미리 빼주고 id값은 예측하는데 불필요 할 것으로 예상됩니다. 드랍해서 지워줍시다.
+
+```py
+All_index = test.columns
+```
+일단 스케일을 적용하기전에 columns값을 가져옵시다. 경험상 스케일을 적용할때 어느 열에 적용할지 명시적으로 적어줘야 데이터프레임이 안깨지고 잘 나옵니다. 아니거나 다른 방법이 있다면 덧글로 적어주세요
+
+```py
+from sklearn.preprocessing import StandardScaler
+Scaler = StandardScaler()
+Scaler.fit(train[All_index])
+train[All_index] = Scaler.transform(train[All_index])
+test[All_index] = Scaler.transform(test[All_index])
+```
+이산데이터를 표준화 처리를 합시다.
+
+```py
+from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier()
+model.fit(train,y)
+model.score(train,y)
+```
+분류기를 통해서 음성과 양성을 구분합니다. 물론 훈련데이터에서는 정확도가 100%가 나오네요
+
+```py
+New_feature = ['proba_0_negative', 'proba_1_positive']
+temp = pd.DataFrame()
+temp[New_feature] = pd.DataFrame(model.predict_proba(test)).copy()
+```
+proba의 경우 두개의 열이 나옵니다. 0인 음성인 확률과 1인 양성인 확률입니다. 제가 다른 방법을 찾지 못해서 번거롭지만 일단 임시 데이터프레임에다가 두개다 저장한 다음 하나를 꺼내오는 방식을 사용합시다.
+
+```py
+summit['diagnosis'] = temp['proba_1_male']
+summit.to_csv('Predict_dia.csv', index=False)
+```
+Id값은 이미 가지고 있고 확률값만 임시로 두었던 것에서 꺼내옵시다.

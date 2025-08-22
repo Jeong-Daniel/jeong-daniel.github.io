@@ -1,0 +1,116 @@
+---
+title: 네트워크 프로그래머스 Lv2 BFS
+date:   2022-09-02 10:27:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm, bfs]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/43162](https://school.programmers.co.kr/learn/courses/30/lessons/43162)
+
+BFS 그래프 문제를 풀기에 적당한 문제로 보입니다.
+
+다만 저는 BFS에 너무 생각이 쏠린 나머지 주어진 그대로 2차원 배열로 풀었다가 제출하고보니 그렇게 풀면 안되네요 ㅋㅋ....
+
+```py
+from collections import deque
+
+n = len(computers)
+m = len(computers[0])
+visited = [[0]*n for _ in range(m)]
+q = deque()
+count = 0
+
+dx = [0,1,0,-1]
+dy = [1,0,-1,0]
+
+for i in range(n):
+    for j in range(m):
+        print(visited)
+        if visited[i][j]==0 and computers[i][j]==1:
+            q.append((i,j))
+            while q:
+                loc = q.popleft()
+                for k in range(4):
+                    nx = loc[0] + dx[k]
+                    ny = loc[1] + dy[k]
+                    if n>nx>=0 and m>ny>=0 and visited[i][j]==0 and computers[i][j]==1:
+                        visited[nx][ny]=1
+                        q.append((nx,ny))
+            count += 1
+                        
+print(count)
+```
+
+이거는 for문으로 푼것이고
+
+```py
+from collections import deque
+
+def dfs(x,y,graph,n,m):
+    if x<=-1 or x>=n or y<=-1 or y>= m:
+        return False
+    if graph[x][y] == 1:
+        #해당 노드를 방문처리
+        graph[x][y] = 0
+        dfs(x-1,y,graph,n,m)
+        dfs(x,y-1,graph,n,m)
+        dfs(x+1,y,graph,n,m)
+        dfs(x,y+1,graph,n,m)
+        return True
+    return False
+
+def solution(n, computers):
+    result = 0
+    n = n
+    m = len(computers[0])
+    for i in range(n):
+        for j in range(m):
+            if dfs(i,j,computers,n,m) == True:
+                result += 1
+    return result
+```
+
+이거는 재귀로푼건데 재귀로 푸는게 코드에서는 깔끔해보이는 점이 있고 dx,dy를 따로 관리하지 않아도 되는 장점이 있네요
+
+아무튼 위 두개는 아니고.... 그래프에서 노드-간선 형태로 풀어야 합니다.
+
+```py
+from collections import deque
+
+def solution(n, computers):
+    graph_map = [[] for i in range(n)]
+    visited = [False]*n
+    for i in range(n):
+        for j in range(n):
+            if computers[i][j] == 1:
+                graph_map[i].append(j)
+                
+    q = deque()
+    answer = 0
+    for i in range(n):
+        if visited[i] == False:
+            visited[i]=True
+            answer+=1
+            q.append(i)
+            while q:
+                now = q.popleft()
+                for j in graph_map[now]:
+                    if visited[j] == False:
+                        visited[j] = True
+                        q.append(j)
+    return answer
+```
+
+일단 2차원 배열을 그래프로 바꾸었습니다.
+
+![graph map](https://user-images.githubusercontent.com/85277660/211157118-663e0bd6-c5ba-4348-bb8f-356ac7d6b87d.png)
+
+그러면 각 노드는 내가 갈 수 있는 방향의 노드를 알려줍니다. 예시에서 1번 노드는 1,2로 2번 노드는 1,2,3으로 3번은 2,3으로 갈 수 있습니다.
+
+먼저 Viisted 배열을 하나 만들어 줍니다. 갔을 경우에는 True 아직 모두 방문하지 않았으니 False로 초기화를 해줍시다. 이제 노드를 n번 만큼 순회를 합시다.
+
+첫번째 노드는 당연히 방문하지 않았으니 answer을 1더해주고 큐에 넣은 다음 BFS 탐색을 합시다. 그리고 1번 노드에서 갈 수 있는 곳은 1과 2번이니 for문으로 차례대로 확인을 합니다. 만약 이때 방문을 하지 않았다면 방문처리로 바꾸고 큐에 넣어주고 모든 큐가 빌때까지 반복을 합니다. 그러면 한 노드에서 갈 수 있는 모든 노드는 갔다는 표시를 할 수 있습니다.
+
+이제 처음 for문으로 돌아와서 2번과 3번 노드 모두 방문 처리가 되었으니 더는 방문하지 않고 종료합니다.
+
+그렇게 어려운 문제는 아니었는데 2차원형태의 BFS만 보고 그래프를 보지 않으니 처음부터 꼬인 것을 찾는데 시간이 오래 걸렸네요 ㅠ 분발해야 겠습니다. 그래도 Lv3라고 하기에는 개념만 챙기시면 쉽게 풀수 있어 보입니다.

@@ -1,0 +1,255 @@
+---
+title: 빅분기 실기 작업형 2유형 모형 구축 및 평가 영역 2편
+date:   2022-05-11 23:59:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [python, bigdata, data, pandas, ml]
+---
+
+이번에는 예제 문제를 한번 풀어봅시다. 문제부터 바로 보면 다음과 같습니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210170641-74e5e275-d10b-49be-96fa-9d56a25a7775.png)
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210170642-6ef1aee7-925e-4afd-a863-b9f933ce7089.png)
+
+데이터는 총 3개가 주어집니다. y_train, X_train, X_test 입니다.
+
+보통 데이터를 학습할때 그냥 원본 Raw데이터를 주고 split data를 이용해서 구분을 하는데 친절하게도 그럴 필요없이 바로 변수에다가 지정해서 사용하게 만들었습니다.
+
+이때 간략하게 두가지 개념을 설명을 해드리고 시작하겠습니다. 우리는 먼저 우리는 X와 y데이터가 있습니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210170680-be73e6f9-21eb-4f4e-8bec-0d42b4d9fc30.png)
+
+y데이터는 맨 처음 사진에 보시는 것 처럼 고객 식별자와 성별(남1,여0)으로 구분이 됩니다. X데이터는 위 사진처럼 고객들의 행동패턴이라고 할 수 있는 정보들이 들어 있습니다.
+
+
+그러면 이 정보를 바탕으로 고객의 성별을 유추를 해볼 수 있는 거겠지요 이런 총구매액, 최대구매액들을 변수라는 뜻의 [feature]라고합니다. variable 아니에요, 그리고 feature engineering은 어떤 변수를 선택할 것인가 문제입니다. 그래서 빅데이터 분석기사 필기를 공부하셨다면 아시겠지만 전진선택법, 후진제거법이라는게 각 변수에 따라서 가장 영향을 끼치는 것을 선택하고 덜 끼치는 것을 선택하는 등의 방법을 말하는 것입니다. 저는 귀찮아서 그냥 범주형은 다 빼버리고 예시를 보여드릴려고 합니다. 아무튼 X를 통해서 y를 구한다 이게 어떤 의미인지 이해 하셨으리라 봅니다. 여기서 y는 우리가 구하고자하는 목표 변수가 되는 것이겠지요
+
+ 
+두번째 개념은 데이터는 train데이터와 test로 나누어 집니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210170687-575e8d3e-f1ac-44ad-8820-2feaa1583fa7.jpg)
+
+전체 데이터를 가지고 학습을 하지 않습니다. Overfitting라고 하는 과대적합 문제 때문인데요, 보통 데이터는 훈련세트-검증세트-테스트세트로 나누는데 훈련세트를 통해서 모델을 만들고 검증세트를 통해서 과대적합방지&일반화를 진행을 하고 테스트 세트로 모델의 성능을 검증을 하게 됩니다. 하지만 여기서는 데이터가 너무 적은 관계로 훈련세트와 테스트세트로만 나눈거 같습니다.
+
+ 
+
+훈련 데이터 세트에서 모델이 100%가 나왔어요! 아무짝에도 쓸모 없을 확률이 높습니다. 테스트 세트에서 정확도가 높게 나와야 합니다. 오버피팅이야기만 해도 게시글 한개 뚝딱 나오는 수준이기 때문에 넘어가겠습니다.
+
+
+ 
+
+다시 돌아와서 우리에게 주어진 데이터는 y_train, X_train, X_test 라고 했습니다.
+
+
+즉 X_train데이터와 y_train데이터를 가지고 모델을 만든 다음에 X_test를 가지고 각 고객이 남자일 확률을 얼마인가? 구해보는 문제입니다. 아주 간단한 두가지 개념을 설명했으니 이제 문제를 풀어봅시다.
+
+```py
+import numpy as np
+import pandas as pd
+
+X_train = pd.read_csv("X_train.csv", encoding = 'euc-kr')
+X_test = pd.read_csv("X_test.csv", encoding = 'euc-kr')
+
+y_test=X_test[['cust_id']]
+```
+
+일단은 numpy와 pandas를 부르고 데이터를 변수에 저장합시다. encoding하는 이유는 한글이 깨질까봐 euc-kr로 설정을 합니다.
+
+y_test라는 것은 우리에게 주어지지 않았는데 만들기 편하라고 지금 붙였습니다. 지금은 고객 id정보만 있는데 나중에 여기에 데이터를 좀더 붙이겠습니다.
+
+
+![data view](https://user-images.githubusercontent.com/85277660/210170771-8a4fbed5-24e9-4c62-ba72-f41358edd461.png)
+
+고객의 행동패턴데이터에서 위와 같은 값들이 나왔습니다. 그런데 주 구매상품과 주구매지점의 경우 한글이 들어가있고 환불금액의 경우 0원대신 NaN이라고 아무값이 없는 것도 있습니다. 주구매상품의 경우 남/여 상관관계가 있어보이기는 하지만 이번에는 넘어가고 다음에 다루도록 하겠습니다.
+
+```py
+feature = ['총구매액','최대구매액','환불금액','내점일수','내점당구매건수','주말방문비율','구매주기']
+X_train=X_train[feature]
+X_test=X_test[feature]
+X_train = X_train.fillna(0)
+X_test = X_test.fillna(0)
+```
+
+변수에다가 우리가 원하는 feature를 정리해서 적어 넣고 X_train과 X_test에다가 집어 넣어 줍시다. 그리고 fillna의 경우 값이 Null or NaN처럼 비어 있다면 무엇으로 채울지 결정하게 되는데 이들 모두 0으로 처리하겠다는 의미 입니다.
+
+![view](https://user-images.githubusercontent.com/85277660/210170775-74444ab3-9c26-4c29-8e52-1a0a5f676ea1.png)
+
+describe를 통해서 설펴보면 대부분의 feature에서 평균값과 50%(중위값)의 차이가 큰것을 알 수 있습니다. 이는 데이터가 정규분포를 따르는등의 균일한 분포가 아니라 이상치가 존재하는 것도 알 수 있습니다. 이럴 경우 이상치에 민감한 Min-Max Sacle은 적용하기 힘듭니다.
+
+ 
+
+그런데 그냥 이것도 한번 적용도 해봅시다.
+
+```py
+from sklearn.preprocessing import MinMaxScaler
+scaler=MinMaxScaler()
+scaler.fit(X_train)
+X_scaled_train=scaler.transform(X_train)
+X_scaled_test=scaler.transform(X_test)
+```
+
+[실기 작업형 1유형 데이터 처리 영역 풀이](https://jeong-daniel.github.io/posts/%EC%8B%A4%EA%B8%B0-%EC%9E%91%EC%97%85%ED%98%95-1%EC%9C%A0%ED%98%95-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%B2%98%EB%A6%AC-%EC%98%81%EC%97%AD-%ED%92%80%EC%9D%B4/)
+
+스케일처리에 관한 내용은 위 게시글 참고하시면 됩니다.
+
+```py
+y_train = pd.read_csv("y_train.csv", encoding = 'euc-kr')
+y_train = y_train['gender']
+```
+y_train을 불러올 차례입니다. 어차피 고객번호는 오름차순으로 정리가 되어 있기 때문에 gender만 있으면 됩니다.
+
+그러면 이제부터 모델을 불러와서 학습을 시켜봅시다. 이번에 사용할 모델은 랜덤포레스트입니다.
+
+sklearn ensemble에 들어 있습니다. 한번 dir로 어떤게 들어 있는지 살펴봅시다.
+
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210170818-41d102c9-0666-483d-bcff-5f057402cd06.png)
+
+에이다부스트, 배깅등 여러가지 방법이 있습니다. 그중에서도 대충 써도? 성능이 잘나오는 랜덤 포레스트를 사용해보도록 하겠습니다. 여기서 Classifier(분류)와 Regressor(회귀) 두가지가 있습니다.
+
+ 
+
+우리가 어떤 대상의 범주를 알고 싶을때는 분류를 정확한 값을 알고 싶을때는 회귀를 사용하면 됩니다.
+
+예시를 들어보면 이번에 하는 것처럼 남자일지 여자일지 어떤 대상에 포함하는지 궁금합니다. 이럴때는 분류 Classifier을 사용하면 됩니다. 우리가 이번에는 주택의 가격을 추정하고 싶습니다. 정확히 말하면 이 주택의 가격 범주가 아니라 정확히 어떤 가격으로 예측되는지 값을 알고 싶습니다. 이럴때는 회귀를 사용하면 됩니다. 다시 돌아와서 우리는 남자와 여자를 나누는 분류를 사용해야겠지요
+
+```py
+from sklearn.ensemble import RandomForestClassifier
+model=RandomForestClassifier()
+model.fit(X_scaled_train, y_train)
+pred_train=model.predict(X_scaled_train)
+model.score(X_scaled_train, y_train)
+```
+이전 스케일을 다루면서 자세히 설명했는데 이번에도 별반 다를게 없습니다.
+
+랜덤포레스트분류모델을 불러온다음 우리는 편하게 model이라는 별명을 붙여줍니다.
+
+그런 다음 train데이터를 가지고 .fit로 모델을 학습을 시켰습니다. 이때 X_train, y_train 데이터 둘다가 필요합니다.
+
+
+자 그렇다면 X_train 데이터를 가지고 예측한 결과값을 우리는 알고 싶습니다. .predict를 통해서 예측 결과를 확인 할 수 있으며 여기에서는 변수 pred_train에다가 저장을 했습니다. 마지막으로 정확도를 알고 싶다면 .score를 사용할 수 있습니다.
+
+![random forest](https://user-images.githubusercontent.com/85277660/210170854-a2196dc7-5180-4e55-876b-be02f9961672.png)
+
+놀랍게도 모델 정확도는 0.998이 나왔습니다. 대충 오버피팅 됬겠구나 생각하시면 됩니다.
+
+번외로 혼동행렬이나 불러와서 얼마나 정확한지 살펴봅시다.
+
+```py
+from sklearn.metrics import confusion_matrix
+confusion_train=confusion_matrix(y_train, pred_train)
+print("훈련데이터 오차행렬:\n", confusion_train)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210170861-974204b5-e83b-4d2f-84dd-4ec9a497a5ca.png)
+
+혼동행렬을 불러온 결과 남자의 경우 5명 여자의 경우 단 2명을 잘못분류한 것으로 나왔습니다. 이정도면 아주 우수한 성능인 것은 맞습니다.
+
+다시 돌아와서 우리는 고객이 남자일 확률을 얻고 싶습니다. 그렇다면 해당 고객이 남자일 확률과 여자일 확률을 또 구할 수 있습니다. 이때 모델예측(확률)을 구하고 싶으시다면 .predict_proba(X)가 됩니다.
+
+```py
+proba_test=model.predict_proba(X_scaled_test)
+proba_test
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210170867-4acfc583-8d52-4c27-b429-068e7d6d4803.png)
+
+
+이렇게 여자일 확률과 남자일 확률을 얻을 수 있습니다. 여자가 0이고 남자가 1이니까요 숫자 작은 순서대로 나옵니다.
+
+거의 다왔습니다. 이제 저장해봅시다.
+
+```py
+New_feature = ['proba_0_female', 'proba_1_male']
+y_test[New_feature] = pd.DataFrame(proba_test).copy()
+```
+
+그냥 한줄로 쓰셔도 되는데 저는 이렇게 써봤습니다. numpy행렬로 반환된 값을 굳이 데이터프레임을 안쓰고 형태만 맞다면 우겨 넣을 수 있지만, 그리고 대충 뒤에 copy를 빼버려도 작동은 하지만 형태를 맞춰서 하라거나 쓰기경고가 뜹니다. 아무래도 우리가 전체 하는 과정에 있어서 연습할때에도 경고가 없는 방향으로 코드를 작성하려고 합니다.
+
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210170919-efc9c226-5433-4eaf-8417-acaecdccad09.png)
+
+
+아무튼 이렇게 예쁘게 값이 들어 왔습니다. 이제 조건에 맞춰서 csv파일을 작성해봅시다.
+
+```py
+data = pd.DataFrame({"custid": y_test['cust_id'], "gender": y_test['proba_1_male'] })
+data.to_csv('00000.csv', index=False)
+```
+
+우리는 지금부터 데이터프레임을 이용해서 데이터를 재구성 할것입니다.
+
+가장 먼저 "cust_id"라는 이름을 가진 열에는 y_test의 "cust_id"의 내용으로 채울 것이고
+
+"gender"라는 이름을 가진 열에는 y_test의 'proba_1_male' 남자일 확률 값을 채울 것입니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210170923-4cf16206-a2f3-44e1-8161-a5918c711882.png)
+
+참고로 데이터는 이렇게 나오고
+
+![csv view](https://user-images.githubusercontent.com/85277660/210170925-c024e3f2-7e64-41f7-b039-955758cddefb.png)
+
+생성된 CSV파일도 이렇게 생성되는 것을 확인 할 수 있습니다. 실기였다면이 csv파일을 제출하는 것으로 마무리 될 것입니다.
+
+여기서 한가지 의문이 드시는 분들이 있을 것입니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210170931-b73807d7-20cb-414a-807c-a5e8ff5579b5.png)
+
+제출 형식이 저렇게 표로 나오는게 아니라 , 콤마로 구분이 되지요
+
+이게 csv파일 특징입니다. 
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210170974-fafdb4bb-8d54-43e3-9080-e82fd7ca66a4.png)
+
+똑같은 파일을 워드패드나 메모장으로 열어보시면 위와같이 값들이 콤마로 구분이 됩니다. 다만 엑셀에서 열어볼때는 표로 정리해서 줍니다.
+
+이렇게 전체 과정이 끝났습니다. 이번에는 변수를 대충 처리했는데 다음번에는 feature를 선택해서 날리지 말고 원핫인코딩이나 범주형처리, 하이퍼파라미터 최적화를 다뤄 보겠습니다.
+
+마지막으로 전체 코드 정리입니다.
+
+```py
+import numpy as np
+import pandas as pd
+#라이브러리 호출
+
+X_train = pd.read_csv("X_train.csv", encoding = 'euc-kr')
+X_test = pd.read_csv("X_test.csv", encoding = 'euc-kr')
+y_train = pd.read_csv("y_train.csv", encoding = 'euc-kr')
+y_train = y_train['gender']
+y_test=X_test[['cust_id']]
+#데이터 호출
+
+feature = ['총구매액','최대구매액','환불금액','내점일수','내점당구매건수','주말방문비율','구매주기']
+X_train=X_train[feature]
+X_test=X_test[feature]
+X_train = X_train.fillna(0)
+X_test = X_test.fillna(0)
+#Train 데이터 전처리
+
+from sklearn.preprocessing import MinMaxScaler
+scaler=MinMaxScaler()
+scaler.fit(X_train)
+X_scaled_train=scaler.transform(X_train)
+X_scaled_test=scaler.transform(X_test)
+#데이터 스케일링
+
+from sklearn.ensemble import RandomForestClassifier
+model=RandomForestClassifier()
+model.fit(X_scaled_train, y_train)
+pred_train=model.predict(X_scaled_train)
+model.score(X_scaled_train, y_train)
+#모델 학습
+
+proba_test=model.predict_proba(X_scaled_test)
+New_feature = ['proba_0_female', 'proba_1_male']
+y_test[New_feature] = pd.DataFrame(proba_test).copy()
+#예측 결과값 추출, 저장할 데이터 생성
+
+data = pd.DataFrame({"custid": y_test['cust_id'], "gender": y_test['proba_1_male'] })
+data.to_csv('00000.csv', index=False)
+#제출 데이터 저장
+```
+
+주석이랑 공백을 제외하면 27줄 밖에 안되는 코드입니다. 심지어 그냥 의미없이 넣어본 스케일링이 빠지면 22줄로 끝납니다. 다시 말씀드리지만 이 전체 코드 동작 시간은 1분으로 제한된만큼 크게 어렵고 고도화되는 분석을 요구하지는 않을 것입니다. 2회 시험에 에러가 났던 만큼 3회에서는 안정성을 높이려고하지 새로운 것을 시도하기에는 어렵지 않을까 합니다.
+
+LSTM 과제나 마무리 하고 나머지도 쉬엄쉬엄해봐야 겠네요!

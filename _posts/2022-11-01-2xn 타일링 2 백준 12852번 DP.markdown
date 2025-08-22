@@ -1,0 +1,30 @@
+---
+title: 2xn 타일링 2 백준 12852번
+date:   2022-11-01 17:28:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, dp, dynamic]
+---
+
+[https://www.acmicpc.net/problem/11727](https://www.acmicpc.net/problem/11727)
+
+문제
+
+2×n 직사각형을 1×2, 2×1과 2×2 타일로 채우는 방법의 수를 구하는 프로그램을 작성하시오.
+
+아래 그림은 2×17 직사각형을 채운 한가지 예이다.
+
+![img](https://user-images.githubusercontent.com/85277660/211191152-93280a9e-6586-40af-bbad-f69a32676835.gif)
+
+평범한? DP문제입니다. 다만 점화식을 구하는데 4번째....가 11가지 케이스가 나오는데 9개로보고 한참을 고민했습니다.
+
+결론적으로 d[i] = d[i-1] + d[i-2] * 2 입니다.
+
+```py
+num = int(input())
+dp = [0 for i in range(1010)]
+dp[1], dp[2] = 1, 3
+for i in range(3, num+1):
+    dp[i] = (dp[i-1] + dp[i-2]*2) % 10007
+print(dp[num])
+```
+원인은 잘 모르겠는데 dp 리스트를 입력받아서 생성하면 인덱스 에러가 나옵니다. 조건에 따라서 최다 값은 1000이니 넉넉하게 미리 만들어줍시다.

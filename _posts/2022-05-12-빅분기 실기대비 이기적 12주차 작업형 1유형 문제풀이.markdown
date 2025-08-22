@@ -1,0 +1,138 @@
+---
+title: 빅분기 실기대비 이기적 12주차 작업형 1유형 문제풀이
+date:   2022-05-12 21:14:30 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [bigdata, data, python, pandas]
+---
+
+데이터 출처 :[https://www.kaggle.com/darinhawley/fifa-world-cup-goalscorers-19302018](https://www.kaggle.com/darinhawley/fifa-world-cup-goalscorers-19302018(참고, 데이터 수정)
+
+데이터 설명 : 1930~2018년도 월드컵 출전선수 골기록
+
+data url = [https://raw.githubusercontent.com/Datamanim/datarepo/main/worldcup/worldcupgoals.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/worldcup/worldcupgoals.csv)
+
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210563197-fd84b8d3-6634-4b38-b02d-8feaf791614a.png)
+
+```py
+import pandas as pd
+df= pd.read_csv('https://raw.githubusercontent.com/Datamanim/datarepo/main/worldcup/worldcupgoals.csv')
+```
+
+### Q1.  주어진 전체 기간의 각 나라별 골득점수 상위 5개 국가와 그 득점수를 데이터프레임형태로 출력하라
+
+```py
+df.groupby('Country').sum().sort_values('Goals').tail(5)
+```
+국가로 묶은 다음에 sum으로 다 더해버리고 Golas을 기준으로 정렬하면 됩니다. tail을 사용하면 뒤부터 세어줍니다. 기분값은 오른차순이니 ascending=False를 사용하도 head(5)를 사용해도 무방합니다. 높은 국가 순서로 배열 하라는 특별한 조건이 없어서 tail로 해봤습니다.
+
+
+### Q2. 주어진 전체기간동안 골득점을 한 선수가 가장 많은 나라 상위 5개 국가와
+
+그 선수 숫자를 데이터 프레임 형식으로 출력하라
+
+결국 국가열 이 몇개인지 세어보면 됩니다. 국가열로 묶어서 size로 알 수 있습니다.
+
+```py
+df.groupby('Country').size().sort_values().tail(5)
+Q3. Years 컬럼은 년도 -년도 형식으로 구성되어있고, 각 년도는 4자리 숫자이다. 
+```
+연도 표기가 4자리 숫자로 안된 케이스가 존재한다. 해당 건은 몇건인지 출력하라.
+
+보자마자 정규표현식으로 풀어볼려고 했는데 안타깝게도 re 패키지가 없군요... 정규식 표현 조금만 알면 개꿀인데 이거는 나중에 생각나면 해보겠습니다.
+
+```py
+df['yearLst'] = df.Years.str.split('-')
+```
+
+split으로 -를 기준으로 나누게 되면 yearLst에는 -가 제거된 리스트를 반환하게 됩니다.
+
+```py
+def checkFour(x):
+    for value in x:
+        if len(str(value)) != 4:
+            return False
+    return True
+df['check'] = df['yearLst'].apply(checkFour)
+len(df[df.check ==False])
+```
+
+그리고 x는 리스트 값이라고 생각을 해줍시다. 각 리스트에 value의 길이가 4개인가 확인을 하게 되고 아니라면 False 문제가 없다면 True를 반환하게 됩니다. apply 함수를 이용해서 적용 할 수 있을 것입니다. 조금 만져보면 lambda함수로 해볼 수 있을거 같은데 가독성이 박살나서 넘어가겠습니다.
+
+
+### Q4. Q3에서 발생한 예외 케이스를 제외한 데이터프레임을 
+df2라고 정의하고 데이터의 행의 숫자를 출력하라 
+(아래 문제부터는 df2로 풀이하겠습니다)
+
+```py
+df2 = df[df.check ==True].reset_index(drop=True)
+print(df2.shape[0])
+#len(df2)
+```
+shape는 행과 열을 출력을 합니다. 첫번째는 행이고 두번째는 열이지요 len도 똑같습니다.
+
+
+### Q5. 월드컵 출전횟수를 나타내는 'LenCup' 컬럼을 추가하고 4회 출전한 선수의 숫자를 구하여라
+
+```py
+df2['LenCup'] =df2['yearLst'].str.len()
+df2['LenCup'].value_counts()[4]
+```
+yearLst에는 리스트값이 들어 있습니다. 리스트의 value길이를 구해서 4회 출천한 값을 가져오면 됩니다.
+
+ 
+### Q6. Yugoslavia 국가의 월드컵 출전횟수가 2회인 선수들의 숫자를 구하여라
+
+앞에서 새로 만든 열에다가 국가 조건을 걸어주고 값이 2인 것을 찾으면 되겠네요
+
+```py
+len(df2[(df2.LenCup==2) & (df2.Country =='Yugoslavia')])
+```
+
+### Q7. 2002년도에 출전한 전체 선수는 몇명인가?
+
+pandas.Series.str를 가지고 여러가지를 해볼 수 있습니다. contain을 사용하면 포함여부를 알려주고 split를 하면 나누어 주고 대문자 변환, 소문자 변환, 오브젝트 반환 숫자형 반환 이것저것 많이 있습니다.
+
+[https://pandas.pydata.org/docs/search.html?q=str](https://pandas.pydata.org/docs/search.html?q=str)
+
+내일 당장 시험이라 차분히 볼 시간은 없겠지만 시간 나시면 보는 것도 도움이 될 겁니다.
+
+```py
+len(df2[df2.Years.str.contains('2002')])
+```
+Years에 2002라는 문자가 들어 있는지 확인 할 수있습니다.
+
+
+### Q8. 이름에 'carlos' 단어가 들어가는 선수의 숫자는 몇 명인가? (대, 소문자 구분 x)
+
+
+대소문자를 구분하라고 합니다. 전부다 대문자로 바꾸거나 소문자로 바꾸면 되겠네요
+
+str.lower()을 사용하시고 그리고 다시 .str.contains('calos')를 넣어주시면 됩니다.
+
+```py
+len(df2[df2.Player.str.lower().str.contains('carlos')])
+```
+contain아닙니다 contains입니다. 간독 쓰다보면 매서드와 함수 괄호가 있고 없고, 뒤에 counts라거나 columns 처럼 뭔가 명령어를 넣었는데 에러가 나면 단어를 잘못 사용했는지 확인해보세요
+
+
+### Q9. 월드컵 출전 횟수가 1회뿐인 선수들 중에서 가장 많은 득점을 올렸던 선수는 누구인가?
+
+
+출천횟수는 앞에서 구했으니 그 값이 1인 것에서 value_sort를 사용해서 선수를 구하면 되겠네요
+
+```py
+df2[df2.LenCup==1].sort_values('Goals').Player.values[-1]
+```
+sort_values의 기본값은 오름차순입니다. 첫번째로 나오는 것은 가장 작은수이고 마지막에 있는 것은 제일 큰 수가 되요 -1은 마지막 값을 반환합니다.
+
+ 
+### Q10. 월드컵 출전횟수가 1회 뿐인 선수들이 가장 많은 국가는 어디인가?
+
+
+출전횟수를 1로 하면 선수들이 쭉 나오는데 이를 국가를 기준으로 쭉 더해보면 되겠네요
+
+```py
+df2[df2.LenCup==1].Country.value_counts().index[0]
+```

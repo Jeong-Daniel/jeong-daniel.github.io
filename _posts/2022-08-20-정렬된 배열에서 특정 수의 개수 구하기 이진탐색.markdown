@@ -1,0 +1,111 @@
+---
+title: 정렬된 배열에서 특정 수의 개수 구하기 이진탐색
+date:   2022-08-20 16:12:13 +0900
+categories: [Coding_Test, Others]
+tags: [coding, python, algorithm, bisect]
+---
+
+리스트나 배열이 정렬되어 있다는 가정하에 가장 빠르게 원소를 찾는 방법은 이진탐색을 이용하는 것입니다. 그리고 이런 이진탐색은 코딩테스트에서 출제자가 의도하지 않았더라도 제일 효과적으로 문제를 해결할 수도 있으니 이진 탐색 라이브러리인 bisect 모듈의 사용 방법은 꼭 기억을 합시다.
+
+예를 들어 수열 [1,1,2,2,2,2,3]이 있을 때 x = 2라면 현재 수열에서 값이 2인 워소가 4개이므로 4를 출력
+
+단 조건은 시간복잡도 O(logN)을 만족해야 합니다.
+
+문제의 답을 구하는 것은 굉장히 쉽습니다. count를 써서 값을 받으면 그만이기 때문입니다. 하지만 이는 선형적인 접근이기 때문에 log의 시간복잡도를 만족하지 못합니다. 이럴때 사용하는 이진탐색을 사용합니다.
+
+아이디어는 다음고 같습니다. 위 리스트에서 11122223이 있는데 2가 나타나는 첫번째 인덱스는 3이고 마지막 인덱스는 6이 됩니다. (6-3)+1을 하면 구할 수 있겠네요
+
+직접 이진탐색을 구성하는 방법과 bisect를 이용해서 구성하는 방법을 모두 찾아보겠습니다.
+
+```py
+#정렬된 수열에서 값이 x인 원소의 개수를 세는 매서드
+def count_by_value(array,x):
+    #데이터의 개수
+    n = len(array)
+    
+    # x가 처음 등장한 인덱스 계산
+    a = first(array,x,0,n-1)
+    
+    #수열에 x가 존재하지 않는 경우
+    if a == None:
+        return 0 #값이 x인 원소의 개수는 0개이므로 0반환
+    
+    #x가 마지막으로 등장한 인덱스 계산
+    b = last(array, x, 0, n-1)
+    
+    #개수를 반환
+    return (b - a + 1)
+
+#처음 위치를 찾는 이진 탐색 매서드
+def first(array, target, start, end):
+    if start > end:
+        #이진탐색은 인덱스 위치가 바뀌면 종료함
+        return None
+    mid = (start+end)//2
+    #해당 값을 가지는 원소 중에서 가장 왼쪽에 있는 경우에만 인덱스 반환
+    if (mid==0 or target > array[mid-1]) and array[mid] == target:
+        return mid
+    #중간점의 값 보다 찾고자 하는 값이 작거나 같은 경우 왼쪽 확인
+    elif array[mid] >= target:
+        return first(array, target, start, mid-1)
+    #중간점의 값 보다 찾고자 하는 값이 큰 경우 오른쪽 확인
+    else:
+        return first(array, target, mid+1, end)
+    
+#마지막 위치를 찾는 이진 탐색 매서드
+def last(array, target, start, end):
+    if start > end:
+        return None
+    mid = (start+end)//2
+    #해당 값을 가지는 원소 중에서 가장 오른쪽에 있는 경우에만 인덱스 반환
+    if (mid==n-1 or target < array[mid+1]) and array[mid] == target:
+        return mid
+    #중간점의 값 보다 찾고자 하는 값이 작거나 같은 경우 왼쪽 확인
+    elif array[mid] >= target:
+        return last(array, target, start, mid-1)
+    #중간점의 값 보다 찾고자 하는 값이 큰 경우 오른쪽 확인
+    else:
+        return last(array, target, mid+1, end)
+    
+n, x = map(int,input().split())
+array = list(map(int,input().split())) #전체 데이터 입력받기
+
+#값이 x인 데이터의 개수 계산
+count = count_by_value(array,x)
+
+#값이 x인 원소가 존재하지 않는 다면
+if count == 0:
+    print(-1)
+#값이 x인 원소가 존재한다면
+else:
+    print(count)
+```
+
+마찬가지로 파이썬의 이진탐색 라이브러이인 bisect를 적절하게 활용하면 간단하게 문제를 해결 할 수 있습니다.
+
+[정렬된 시퀸스를 탐색할때 이진탐색 bisect 사용방법](https://jeong-daniel.github.io/posts/%EC%A0%95%EB%A0%AC%EB%90%9C-%EC%8B%9C%ED%80%B8%EC%8A%A4%EB%A5%BC-%ED%83%90%EC%83%89%ED%95%A0%EB%95%8C-%EC%9D%B4%EC%A7%84%ED%83%90%EC%83%89-bisect-%EC%82%AC%EC%9A%A9%EB%B0%A9%EB%B2%95/)
+
+```py
+from bisect import *
+
+#값이 [left_value, right_vlaue]인 데이터의 개수를 반환하는 함수
+def count_by_range(array, left_value, right_value):
+    right_index = bisect_right(array, right_value)
+    left_index = bisect_left(array, left_value)
+    return right_index - left_index
+
+n, x = map(int,input().split())
+array = list(map(int,input().split())) #전체 데이터 입력받기
+
+#값이 x인 데이터의 개수 계산
+count = count_by_range(array,x,x)
+
+#값이 x인 원소가 존재하지 않는 다면
+if count == 0:
+    print(-1)
+#값이 x인 원소가 존재한다면
+else:
+    print(count)
+```
+
+bisect_right와 left가 있다고 했습니다. bisect는 오른쪽의 인덱스를 left는 왼쪽의 인덱스를 기준으로 반환을 하는데 이 인덱스를 뺀 값을 넣어주면 끝입니다.

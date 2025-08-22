@@ -1,0 +1,144 @@
+---
+title: 빅분기 실기 빅분기 실기 캐글 타이타닉 생존자 예측 문제
+date:   2022-05-12 09:20:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [python, bigdata, data, pandas, ml]
+---
+
+[https://www.kaggle.com/c/titanic/data](https://www.kaggle.com/c/titanic/data)
+
+이번에는 집값 예측에 이어서 타이타닉 생존자 예측 문제를 해보겠습니다. 데이터는 마찬가지로 캐글에서 받으셔서 사용하면 되겠습니다. 지난번 집값 예측은 정확한 값을 구하는 회귀였지만 이번에는 생존자가 죽었는지 살았는지 예측하는 문제입니다. 
+
+```py
+import numpy as np
+import pandas as pd
+train = pd.read_csv("train.csv")
+test = pd.read_csv("test.csv")
+```
+데이터 부터 살펴 봅시다.
+
+![img view](https://user-images.githubusercontent.com/85277660/210240335-29e5644e-9c20-4b36-9867-19d7dee65cd5.png)
+
+총 12개의 열로 이루어져있습니다. 그런데 승객번호는 지난번과 마찬가지로 예측하는데 필요가 없지요 그리고 우리가 예측 해야할 대상 역시 Survived이기 때문에 둘은 빼고 데이터 전처리를 쉽게 하기 위해서 train과 test를 하나로 합치겠습니다.
+
+```py
+all_feature = pd.concat((train.iloc[:,2:], test.iloc[:,1:]))
+```
+
+![isull check](https://user-images.githubusercontent.com/85277660/210240526-364a0add-4a59-4ea5-8821-71332819e5a0.png)
+
+비어있는 값중 Age를 제외한다면 나머지는 범주형입니다. Age는 표준화를 시켜서 처리를 하고 나머지는 0으로 값을 처리하겠습니다.
+
+```py
+Age_temp = all_feature['Age'].to_numpy()
+Age_temp = Age_temp.reshape(-1, 1)
+
+from sklearn.preprocessing import MinMaxScaler
+Sclaer = MinMaxScaler()
+Sclaer.fit(Age_temp)
+Age_temp = Sclaer.transform(Age_temp)
+all_feature['Age'] = Age_temp
+all_feature = all_feature.fillna(0)
+```
+지난번에는 apply함수를 사용했는데 저도 그냥 쓰다보니 MinMaxScaler나 StandardScaler쓰는게 편한거 같네요
+
+
+이어서 원핫인코딩까지 해줍시다. 그런데 하기 전에 데이터를 다시 보니
+
+![img pclass](https://user-images.githubusercontent.com/85277660/210240566-e3c34fcc-2f97-44b2-89e3-735a7d0956eb.png)
+
+아무리 좋게 생각해줘도 이름이 생존률이랑 관계가 있다고 보기는 어려울거 같습니다. 이거를 원핫인코딩 하면 난리날게 뻔하니 이름을 날리고 합시다.
+
+```py
+all_feature.pop('Name')
+all_features = pd.get_dummies(all_features, dummy_na=True)
+```
+
+![img1](https://user-images.githubusercontent.com/85277660/210240622-eaffb576-b867-4dcf-9d33-f72c7e24c605.png)
+
+그래도 열이좀 많군요 이후는 지난번 집값 예측 모델과 비슷하게 흘러가니 코드만 간략하게 설명하고 넘어가겠습니다.
+
+ 
+```py
+X_train = all_feature.iloc[:891,:]
+X_test = all_feature.iloc[891:,:]
+y_train = train.iloc[:,1]
+```
+마찬가지로 데이터 전처리 한다고 합쳐둔 것을 다시 구분했습니다.
+
+```py
+from sklearn.ensemble import RandomForestClassifier
+Random_modle = RandomForestClassifier()
+Random_modle.fit(X_train,y_train)
+pred_train=Random_modle.predict(X_train)
+Random_modle.score(X_train, y_train)
+```
+
+![score](https://user-images.githubusercontent.com/85277660/210240662-946f7ed1-66ae-4771-adf0-d0f2c71d2664.png)
+
+이번에 데이터 정확도는 0.998로 아주 우수하게 나왔습니다. 물론 오버피팅왕창된 값이라 별 의미는 없지요
+
+```py
+summit = pd.DataFrame()
+summit['PassengerId'] = test['PassengerId']
+summit['Survived'] = Random_modle.predict(X_test)
+summit.to_csv('Survived_predict.csv', index=False)
+```
+
+그리고 제출용 코드 작성!
+
+ 
+
+이번에도 이왕 해본거 캐글에 제출 해보았습니다.
+
+![img1 score](https://user-images.githubusercontent.com/85277660/210240692-ee8d1474-adbd-4a71-a9f4-97c0d6706248.png)
+
+2191등이라고 나오는데 전체 참가자수 14317에 비하면 랜덤포레스트만 사용했을뿐인데 아주 우수한값이라고 할 수 있습니다. 상위 70%안에 들었다고 하네요 지난번처럼 하이퍼파라미터랑 배깅을 써봤는데 큰 차이가 없어서 여기 까지 하겠습니다.
+
+ 
+
+막말로 랜덤포레스트만 가지고 가셔도 될거 같습니다.
+
+ 
+```py
+import numpy as np
+import pandas as pd
+train = pd.read_csv("train.csv")
+test = pd.read_csv("test.csv")
+#데이터 불러오기
+
+all_feature = pd.concat((train.iloc[:,2:], test.iloc[:,1:]))
+Age_temp = all_feature['Age'].to_numpy()
+Age_temp = Age_temp.reshape(-1, 1)
+
+from sklearn.preprocessing import StandardScaler
+Sclaer = StandardScaler()
+Sclaer.fit(Age_temp)
+Age_temp = Sclaer.transform(Age_temp)
+all_feature['Age'] = Age_temp
+all_feature = all_feature.fillna(0)
+all_feature.pop('Name')
+all_feature = pd.get_dummies(all_feature, dummy_na=True)
+#데이터 전처리
+
+X_train = all_feature.iloc[:891,:]
+X_test = all_feature.iloc[891:,:]
+y_train = train.iloc[:,1]
+#데이터 다시 불러오기
+
+from sklearn.ensemble import RandomForestClassifier
+Random_modle = RandomForestClassifier()
+Random_modle.fit(X_train,y_train)
+pred_train=Random_modle.predict(X_train)
+Random_modle.score(X_train, y_train)
+
+summit = pd.DataFrame()
+summit['PassengerId'] = test['PassengerId']
+summit['Survived'] = model.predict(X_test)
+summit.to_csv('Survived_predict.csv', index=False)
+```
+이번에는 전처리에서 잡다하게 좀 할게 많다보니 길어진거 같은데 그래도 전체적인 맥락에서는 비슷합니다.
+
+ 
+
+이렇게 해볼만한거 한두개 더 해보겠습니다.

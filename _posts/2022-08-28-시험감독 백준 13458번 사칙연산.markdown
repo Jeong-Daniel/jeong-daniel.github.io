@@ -1,0 +1,46 @@
+---
+title: 시험감독 백준 13458번 사칙연산
+date:   2022-08-28 16:22:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm]
+---
+
+[https://www.acmicpc.net/problem/13458](https://www.acmicpc.net/problem/13458)
+
+> 문제
+> 총 N개의 시험장이 있고, 각각의 시험장마다 응시자들이 있다. i번 시험장에 있는 응시자의 수는 Ai명이다.
+> 
+> 감독관은 총감독관과 부감독관으로 두 종류가 있다. 총감독관은 한 시험장에서 감시할 수 있는 응시자의 수가 B명이고, 부감독관은 한 시험장에서 감시할 수 있는 응시자의 수가 C명이다.
+> 
+> 각각의 시험장에 총감독관은 오직 1명만 있어야 하고, 부감독관은 여러 명 있어도 된다.
+> 
+> 각 시험장마다 응시생들을 모두 감시해야 한다. 이때, 필요한 감독관 수의 최솟값을 구하는 프로그램을 작성하시오.
+
+---
+
+```py
+n = int(input())
+students = list(map(int,input().split()))
+b, c = map(int,input().split())
+
+result = n
+for _ in range(n):
+    students[_] -= b
+    if students[_] < 0:
+        continue
+    div,last = divmod(students[_],c)
+    result += div
+    if last>0:
+        result+=1
+print(result)
+```
+
+그냥 간단하게 전체 학생 수에서 감독관을 전부 뺐습니다. 조건에 무조건 한 시험장당 감독관 1명은 있어야 하니까요 그리고 뺏을때 학생수는 상관하지 않았습니다. 만약 음수가 나올경우 더는 계산하지 않고 다음 교실로 넘어 갔습니다.
+
+그리고 divmod를 이용해서 나머지와 몫을 한꺼번에 구했습니다. 그리고 감독관수에다가 몫을 더하고 나머지가 1이상일 경우 한번더 더했습니다.
+
+```py
+_,a,[b,c]=eval('map(int,input().split()),'*3)
+print(sum(1-min(0,(b-n)//c)for n in a))
+```
+ 숏코딩으로 올라온게 있어서 봤는데.  뭐 이렇게도 풀 수 있군요 ㅋㅋ.....

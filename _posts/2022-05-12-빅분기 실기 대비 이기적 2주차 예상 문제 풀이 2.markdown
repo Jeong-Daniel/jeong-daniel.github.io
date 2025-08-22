@@ -1,0 +1,120 @@
+---
+title: 빅분기 실기 대비 이기적 2주차 예상 문제 풀이 2
+date:   2022-05-12 11:10:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [bigdata, data, python, pandas]
+---
+
+## 작업형 1유형
+
+데이터 출처 :[https://www.data.go.kr/data/15007122/fileData.do](https://www.data.go.kr/data/15007122/fileData.do) (참고, 데이터 수정)
+
+데이터 설명 : 2018년도 성인의 건강검 진데이터 (흡연상태 1- 흡연, 0-비흡연 )
+
+데이터 url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/smoke/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/smoke/train.csv)
+
+데이터 상위 5개 컬럼
+
+![table view](https://user-images.githubusercontent.com/85277660/210364151-670153dc-c438-49d3-b89d-acc290058eaa.png)
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/smoke/train.csv")
+```
+
+### Q1. 수축기혈압과 이완기 혈압기 수치의 차이를 새로운 컬럼('혈압차') 으로 생성하고, 연령대 코드별 각 그룹 중 '혈압차' 의 분산이 5번째로 큰 연령대 코드를 구하여라
+
+```py
+df.groupby('연령대코드(5세단위)')['혈압차'].var().sort_values(ascending=False)
+```
+
+![img1 5세단위](https://user-images.githubusercontent.com/85277660/210364308-da8c91ea-f99a-48e2-9c03-6d6de41ce5ae.png)
+
+정답 60
+groupby로 연령대코드를 묶은 다음 혈압차의 값을 가져옵니다. 그리고 var로 분산을 구하고 sort_values로 값을 정렬을 하는데 ascending=False로 두어서 큰값부터 정렬합니다.
+
+
+### Q2. 비만도를 나타내는 지표인 WHtR는 허리둘레 / 키로 표현한다. 일반적으로 0.58이상이면 비만으로 분류한다. 데이터중 WHtR 지표상 비만인 인원의 남/여 비율을 구하여라
+
+```py
+df['WHtR'] = df['허리둘레']/df['신장(5Cm단위)']
+data = df.loc[df['WHtR']>=0.58].성별코드.value_counts()
+data['M']/data['F']
+```
+정답 1.16
+
+문제정답이랑 약간 다르게 나와서 당황했는데 부호를 >=를 안쓰고 >를 써서 그랬습니다. 문제 볼때는 이상/이하/초과/미만도 꼼꼼하게 봐야겠습니다.
+
+## 작업형 2유형
+
+데이터 출처 :[https://www.kaggle.com/anmolkumar/health-insurance-cross-sell-prediction](https://www.kaggle.com/anmolkumar/health-insurance-cross-sell-prediction)
+
+(참고, 데이터 수정)
+
+데이터 설명 : 자동차 보험 가입 예측
+
+문제타입 : 분류유형
+
+평가지표 : f1-score
+
+trainData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/insurance/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/insurance/train.csv)
+
+testData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/insurance/test.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/insurance/test.csv)
+
+subData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/insurance/submission.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/insurance/submission.csv)
+
+데이터 상위 5개 컬럼
+
+![total view](https://user-images.githubusercontent.com/85277660/210364515-7b0a5b6a-b88d-4d11-9d9d-907eecaa06bc.png)
+
+이번에는 Response 응답이 자동차 보험 가입 예측입니다. 문제는 Vehicle_Age가 참 애매하게 되어있는데 범주 처리를 하겠습니다.
+
+```py
+trainData  = 'https://raw.githubusercontent.com/Datamanim/datarepo/main/insurance/train.csv'
+testData  = 'https://raw.githubusercontent.com/Datamanim/datarepo/main/insurance/test.csv'
+subData  = 'https://raw.githubusercontent.com/Datamanim/datarepo/main/insurance/submission.csv'
+
+#데이터로드
+import pandas as pd
+
+train = pd.read_csv(trainData,index_col=0)
+test = pd.read_csv(testData,index_col=0)
+submission = pd.read_csv(subData,index_col=0)
+```
+
+바로 앞에서는 하이퍼파라미터를 찾아보고 했는데, 너무 시간이 오래 걸리는 관계로 데이터를 나누거나 하지 않고 그냥 train데이터를 가지고 학습을 하고 test데이터 평가는 따로 하지 않겠습니다. 평가를 하더라도 튜닝하는데 시간이 너무 오래 걸리네요 시간이 얼마 안남은 시점에서 많이 풀어보고 싶은 생각에 자세한 것은 다른 게시글 참고 부탁드립니다.
+
+```py
+Scale_feature = ['Age','Region_Code','Annual_Premium','Policy_Sales_Channel','Vintage']
+from sklearn.preprocessing import StandardScaler
+Scaler = StandardScaler()
+Scaler.fit(train[Scale_feature])
+train[Scale_feature] = Scaler.transform(train[Scale_feature])
+test[Scale_feature] = Scaler.transform(test[Scale_feature])
+```
+ 
+사실 여러분들도 여기까지 따라오셨으면 다 비슷한거 느끼실 겁니다. 데이터 전처리하고 어떤거는 스케일링을하고 어떤거는 원핫인코딩을 하고, 목표변수, 독립변수 나누고 모델 불러와서 학습하고 결과 받아보고.. 이번에도 마찬가지입니다.
+0, 1이나 범위가 작은 feature을 빼고 몇가지 feature을 직접 골랐습니다. 고른 애들을 표준스케일을 적용을 해줍니다.
+
+```py
+y = train.pop('Response')
+X_train = pd.get_dummies(train)
+X_test = pd.get_dummies(test)
+```
+데이터를 분리를 하고
+
+```py
+from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier()
+model.fit(X_train, y)
+model.score(X_train, y)
+```
+이번에는 보험가입을 하는지 안하는지 예측을 하는 것이니 분류를 가져와서 마찬가지로 랜덤프레스트로 학습을 합니다.
+
+```py
+summit = pd.DataFrame()
+summit['Id'] = X_test.index
+summit['Response'] = model.predict(X_test)
+summit.to_csv('predict_response.csv', index=False)
+```
+데이터 만들어서 저장하는거는 너무나도 쉽지요

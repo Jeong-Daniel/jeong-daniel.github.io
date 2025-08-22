@@ -1,0 +1,50 @@
+---
+title: 퇴사 2 백준 15486번 DP
+date:   2022-11-03 17:54:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, dp, dynamic]
+---
+
+[https://www.acmicpc.net/problem/15486](https://www.acmicpc.net/problem/15486)
+
+어... 그런데 이 문제
+
+[퇴사 백준 14501번 DP](https://jeong-daniel.github.io/posts/%ED%87%B4%EC%82%AC-%EB%B0%B1%EC%A4%80-14501%EB%B2%88-DP/)
+
+이것과 똑같이 나와서 뭐가 다른지 찾아보았더니
+
+퇴사 1의 경우 N의 크기가 1부터 15였다면 퇴사 2는 1부터 1500000까지 입력크기가 다르다는 점입니다.
+
+그래서 퇴사 1의 경우 DP가 아니라 완전탐색으로 문제를 풀 수 있는 반면 퇴사 2는 크기를 고려하여 DP로 문제를 풀어야한다는 점입니다. 그런데 퇴사 1을 DP로 풀어 놓아서 이를 pypy로 하고 input값을 변경하니 그대로 통과되었습니다.
+
+```py
+import sys
+input = sys.stdin.readline
+
+n = int(input())
+t = [] #각 상담을 완료하는데 걸리는 시간
+p = [] #각 상담을 완료했을 때 받을 수 있는 금액
+dp  = [0]*(n+1) #dp를 위한 1차원 테이블 초기화 n+1한 이유는 마지막+1일까지 있을 수 있음
+max_value = 0
+
+for _ in range(n):
+    x,y = map(int, input().split())
+    t.append(x)
+    p.append(y)
+
+#리스트를 뒤에서부터 거꾸로 확인
+for i in range(n-1,-1,-1):
+    time = t[i] + i
+    #상담이 기간 안에 끝나는 경우
+    if time <= n:
+        #점화식에 맞게, 현재까지의 최고 이익 계산
+        dp[i] = max(p[i] + dp[time], max_value)
+        max_value = dp[i]
+    #상담이 기간을 벗어나는 경우
+    else:
+        dp[i] = max_value
+
+print(max_value)
+```
+
+그래서 이거는 예전풀이 그대로 두고 가는 것으로 하겠습니다.

@@ -1,0 +1,46 @@
+---
+title: N과 M (9) 백준 15663번 백트래킹
+date:   2022-10-25 16:01:20 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, backtracking]
+---
+
+[https://www.acmicpc.net/problem/15664](https://www.acmicpc.net/problem/15664)
+
+문제
+N개의 자연수와 자연수 M이 주어졌을 때, 아래 조건을 만족하는 길이가 M인 수열을 모두 구하는 프로그램을 작성하시오.
+
+N개의 자연수 중에서 M개를 고른 수열
+
+고른 수열은 비내림차순이어야 한다.
+
+길이가 K인 수열 A가 A1 ≤ A2 ≤ ... ≤ AK-1 ≤ AK를 만족하면, 비내림차순이라고 한다.
+
+---
+
+```py
+n,m = map(int,input().split())
+num = list(map(int,input().split()))
+num.sort()
+arr = [0]*m
+isused = [False]*n
+
+def func(k):
+    if k==m:
+        for i in range(m):
+            print(arr[i], end=' ')
+        print()
+        return
+    
+    temp = 0 #중복수열인지 확인하는 임시 변수
+    for i in range(n):
+        if (not isused[i] and temp!=num[i]):
+            isused[0:i+1] = [True]*(i+1)
+            arr[k] = num[i]
+            temp = arr[k]
+            func(k+1)
+            isused[0:i+1] = [False]*(i+1)         
+func(0)
+```
+
+[N과 M (9) 백준 15663번 백트래킹](https://jeong-daniel.github.io/posts/N%EA%B3%BC-M-(9)-%EB%B0%B1%EC%A4%80-15663%EB%B2%88-%EB%B0%B1%ED%8A%B8%EB%9E%98%ED%82%B9/)

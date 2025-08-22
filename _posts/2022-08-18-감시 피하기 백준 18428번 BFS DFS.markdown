@@ -1,0 +1,125 @@
+---
+title: 감시 피하기 백준 18428번 BFS DFS
+date:   2022-08-18 16:54:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, bfs, dfs]
+---
+
+[https://www.acmicpc.net/problem/18428](https://www.acmicpc.net/problem/18428)
+
+문제
+> NxN 크기의 복도가 있다. 복도는 1x1 크기의 칸으로 나누어지며, 특정한 위치에는 선생님, 학생, 혹은 장애물이 위치할 수 있다. 현재 몇 명의 학생들은 수업시간에 몰래 복도로 빠져나왔는데, 복도로 빠져나온 학생들은 선생님의 감시에 들키지 않는 것이 목표이다.
+>
+> 각 선생님들은 자신의 위치에서 상, 하, 좌, 우 4가지 방향으로 감시를 진행한다. 단, 복도에 장애물이 위치한 경우, 선생님은 장애물 뒤편에 숨어 있는 학생들은 볼 수 없다. 또한 선생님은 상, 하, 좌, 우 4가지 방향에 대하여, 아무리 멀리 있더라도 장애물로 막히기 전까지의 학생들은 모두 볼 수 있다고 가정하자.
+> 
+> 다음과 같이 3x3 크기의 복도의 정보가 주어진 상황을 확인해보자. 본 문제에서 위치 값을 나타낼 때는 (행,열)의 형태로 표현한다. 선생님이 존재하는 칸은 T, 학생이 존재하는 칸은 S, 장애물이 존재하는 칸은 O로 표시하였다. 아래 그림과 같이 (3,1)의 위치에는 선생님이 존재하며 (1,1), (2,1), (3,3)의 위치에는 학생이 존재한다. 그리고 (1,2), (2,2), (3,2)의 위치에는 장애물이 존재한다. 
+
+장애물을 3개 설치해서 모든 선생님의 감시를 피할 수 있는가?
+
+인공지능이라면 선생님 근처로 잡고 휴리스틱 하게 탐색을 하면 되겠지만 완전탐색으로 모든 곳에 일단 3개를 넣어두고 라고 생각을 했는데. 아닌가 휴리스틱하게 풀 수 없나?
+
+선생님 근처에 0이 있는 곳을 우선적으로 고려해서 풀어보는 방법도 존재는 할거 같습니다.
+
+아무튼 DFS로 봅시다. 완전탐색으로 풀더라도 최대 공간은 6x6이기 때문에 36C3이라고 해도 최대 경우의 수는 10,000이하의 숫자이기 때문입니다.
+
+```py
+from itertools import combinations
+
+n = int(input()) #복도의 크기
+board = [] #복도의 정보
+teachers = [] #모든 선생님 위치 정보
+spaces = [] #모든 빈 공간 위치 정보
+
+for i in range(n):
+    board.append(list(input().split()))
+    for j in range(n):
+        #선생님이 존재하는 위치 저장
+        if board[i][j] == 'T':
+            teachers.append((i,j))
+        #장애물을 설치할 수 있는 (빈 공간) 위치 저장
+        if board[i][j] == 'X':
+            spaces.append((i,j))
+```
+
+일단 combinations을 불러와줍시다.
+
+복도의 정보를 입력을 할때 선생님과 장애물을 설치할 수 있는 빈공간 역시 체크를 합시다.
+
+```py
+#특정 방향으로 감시를 진행(학생 발견: True, 학생 미발견:False)
+def watch(x,y, direction):
+    #왼쪽 방향으로 감시
+    if direction == 0:
+        while y>=0:
+            if board[x][y] == 'S': #학생이 있는 경우
+                return True
+            if board[x][y] == 'O': #장애물이 있는 경우
+                return False
+            y -= 1
+    #오른쪽 방향으로 감시
+    if direction == 1:
+        while y<n:
+            if board[x][y] == 'S': #학생이 있는 경우
+                return True
+            if board[x][y] == 'O': #장애물이 있는 경우
+                return False
+            y += 1
+    if direction == 2:
+        while x>=0:
+            if board[x][y] == 'S': #학생이 있는 경우
+                return True
+            if board[x][y] == 'O': #장애물이 있는 경우
+                return False
+            x -= 1
+    if direction == 3:
+        while x<n:
+            if board[x][y] == 'S': #학생이 있는 경우
+                return True
+            if board[x][y] == 'O': #장애물이 있는 경우
+                return False
+            x += 1
+        return False
+```
+
+watch함수를 하나 만들어줍시다. 각 방향을 쭉 따라서 가능할 때까지 학생이 있는지 체크를 하고 학생이 없다면 False를 리턴합시다.
+
+```py
+# 장애물 설치 이후에, 한 명이라도 학생이 감지되는지 검사
+def process():
+    #모든 선생님의 위치를 하나씩 확인
+    for x,y in teachers:
+        # 4가지 방향으로 학생을 감지할 수 있는지 확인
+        for i in range(4):
+            if watch(x,y,i):
+                return True
+    return False
+```
+
+그리고 이는 teachers를 기준 4가지 방향으로 쭉 확인을 하게 됩니다.
+
+```py
+find = False #학생이 한명도 감지되지 않도록 설치할 수 있는지의 여부
+
+#빈 공간에서 3개를 뽑는 모든 조합을 확인
+for data in combinations(spaces, 3):
+    #장애물을 설치해보기
+    for x, y in data:
+        board[x][y] = 'O'
+    #학생이 한명도 감지되지 않는 경우
+    if not process():
+        #원하는 경우를 발견한 것임
+        find = True
+        break
+    #설치된 장애물을 다시 없애기
+    for x,y in data:
+        board[x][y] = 'X'
+    
+if find:
+    print('Yes')
+else:
+    print('No')
+```
+
+spaces에 대해 모든 조합을 뽑아서 장애물을 설치를 하게 됩니다. data에는 결국 3가지 자료가 순차적으로 들어가게 되고
+
+다 돌았을때 선생이 감지를 성공했는지 안했는지 find에 반환하게 됩니다.

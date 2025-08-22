@@ -1,0 +1,198 @@
+---
+title: 단어변환 프로그래머스 Lv3 BFS
+date:   2022-09-02 12:09:20 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm, bfs]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/43163](https://school.programmers.co.kr/learn/courses/30/lessons/43163)
+
+? 이 문제를 어떻게 풀어 했는데 문제의 카테고리가 DFS/BFS였다. 그래서 곰곰히 생각을 해보니
+
+각 단어의 차이를 서로 비교를 해서 \<단어간의 거리\>를 구할 수 있을 것이고 거리가 1차이인 것을 찾아가다가 target을 만나면 횟수를 반환하고 끝까지 갔는데 target를 못찾았다면 return을 해보자라는 생각이 들었다.
+
+이때 반환하는 조건은 방문 배열을 하나 만들어서 모든 단어를 방문했는데도 답을 찾지 못하면 빠져 나오는 것이다. 그러면 두 숫자의 거리를 비교하는 함수부터 만들어보자
+
+```py
+from collections import deque
+
+def word(a,b):
+    length = len(a)
+    count = 0
+    for i in range(length):
+        if a[i]!=b[i]:
+            count+=1
+    return count
+
+def solution(begin, target, words):
+    
+    if target not in words:
+        return 0
+    
+    q = deque()
+    length = len(words)
+    visited = [-1]*length
+    check_list = [0]*length
+    start_num = None
+    
+    for i in range(length):
+        dist = word(begin,words[i])
+        check_list[i] = dist
+        if dist == 1:
+            visited[i]=0
+            q.append(i)
+            
+        dist_t = word(target,words[i])
+        if dist_t == 0:
+            find = i
+            
+    if not q:
+        return 0
+    
+    graph_map = [[0]*length for n in range(length)]
+
+    for a in range(length):
+        for b in range(length):
+            graph_map[a][b] = word(words[a],words[b])
+
+    while q:
+        now = q.popleft()
+        if now == find:
+            break
+        temp_map = graph_map[now]
+        for i in range(length):
+            if temp_map[i]==1 and visited[i] == -1:
+                q.append(i)
+                visited[i] = visited[now]+1
+    
+    return visited[find]+1
+```
+
+그래도 이제 프로그래머스 Lv3 정도 되는 문제는 답지를 안보고 충분히 고민하면 스스로 풀 수 있는 정도가 되니 자신감은 붙는거 같다. 백준 기준으로 골드까지는 아니고 실버4~5쯤 되려나
+
+정말 코테는 공부하는데 왕도가 없는거 같습니다. 많은 문제를 만나고 충분히 고민해보는것 이게 전부입니다.
+
+```py
+from collections import deque
+
+def word(a,b):
+    length = len(a)
+    count = 0
+    for i in range(length):
+        if a[i]!=b[i]:
+            count+=1
+    return count
+```
+
+일단 BFS를 위해서 deque를 사용하고 두 단어를 비교하는 함수를 하나 만들어 줍니다. 조건에서 단어의 길이는 똑같고 하한번당 하나의 단어만 바꿀 수 있다고 했으니 그냥 슬라이스로 잘라서 단어가 같은지만 보면 됩니다. 단어가 다르면 거리를 추가해주고 반환합시다.
+
+```py
+if target not in words:
+        return 0
+    
+    q = deque()
+    length = len(words)
+    visited = [-1]*length
+    check_list = [0]*length
+    start_num = None
+```
+
+일단 찾고자 하는 단어가 words에 있는지부터 확인하자 없으면 바로 return해서 빠져나오면 끝
+
+그리고 BFS를 위해서 큐와 길이 lenghtm 그리고 방문을 체크하기 위해서 visited와 몇가지 변수를 준비한다.
+
+```py
+for i in range(length):
+        dist = word(begin,words[i])
+        check_list[i] = dist
+        if dist == 1:
+            visited[i]=0
+            q.append(i)
+            
+        dist_t = word(target,words[i])
+        if dist_t == 0:
+            find = i
+```
+그리고 begin 시작하는 단어와 words에 있는 단어의 거리를 비교해서 check_list에 쭉 넣어주는데 차이가 1이라면 먼저 찾을 지점이니 큐에다가 추가를 해주고 우리가 목표하는 target의 위치 인덱스도 잡아준다.
+
+ 
+
+그런데 막상 지금보니 check_list를 왜썼는지 모르겠다. 지워도 되겠다.
+
+```py
+if not q:
+        return 0
+```
+
+그렇게 쭉 보았을때 조건에서 한번에 한단어만 바꿀 수 있기 때문에 시작 단어와의 단어거리가 1인 것인 곳에서 해야하는데 만약 단어거리가 1인 녀석이 없으면 이것도 불가능하니 바로 0을 반환해서 종료하자
+
+```py
+graph_map = [[0]*length for n in range(length)]
+
+    for a in range(length):
+        for b in range(length):
+            graph_map[a][b] = word(words[a],words[b])
+
+    while q:
+        now = q.popleft()
+        if now == find:
+            break
+        temp_map = graph_map[now]
+        for i in range(length):
+            if temp_map[i]==1 and visited[i] == -1:
+                q.append(i)
+                visited[i] = visited[now]+1
+    
+    return visited[find]+1
+```
+
+그래프 맵을 쭉 그려주고 여기 그래프 맵에는 각 단어와의 거리 정보를 넣어준다. 그리고 이를 가지고 BFS를 수행할거다.
+
+while문에서 먼저 시작과 단어거리가 1인 단어들이 들어가있는데 차례로 확인을 해보자. 만약 우리가 찾고자 하는 단어의 인덱스를 만나게되면 while문을 빠져나온다. 그리고 이동한 단어에서 단어거리가 1인 녀석들이 있는지 찾아보고 방문도 하지 않았으며(어차피 우리 목표는 최단거리라서 먼저 했다면 그 값이 무조건 최단거리다) 단어 거리가 1이라면 큐에 추가를 하고 visited에 거리를 갱신한다.
+
+그리고 마지막에다가 거리를 1추가 하는 이유는 now == find에서 인덱스를 만났을때 거리 갱신을 안하고 바로 빠져나왔기 때문에 1을 더해준다.
+
+[네트워크 프로그래머스 Lv2 BFS](https://jeong-daniel.github.io/posts/%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%81%AC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%A8%B8%EC%8A%A4-Lv2-BFS/)
+
+바로 이를 알았던 이유는 오늘 바로 앞에서 2차원 배열로 풀었다가 에러 난거 그래프로 푸니 풀렸기 때문...
+
+```py
+from collections import deque
+
+def solution(n, edge):
+    
+    graph = [[]*n for i in range(n+1)]
+    for x,y in edge:
+        graph[x].append(y)
+        graph[y].append(x)
+        
+    visited = [-1]*(n+1)
+    
+    start = 1
+    q = deque()
+    answer = 0
+    q.append(start)
+    visited[start] = 0
+    while q:
+        now = q.popleft()
+        for j in graph[now]:
+            if visited[j] == -1:
+                visited[j] = visited[now]+1
+                q.append(j)
+                
+    a = max(visited)
+    return visited.count(a)
+```
+
+뭔가 코드도 간결해졌다. 그리고 그래프 정리 할때 무방향 그래프이니 양쪽으로 다 체크를 해준다(방향이 있으면 당연하게도 이렇게 하면 안됨)
+
+마지막은 max값 함수로 받아서 count로 처리하니 더 깔끔....
+
+![score](https://user-images.githubusercontent.com/85277660/211157882-72ad6dfc-aa16-444d-b78f-a3d90dbc9f87.png)
+
+앞에서 테스트7번 8500ms나오고 1기가 넘게 나오던게 21ms에다가 17mb로 줄었다......
+
+
+오늘의 교훈
+
+시+공간복잡도를 고려해서 크다 싶으면 2차원 배열대신 그래프로 문제 풀기

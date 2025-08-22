@@ -1,0 +1,63 @@
+---
+title: 벽 부수고 이동하기 백준 2206번 BFS
+date:   2022-10-20 16:13:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, bfs]
+---
+
+[https://www.acmicpc.net/problem/2206](https://www.acmicpc.net/problem/2206)
+
+문제
+N×M의 행렬로 표현되는 맵이 있다. 맵에서 0은 이동할 수 있는 곳을 나타내고, 1은 이동할 수 없는 벽이 있는 곳을 나타낸다. 당신은 (1, 1)에서 (N, M)의 위치까지 이동하려 하는데, 이때 최단 경로로 이동하려 한다. 최단경로는 맵에서 가장 적은 개수의 칸을 지나는 경로를 말하는데, 이때 시작하는 칸과 끝나는 칸도 포함해서 센다.
+
+만약에 이동하는 도중에 한 개의 벽을 부수고 이동하는 것이 좀 더 경로가 짧아진다면, 벽을 한 개 까지 부수고 이동하여도 된다.
+
+한 칸에서 이동할 수 있는 칸은 상하좌우로 인접한 칸이다.
+
+맵이 주어졌을 때, 최단 경로를 구해 내는 프로그램을 작성하시오.
+
+---
+
+이제는 최단 거리가 아니라 벽을 부수는 문자가 나왔네요
+
+```py
+n,m = map(int,input().split())
+dist = [[-1]*m for _ in range(n)]
+map_list = []
+for i in range(n):
+    map_list.append(list(map(int,str(input()))))
+    
+from collections import deque
+boc_n=False
+queue = deque([[0, 0, boc_n]])
+dist[0][0] = 0
+dx = [0,0,1,-1]
+dy = [1,-1,0,0]
+while queue:
+    ty, tx, boc = queue.popleft()
+    for k in range(4):
+        nx = tx + dx[k]
+        ny = ty + dy[k]
+        if nx>=m or nx<0 or ny>=n or ny<0:
+            continue
+        if map_list[ny][nx]==1:
+            if boc==False:
+                boc_n=True
+            else:
+                continue
+        if dist[ny][nx]!=-1:
+            continue
+        queue.append([ny,nx,boc_n])
+        dist[ny][nx] = dist[ty][tx]+1
+
+if dist[-1][-1]==-1:
+    print(-1)
+else:
+    print(dist[n-1][m-1]+1)
+```
+
+일반적인 BFS에 더해서 큐에다가 벽을 부쉈는지 부수지 않았는지를 기록하는 변수를 하나더 추가를 했습니다.
+
+그러면 큐에는 벽을 부순경우와 부수지 않은 경우로 나누어지게되고 벽을 한번 부쉈다면 더 이상 부수지 못하고 벽을 부수지 않은 경우에서 벽을 만나게되면 벽을 한번 부수고가는, 어떻게 보면 완전탐색 형태인거 같기도 하네요
+
+테스트케이스에서는  통과했지만 역시 틀렸네요 이것도 표시만해두고 다음으로 미뤄야 겠습니다.

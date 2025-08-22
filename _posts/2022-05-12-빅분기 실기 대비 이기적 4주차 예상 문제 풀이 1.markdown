@@ -1,0 +1,81 @@
+---
+title: 빅분기 실기 대비 이기적 4주차 예상 문제 풀이 1
+date:   2022-05-12 12:12:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [bigdata, data, python, pandas]
+---
+
+## 작업형 1유형
+데이터 출처 :[https://www.kaggle.com/teejmahal20/airline-passenger-satisfaction?select=train.csv](https://www.kaggle.com/teejmahal20/airline-passenger-satisfaction?select=train.csv) (참고, 데이터 수정)
+
+데이터 설명 : 비행탑승 경험 만족도 (satisfaction 컬럼 : 'neutral or dissatisfied' or satisfied ) (83123, 24) shape
+
+Data url :[https://raw.githubusercontent.com/Datamanim/datarepo/main/airline/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/airline/train.csv)
+
+
+데이터 상위 5개 컬럼
+
+![data view](https://user-images.githubusercontent.com/85277660/210368503-07f99c5a-f94a-4b99-9db6-7fddaad3978b.png)
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/airline/train.csv")
+```
+
+Q1. Arrival Delay in Minutes 컬럼이 결측치인 데이터들 중 'neutral or dissatisfied' 보다 'satisfied'의 수가 더 높은 Class는 어디 인가?
+
+결측치가 아닌것이 아니라 결측치인것을 가져옵시다. 결측치를 확인하는 함수는 isnull입니다. 그리고 satisfaction의 값을 보니 neutral or dissatisfied와 satisfied의 값을 나옵니다.
+```py
+df.loc[df['Arrival Delay in Minutes'].isnull()].groupby(['Class','satisfaction'],as_index=False).size().pivot(index='Class',columns='satisfaction')
+```
+groupby로 Class와 satisfaction을 구한다음 pivot로 index와 columns를 지정해줍시다.
+
+---
+
+## 작업형 2유형
+
+데이터 출처 :[https://www.kaggle.com/teejmahal20/airline-passenger-satisfaction?select=train.csv](https://www.kaggle.com/teejmahal20/airline-passenger-satisfaction?select=train.csv) (참고, 데이터 수정)
+
+데이터 설명 : 비행탑승 경험 만족도 (satisfaction 컬럼 : 'neutral or dissatisfied' or satisfied )
+
+문제타입 : 분류유형
+
+평가지표 : accuracy
+
+trainData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/airline/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/airline/train.csv)
+
+testData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/airline/test.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/airline/test.csv)
+
+​
+데이터 상위 5개 컬럼
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210368658-6d96f135-a02f-49d9-9502-b723da98c736.png)
+
+satisfaction, 고객의 만족도를 조사하는 예측 분류입니다. 데이터 설명에서 조건을 주기는 했는데 unique로 한번 봅시다.
+
+![img1 data](https://user-images.githubusercontent.com/85277660/210368691-6dcf9dbd-96fb-42bb-86f6-35078e4f4cf8.png)
+
+마찬가지로 두가지가 있네요, repalce로 대체를 해줍시다.
+
+```py
+y = train['satisfaction'].replace(['satisfied', 'neutral or dissatisfied'],[1,0])
+train.drop(columns=['id','satisfaction'], inplace=True)
+
+summit = pd.DataFrame(test['id'])
+test.drop(columns='id', inplace=True)
+```
+그리고 train에서는 id와 satisfaction를 제거하고 test에서는 id를 제거해줍시다.
+
+```py
+train = train.fillna(0)
+test = test.fillna(0)
+```
+지연시간에 대해서 결측값이 있었습니다. fillna를 가지고 0으로 줍시다.
+
+```py
+from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier()
+model.fit(train,y)
+summit['satisfaction'] = model.predict(test)
+summit.to_csv('satisfaction_pre.csv', index=False)
+```
+모델을 만들어서 예측까지 하는 것으로 마무리 하겠습니다.

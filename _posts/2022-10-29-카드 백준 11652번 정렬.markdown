@@ -1,0 +1,63 @@
+---
+title: 카드 백준 11652번 정렬
+date:   2022-10-29 16:28:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, sorting]
+---
+
+[https://www.acmicpc.net/problem/11652](https://www.acmicpc.net/problem/11652)
+
+문제
+준규는 숫자 카드 N장을 가지고 있다. 숫자 카드에는 정수가 하나 적혀있는데, 적혀있는 수는 -262보다 크거나 같고, 262보다 작거나 같다.
+
+준규가 가지고 있는 카드가 주어졌을 때, 가장 많이 가지고 있는 정수를 구하는 프로그램을 작성하시오. 만약, 가장 많이 가지고 있는 정수가 여러 가지라면, 작은 것을 출력한다.
+
+처음에는 max에다가 key 파라미터를 이용하면 되게 간단하게 문제를 풀 수 있을거라 생각했습니다.
+
+```py
+num = int(input())
+num_list = []
+for i in range(num):
+    num_list.append(int(input()))
+print(max(num_list, key=num_list.count))
+```
+
+끝! 인줄 알았으나 pypy를 사용해도 시간초과가 나오네요
+
+```py
+num = int(input())
+num_list = []
+for i in range(num):
+    num_list.append(int(input()))
+
+num_list.sort()
+count = 0
+temp = num_list[0]
+answer = []
+for i in range(1,num):
+    if num_list[i]==temp:
+        count+=1
+    else:
+        answer.append([count,temp])
+        temp = num_list[i]
+        count=0
+    
+answer.append([count,temp])
+answer.sort(key=lambda x:(-x[0],x[1]))
+print(answer[0][1])
+```
+
+결국 정렬을 두번 사용했는데 일단 처음에 들어온 리스트를 정렬을 해줍시다.
+
+
+그리고 하나씩 보는 겁니다. 정렬을 했으니 같은 숫자 끼리는 붙어 있겠지요 그러면 1,1,1, 하다가 2가 나오게 됩니다.
+
+그러면 새로 만든 리스트에다가 1의 개수와 1을 세줍니다. 마지막까지 돌게되면 혹시 추가가 안될 수도 있으니 넣어주고
+
+ 
+
+개수가 많은 순으로 그리고 숫자가 적은 순으로 정렬해서 출력을 합니다.
+
+오히려 이거는 파이썬으로 해도 통과가 되네요
+
+아니면 마지막에 정렬하기보다 그때그때 추가해줘도 될거 같습니다.

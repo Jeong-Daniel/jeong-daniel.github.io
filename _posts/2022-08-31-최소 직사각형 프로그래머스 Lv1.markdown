@@ -1,0 +1,29 @@
+---
+title: 최소 직사각형 프로그래머스 Lv1
+date:   2022-08-31 15:06:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/86491](https://school.programmers.co.kr/learn/courses/30/lessons/86491)
+
+한두문제만 보고 나머지 Lv1보다는 바로 2로 넘어가야 겠습니다. Lv1수준은 대부분 큰 고민 없이 풀리니 좀더 어려운 거를 해야겠네요
+
+```py
+def solution(sizes):
+    length = len(sizes)
+    for i in range(length):
+        a = sizes[i][0]
+        b = sizes[i][1]
+        if a<b:
+            sizes[i][0], sizes[i][1] = sizes[i][1], sizes[i][0]
+    max_1 = max(list(zip(*sizes))[0])
+    max_2 = max(list(zip(*sizes))[1])
+    answer = max_1*max_2
+    return answer
+```
+
+결국 모든 명함을 포함할 수 있는 최대 크기가 얼마인가 했을때 가로세로가 중구난방으로 모여 있습니다. 그래서 한 축을 기준으로 긴것만 모아두고 각각의 max값을 뽑아서 곱하면 됩니다.
+
+
+그렇기 때문에 저기 a /< b를 부호를 반대로 해도 정상적으로 작동할겁니다.

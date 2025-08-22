@@ -1,0 +1,46 @@
+---
+title: 좌표 압축 백준 18870번 이진탐색
+date:   2022-11-11 20:18:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, bisect]
+---
+
+[https://www.acmicpc.net/problem/18870](https://www.acmicpc.net/problem/18870)
+
+
+문제
+수직선 위에 N개의 좌표 X1, X2, ..., XN이 있다. 이 좌표에 좌표 압축을 적용하려고 한다.
+
+Xi를 좌표 압축한 결과 X'i의 값은 Xi > Xj를 만족하는 서로 다른 좌표의 개수와 같아야 한다.
+
+X1, X2, ..., XN에 좌표 압축을 적용한 결과 X'1, X'2, ..., X'N를 출력해보자.
+
+---
+
+```py
+import copy
+num = int(input())
+temp = list(map(int,input().split()))
+num_list = copy.deepcopy(temp)
+num_list = sorted(list(set(num_list)))
+from bisect import *
+def count_by_range(array, left_value):
+    left_index = bisect_left(array, left_value)
+    return left_index
+        
+for j in range(num):
+    count = count_by_range(num_list,temp[j],temp[j])
+    print(count, end=' ')
+```
+
+파이썬에서 리스트 중복 제거를 하는 방법은 정렬을 한다음에 하나씩 살펴보면서 새로운 리스트를 만들어도 되지만
+
+set으로 한번 자료형변환을 했다가 다시 리스트로 바꿔주고 그거를 정렬해주면 됩니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211191949-94cb2f49-c722-4d56-8a43-9a711e773098.png)
+
+실제로 결과는 똑같이 나오고 메모리사용과 시간이 소폭 줄어든 것을 확인 할 수 있습니다.
+
+그리고 이번에는 보다 작은 것들의 개수가 궁금합니다. 그러면 우리가 찾는 원소의 왼쪽 인덱스 개수가 곧 정답이 됩니다.
+
+전에 사용했던 함수에서 오른쪽 부분만 때어버리면 됩니다.

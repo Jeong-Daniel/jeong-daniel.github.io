@@ -1,0 +1,47 @@
+---
+title: 연속합 백준 1912번 DP
+date:   2022-11-03 16:17:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, dp, dynamic]
+---
+
+[https://www.acmicpc.net/problem/1912](https://www.acmicpc.net/problem/1912)
+
+문제
+n개의 정수로 이루어진 임의의 수열이 주어진다. 우리는 이 중 연속된 몇 개의 수를 선택해서 구할 수 있는 합 중 가장 큰 합을 구하려고 한다. 단, 수는 한 개 이상 선택해야 한다.
+
+예를 들어서 10, -4, 3, 1, 5, 6, -35, 12, 21, -1 이라는 수열이 주어졌다고 하자. 여기서 정답은 12+21인 33이 정답이 된다.
+
+확실히 문제를 많이 봐야한다는게... 문제유형을 파악하는데서도 한몫하는거 같습니다. 만약 제가 이 문제를 처음 보았다면 DP라고 쉽게 생각하지 못했을듯합니다.
+
+```py
+num = int(input())
+num_list = list(map(int,input().split()))
+
+max_num = 0
+for i in range(1,num+1):
+    for j in range(num-i+1):
+        max_num = max(sum(num_list[j:j+i]),max_num)
+print(max_num)
+```
+
+만약 제가 DP문제라는 것을 모르고 보았다면 일단 위 코드 처럼 짜보았을거 같습니다.
+
+결국 모든 길이의 경우의 수를 다 구하고 그중 제일 큰것을 선택하는 방법입니다. 물론 안봐도 시간초과겠지요 이중 for문만 보아도 O(n^2)이 걸리게 됩니다.
+
+ 
+```py
+import copy
+num = int(input())
+num_list = list(map(int,input().split()))
+dp = copy.deepcopy(num_list)
+for i in range(1,num):
+    dp[i] = max(dp[i], dp[i-1]+num_list[i])
+print(max(dp))
+```
+
+dp를 사용해서 O(n)으로 해결한 모습입니다.
+
+리스트를 갱신하면서 리스트의 현재값과, 이전값+현재값을 비교해서 큰 것을 갱신해나갑니다.
+
+그래서 오히려 더했을때 값이 작아진다면 더하지 않고 원래 값을 가지고갑니다. 그러면 최종적으로 제일 큰 경우의 수만 남게 됩니다.

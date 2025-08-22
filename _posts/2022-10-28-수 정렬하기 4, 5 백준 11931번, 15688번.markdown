@@ -1,0 +1,42 @@
+---
+title: 수 정렬하기 4, 5 백준 11931번, 15688번 정렬
+date:   2022-10-28 14:56:10 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, sorting]
+---
+
+[https://www.acmicpc.net/problem/11931](https://www.acmicpc.net/problem/11931)
+
+```py
+import sys
+input=sys.stdin.readline
+
+t=int(input())
+A=list()
+for i in range(t):
+    A.append(int(input()))
+A.sort(reverse=True)
+
+for i in A:
+    print(i)
+```
+
+마찬가지로 특별히 풀이 법이 따로 있는게 아니라 input을 sys로 변경해줍니다.
+
+[https://www.acmicpc.net/problem/15688](https://www.acmicpc.net/problem/15688)
+
+```py
+import sys
+input=sys.stdin.readline
+
+t=int(input())
+A=list()
+for i in range(t):
+    A.append(int(input()))
+A.sort(reverse=False)
+
+for i in A:
+    print(i)
+```
+
+reverse를 True를 False로 변경하면 됩니다.

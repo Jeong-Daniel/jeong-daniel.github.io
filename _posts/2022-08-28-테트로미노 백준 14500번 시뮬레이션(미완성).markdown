@@ -1,0 +1,117 @@
+---
+title: 테트로미노 백준 14500번 시뮬레이션(미완성)
+date:   2022-08-28 21:13:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, simulation]
+---
+
+[https://www.acmicpc.net/problem/14500](https://www.acmicpc.net/problem/14500)
+
+> 문제
+> 폴리오미노란 크기가 1×1인 정사각형을 여러 개 이어서 붙인 도형이며, 다음과 같은 조건을 만족해야 한다.
+> 
+> 정사각형은 서로 겹치면 안 된다.
+> 도형은 모두 연결되어 있어야 한다.
+> 정사각형의 변끼리 연결되어 있어야 한다. 즉, 꼭짓점과 꼭짓점만 맞닿아 있으면 안 된다.
+> 정사각형 4개를 이어 붙인 폴리오미노는 테트로미노라고 하며, 다음과 같은 5가지가 있다.
+
+![img test](https://user-images.githubusercontent.com/85277660/211150259-ca1e6116-1a1a-4167-8b08-967cd38054c0.png)
+
+아름이는 크기가 N×M인 종이 위에 테트로미노 하나를 놓으려고 한다. 종이는 1×1 크기의 칸으로 나누어져 있으며, 각각의 칸에는 정수가 하나 쓰여 있다.
+
+테트로미노 하나를 적절히 놓아서 테트로미노가 놓인 칸에 쓰여 있는 수들의 합을 최대로 하는 프로그램을 작성하시오.
+
+테트로미노는 반드시 한 정사각형이 정확히 하나의 칸을 포함하도록 놓아야 하며, 회전이나 대칭을 시켜도 된다.
+
+![temp](https://user-images.githubusercontent.com/85277660/211150265-95f71d3e-7a3a-409f-aa63-61dff743eace.png)
+
+멍청하게 이 난리 치고 있다가 아무리 생각해도 이거는 아닌거 같아서 다시 곰곰히 생각해보았습니다.
+
+사실 언제나 그렇듯 조금 고민하다가 포기하고 다른거 참고할까도 했지만... 다른 풀이도 코드가 한눈에 안들어오고 너무 난잡해서 내가 고민해서 풀어내야겠다는 생각
+
+[자물쇠와 열쇠 프로그래머스 구현문제](https://jeong-daniel.github.io/posts/%EC%9E%90%EB%AC%BC%EC%87%A0%EC%99%80-%EC%97%B4%EC%87%A0-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%A8%B8%EC%8A%A4-%EA%B5%AC%ED%98%84%EB%AC%B8%EC%A0%9C/)
+
+그러다가 똑같이 프로그래머스 열쇠 문제에서 사용한 방법을 응용하면 되겠다는 생각이 들었습니다. 4칸씩 더 칸을 키운 것들을 만들고 어차피 원래크기에서 벗어나는 녀석들을 더해봐야 최대값을 못 미치니 불가능한 것만 체크를 하고 진행을 하면 되겠다는 생각
+
+```py
+n,m = map(int,input().split())
+map_list = []
+for i in range(n):
+    map_list.append(list(map(int,input().split())))
+```
+
+먼저 지도의 크기를 입력받고
+
+```py
+def rotate_a_matrix_by_90_degree(a):
+    n = len(a) #행 길이
+    m = len(a[0]) #열 길이
+    result = [[0]*n for _ in range(m)] #결과 리스트
+    for i in range(n):
+        for j in range(m):
+            result[j][n-i-1] = a[i][j]
+    return result
+```
+90도 회전을 하는 함수와
+
+```py
+def reverse_a_matrix(a):
+    n = len(a) #행 길이
+    m = len(a[0]) #열 길이
+    result = [[0]*n for _ in range(m)] #결과 리스트
+    result = a[::-1]
+    return result
+```
+
+위아래 반전을 하는 함수를 만들어 줍시다. 어차피 전체 과정에서 반전은 한번만 있으면 됩니다.
+
+```py
+x,y = 0,0
+shape_1 = [[x,y],[x,y+1],[x+1,y],[x+1,y+1]]
+shape_2 = [[x,y],[x,y+1],[x,y+2],[x,y+3]]
+shape_3 = [[x,y],[x+1,y],[x+2,y],[x+2,y+1]]
+shape_4 = [[x,y],[x,y+1],[x+1,y+1],[x+1,y+2]]
+shape_5 = [[x,y],[x,y+1],[x-1,y+1],[x,y+2]]
+
+shape_1_result = [[0]*4 for _ in range(4)]
+for i in range(4):
+    x,y = shape_1[i][0], shape_1[i][1] 
+    shape_1_result[x][y]= 1
+    
+shape_2_result = [[0]*4 for _ in range(4)]
+for i in range(4):
+    x,y = shape_2[i][0], shape_2[i][1] 
+    shape_2_result[x][y]= 1
+
+shape_3_result = [[0]*4 for _ in range(4)]
+for i in range(4):
+    x,y = shape_3[i][0], shape_3[i][1] 
+    shape_3_result[x][y]= 1
+
+shape_4_result = [[0]*4 for _ in range(4)]
+for i in range(4):
+    x,y = shape_4[i][0], shape_4[i][1] 
+    shape_4_result[x][y]= 1
+
+shape_5_result = [[0]*4 for _ in range(4)]
+for i in range(4):
+    x,y = shape_5[i][0], shape_5[i][1] 
+    shape_5_result[x][y]= 1
+    
+shape_list = [shape_1_result,shape_2_result,shape_3_result,shape_4_result,shape_5_result]
+
+#지도의 크기를 기준의 +4로 변환 하고 중간에 넣기
+new_lock = [[0]*(n+4) for _ in range(n+4)]
+for i in range(n):
+    for j in range(m):
+        new_lock[i+2][j+2] = map_list[i][j]
+```
+
+코드가 길기는한데 특별한 것은 없습니다. 4개의 테트로미노 총 5가지의 모양과 크기를 키운 지도를 넣어두었습니다.
+
+그리고 하나씩 비교를 하는데 일단 모형만큼 더하고 그 크기를 구한다음 4를 뺀 값을 max에다가 비교를 하면 될거 같다는 생각이기는한데
+
+일단 기본적으로 4번의 방향 회전과 1번의 대칭이동 총 8가지의 형태가 나오지만 ㄴ자 한 가지를 제외하면 8번의 모양이 나오는 녀석이 없습니다. 정사각형은 변환자체가 필요 없으며 ㅣ자의 경우 2가지 경우만 가지고 나머지도 4가지의 경우만 있기 때문 그래서 각각 따로 적용을 해야할 거 같기는 한데
+
+
+힘... 여기 까지만 하고 나중에 좀 더 생각을 해보겠습니다. 오늘만 이거를 너무 붙들고 있는데

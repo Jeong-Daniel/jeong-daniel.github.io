@@ -1,0 +1,54 @@
+---
+title: 가장 먼 노드 프로그래머스 Lv3 그래프
+date:   2022-09-02 12:50:20 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm, graph]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/49189](https://school.programmers.co.kr/learn/courses/30/lessons/49189)
+
+쉽게 풀 수 있을줄 알았는데 역시 시간 복잡도에서 걸리네요
+
+```py
+from collections import deque
+
+def solution(n, edge):
+    
+    graph = [[0]*n for i in range(n)]
+
+    for x,y in edge:
+        graph[x-1][y-1] = 1
+        graph[y-1][x-1] = 1
+    
+    visited = [-1]*n
+    q = deque()
+    start = 0
+    visited[start] = 0
+    q.append(start)
+    max_num = 0
+    while q:
+        now = q.popleft()
+        temp_map = graph[now]
+        for i in range(n):
+            if temp_map[i]==1 and visited[i] == -1:
+                q.append(i)
+                visited[i] = visited[now]+1
+                max_num = max(max_num,visited[i])
+
+    count = 0
+    for i in range(n):
+        if visited[i] == max_num:
+            count += 1
+            
+    return count
+ ```
+
+저에게 편리한 방식으로 접근을 했습니다. 들어오는 간선은 무방향입니다. 그래서 이를 2차원의 테이블로 만들고 BFS로 각 노드를 체크를 한다음 이때 거리의 최댓값을 기억하고 있다가 마지막으로 순회하면서 최댓값과 같은 노드의 개수를 세주었습니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211157297-fa20069b-6b2e-4c60-bdce-9b001d9599d5.png)
+
+하지만 시간초과!..
+
+노드의 최대 개수가 20,000라고 했는데 2차원 배열의 경우 테이블만 만드는데 4억이 필요합니다. C++이었다면 통과 했을지는 몰라도 공간 복잡도를 봐도 테스트 7번 같은 경우에는 무슨 1.15GB를 사용한다고 나오네요
+
+2차원 배열 대신에 다른 자료구조를 사용해야 겠습니다.

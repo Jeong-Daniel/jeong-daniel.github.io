@@ -1,0 +1,41 @@
+---
+title: 숫자의 개수 백준 2577번 배열
+date:   2022-09-28 13:05:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, array]
+---
+
+[https://www.acmicpc.net/problem/2577](https://www.acmicpc.net/problem/2577)
+
+문제
+세 개의 자연수 A, B, C가 주어질 때 A × B × C를 계산한 결과에 0부터 9까지 각각의 숫자가 몇 번씩 쓰였는지를 구하는 프로그램을 작성하시오.
+
+예를 들어 A = 150, B = 266, C = 427 이라면 A × B × C = 150 × 266 × 427 = 17037300 이 되고, 계산한 결과 17037300 에는 0이 3번, 1이 1번, 3이 2번, 7이 2번 쓰였다.
+
+ 
+[알파벳 개수 백준 10808번](https://jeong-daniel.github.io/posts/%EC%95%8C%ED%8C%8C%EB%B2%B3-%EA%B0%9C%EC%88%98-%EB%B0%B1%EC%A4%80-10808%EB%B2%88/)
+
+앞에서 알파벳 개수를 구하는 문제를 풀었는데 이것도 똑같이 숫자 버전이라고 보면 된다.
+
+```py
+num_list = [0]*10
+a = int(input())
+b = int(input())
+c = int(input())
+
+check=str(a*b*c)
+for i in range(len(check)):
+    num_list[int(check[i])]+=1
+    
+print(*num_list, sep='\n')
+```
+
+고민할 것도 없이 간단하게 풀었지만 그래도 이거 풀면서 재미있는거를 하나 알았다.
+
+숫자의 개수를 한줄에 하나씩 찍어야 하는데 평소라면 for문을 사용했겠지만 곰곰히 생각해보니 뭔가 쉽게 할 수 있을거 같다는 생각이 들었는데 찾아보니
+
+![num_list](https://user-images.githubusercontent.com/85277660/211178358-0e42378a-79af-42b6-8286-0ea25727415f.png)
+
+파이썬에서 시퀸스한 자료형을 다룰때 종종 언패킹이라는것을 사용하는데 이게 프린트문에서도 작동이 한다.
+
+*을 찍어서 언패킹을 하고 sep로 줄바꿈을 하면 한줄로 깔끔하게 출력이 완성된다.

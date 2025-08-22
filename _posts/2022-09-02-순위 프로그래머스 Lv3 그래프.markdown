@@ -1,0 +1,111 @@
+---
+title: 순위 프로그래머스 Lv3 그래프
+date:   2022-09-02 15:32:20 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm, graph]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/49191](https://school.programmers.co.kr/learn/courses/30/lessons/49191)
+
+처음에는 이 문제를 보고 어떻게 접근을 해야할지 되게 난감했습니다. 위성정렬인가? indegree, outdegree를 고려해야하는 문제인가..? 아 답지라도 봐야하나 싶다가 힌트를 얻었습니다.
+
+다만 힌트에서는 테이블을 여러개 사용했는데 저는 테이블 하나로 끝내 볼려고 합니다.
+
+```py
+graph = [[None]*n for i in range(n)]
+for i in range(n):
+    for j in range(n):
+        if i==j:
+            graph[i][j] = 0
+```
+
+맨처음 None으로 초기화된 2차원 테이블을 만들었습니다. 그리고 자기자신은 0으로 초기화를 합니다.
+
+```py
+for x,y in results:
+    graph[x-1][y-1] = 1
+    graph[y-1][x-1] = -1
+```
+
+그리고 테이블에 이겼을때와 졌을때를 기록을 했습니다.
+
+A가 B를 이겼다면 1을 그리고 반대로 대칭해서 B는 A에게 지게되니 -1을 기록합니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211157983-ccdca09a-d157-45fa-8f56-08022bc7c540.png)
+
+그러면 이런 그래프가 만들어 졌습니다. 2번의 경우 모든 사람에게 졌을때와 이겼을때를 알 수 있지만 나머지는 None으로 모르는 상태이네요
+
+그래서 이때 플로이드 워셜 알고리즘을 사용하던데... 저는 일단 조금 다르게 접근을 했습니다.
+
+일단 A가 B에게 이기거나 지는 경우가 있을 것입니다. 그리고 그 B를 이기거나 지는 경우가 있을 것입니다.
+
+
+1. A가 B를 이겼는데 B는 C를 이김
+
+A > B > C 형태가 되기 때문에 A는 당연히 C도 이길 수가 있습니다.
+
+2. A가 B에게 졌는데 B는 C에게 졌음
+
+A < B < C 형태가 되기 때문에 A는 당연히 C에게도 지게 됩니다.
+
+라고 생각을 해서
+
+```py
+for i in range(n):
+    for j in range(n):
+        if graph[i][j] == -1:
+            for k in range(n):
+                if graph[j][k]==-1 and graph[i][k]==None:
+                    graph[i][k] = -1
+        
+        if graph[i][j] == 1:
+            for k in range(n):
+                if graph[j][k] == 1 and graph[i][k]==None:
+                    graph[i][k] = 1
+```
+
+이런 for문으로 채우고 결과를 보게되면
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211158001-d7bd5562-dc71-47f2-818a-c8e11ec08764.png)
+
+그래프는 누군가에게 지거나 이기는 경우를 기록 할 수 있고 모르는 경우에는 None으로 남게 됩니다. 다시 None이 없는 것은 몇가지인지 확인하고 값을 반환하면 해결!
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211158010-5ca42a99-32e8-4958-9b91-cb6395c41966.png)
+
+인줄 알았으나 아니었습니다.... 
+
+아마도 다시 생각해보니 위의 알고리즘은 A와 C사이에 B 한명이 끼었을 경우에는 잘 작동을 했지만 A>>>>C 이런 경우에는 잘 대응하지 못했다고 추측을 해봅니다. 결론은 플로이드 워셜 알고리즘이나 완전 탐색을 다시 사용해야 겠네요
+
+![final score](https://user-images.githubusercontent.com/85277660/211158012-c34c1c4b-3e1a-428d-97f7-145a1031b1c6.png)
+
+
+```py
+def solution(n, results):
+    answer = 0
+    win_graph = defaultdict(set)    # 이긴 애들
+    lose_graph = defaultdict(set)   # 진 애들
+    
+    for winner,loser in results:        # 결과에서 이기고 진 애들 그래프화
+        win_graph[loser].add(winner)
+        lose_graph[winner].add(loser)
+
+    for i in range(1,n+1):         
+        for winner in win_graph[i]:                    # i한테 진 애들은 i를 이긴 애들한테도 진 것
+            lose_graph[winner].update(lose_graph[i])
+        for loser in lose_graph[i]:                     # i한테 이긴 애들은 i한테 진 애들한테도 이긴 것
+            win_graph[loser].update(win_graph[i])
+    
+    for i in range(1,n+1):
+        if len(win_graph[i]) + len(lose_graph[i]) == n-1:   # i한테 이기고 진 애들 합쳐서 n-1이면 순위가 결정된 것
+            answer += 1
+
+    return answer
+```
+
+사전형태로 깔끔하게 정리한 것이 있었습니다. 완전탐색으로 풀었는데
+
+주석에 있는 것 처럼 i에게 진애들은 i를 이긴 애들한테도 진것이고
+
+i한테 이긴 애들은 i한테 진 애들에게도 이긴 것으로 쭉 돌려버렸습니다.
+
+그런데 이렇게보니 사전을 사용해서 그래프를 인접리스트로 그리는 것보다 사전 형태로 구하는 것도 깔끔하네요

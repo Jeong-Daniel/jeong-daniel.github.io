@@ -1,0 +1,48 @@
+---
+title: 깃허브(Git-hub)블로그 만들어보기 테마 적용 3편
+date:   2022-05-09 12:29:41 +0900
+categories: [Tech, Git]
+tags: [blog, git, github, ruby]
+---
+
+깃허브로 블로그 만들어보기 1, 2편에이은 3편입니다. 이번에는 테마를 적용해보겠습니다.
+
+만약 여러분이 웹프로그래밍 프론트엔드를 능숙하게 다를줄 아는 능력자라면 이런거 볼것도 없이 바로 직접 만드시면되고
+
+그게 아니라면 남이 만들어준 테마를 하나 가져와봅시다.
+
+![git code link](https://user-images.githubusercontent.com/85277660/210136925-ac078864-cba8-4c30-a987-236a7e332f4f.png)
+
+2편의 마지막 부분에 여러 테마를 무료로 사용 할 수 있는 사이트가 있습니다. 원하시는 테마를 불러와서 깃에 들어가시면 이렇게 압축파일 형태로 제공을 하는데 다운 받읍시다.
+
+![git local folder](https://user-images.githubusercontent.com/85277660/210136935-481ef68c-d038-49d5-a7ad-482ec8e172d1.png)
+
+그리고 우리가 적용할 깃에다가 파일을 모조리 붙여 넣으신 다음에 Git을 켜서 명령어 두줄을 입력해줍시다.
+
+```ruby
+bundle install
+bundle exec jekyll serve
+```
+
+bundle를 설치를 하고 jekyll serve를 돌려주면 끝납니다.
+
+```bash
+git add --all
+git commit -m "커밋 내용 입력"
+git push
+```
+
+그리고 깃에다가 바로 업로드를 해줍시다.
+
+![깃 블로그 생성](https://user-images.githubusercontent.com/85277660/210136950-a5455da9-92d0-4053-8c49-cb2035ee1f95.png)
+* 예전에 사용하던 블로그 테마인데 지금은 보시는 페이지 그대로 입니다.
+
+그리고 조금만 기다리시면 깃에서 서비스가 정적웹페이지가 돌아가는 것을 확인 할 수 있습니다.
+
+![git action](https://user-images.githubusercontent.com/85277660/210136965-eb737238-c61f-4850-b4b7-10455d1156a2.png)
+
+깃 레포지토리에 들어가서 actions를 확인하면 페이지 생성이 이루어지는지 확인 할 수 있습니다. 만약 fail이 닜다면 에러코드를 확인해서 어떤 부분이 문제가 생겼는지 보고 수정하면 됩니다. 보통 배포하는데 1~2분 정도면 됩니다.
+
+이제 내용을 몇개 수정하기는 했는데 좀더 봅시다.
+
+제가 예전에 티스토리 블로그는 여기 까지 썼네요 나중에 이 chirpy theme jekyll 적용과 댓글 애드센스 광고 다는것 까지 정리해서 올려보도록 하겠습니다.

@@ -1,0 +1,81 @@
+---
+title: 작은 숫자 카드 꺼내기 그리드
+date:   2022-05-10 10:55:41 +0900
+categories: [Coding_Test, Others]
+tags: [coding, python, algorithm, greedy]
+---
+
+기출 : 2019 국가 교육기관 코딩 테스트
+
+숫자카드게임
+숫자가 쓰인 카드들이 NxM 형태로 놓여있다. 이때 N은 행의 개수를 의미하며, M은 열의 개수를 의미한다.
+먼저 뽑고자 하는 카드가 포함되어 있는 행을 선택한다.
+선택된 행에 포함된 카드들중 가장 숫자가 낮은 카드를 뽑아야 한다.
+처음에 카드를 골라낼 행을 선택할 때, 이후에 해당 행에서 가장 숫자가 낮은 카드를 뽑을 것을 고려하여 최종적으로 가장 높은 숫자의 카드를 뽑을 수 있도록 전략을 세워야 한다.
+해결방법 : 각행마다 가장 작은 수를 찾아내고 그중에서 가장 큰 수를 골라낸다.
+
+ 
+
+예를 들어서
+
+3 x 3카드가 다음과 같이 있다고 가정을 하면
+
+1 2 3 
+
+3 4 2
+
+5 4 3
+
+출력 : 3
+
+이런식으로 카드가 있을때 각 행에서 제일 작은 값을 꺼내면 1,2,3이 되는데 이중에서 가장 큰 숫자는 3입니다.
+
+
+```python
+n, m = map(int, input().split())
+
+result = 0
+#한 줄씩 입력받아 확인
+for i in range(n):
+    data = list(map(int,input().split()))
+    #현재 줄에서 '가장 작은 수' 찾기
+    min_value = min(data)
+    #가장 작은 수들 중에서 가장 큰 수 찾기
+    result = max(result, min_value)
+    #한줄을 입력할때마다 최소값과 최대값을 찾아본다.
+
+print(result)
+```
+
+첫번째 방법은 min()함수를 이용하는 방법입니다. n,m값을 받고 data에다가 한줄씩 입력을 받은다음 그 줄에서 가장 작은 값을 찾아내고, 처음 result에다가 0을 넣은다음 이것과 계속해서 비교해서 큰 것을 result에 넣어 둔다음
+
+ 
+
+반복문을 빠져나오면 출력합니다.
+
+```python
+n, m = map(int, input().split())
+
+result = 0
+#한 줄씩 입력받아 확인
+for i in range(n):
+    data = list(map(int,input().split()))
+    #현재 줄에서 '가장 작은 수' 찾기
+    min_value = 100000
+    #임의의 큰수를 넣어줌
+    for a in data:
+        min_value = min(min_value, a)
+    #가장 작은 수 들 중에서 가장 작은 것을 선택
+    result = max(result, min_value)
+    
+print(result) #최종답안 출력
+```
+두번째 방법은 for문을 두번 쓰는 것입니다. data까지 받아두는데 min_value에다가 임의의 큰 값을 넣어두고
+
+for a in data를 사용해서 data에 있는 값을 읽어온다음 최고 값과 비교합니다.
+
+ 
+
+min(data)와 for문이 똑같은 의미입니다.
+
+![result image](https://user-images.githubusercontent.com/85277660/210140695-4fc49a7e-45bb-443c-86e8-753f287baa46.png)

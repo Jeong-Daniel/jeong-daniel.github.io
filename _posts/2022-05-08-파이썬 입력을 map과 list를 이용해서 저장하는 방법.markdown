@@ -1,0 +1,51 @@
+---
+title: 파이썬 입력을 map과 list를 이용해서 저장하는 방법
+date:   2022-05-08 15:42:41 +0900
+categories: [Languages, Python]
+tags: [python]
+comment: true
+---
+
+파이썬의 내장함수인 map는 여러 개의 데이터를 한번에 다른 형태로 바꾸기 위해서 사용합니다. 주로 list와 tuple과 함께 사용하지요 문법은 다음과 같습니다.
+
+```python
+map(변환 함수, 순회 가능한 데이터)
+```
+
+list와 함께 사용 예시를 보겠습니다.
+
+
+a = [1.2, 2.5, 3.7, 4.6] 라는 리스트가 있는데 한꺼번에 얘네들을 정수형으로 바꾸고 싶습니다.
+
+int(a)? 당연히 해보시면 아시겠지만 안됩니다.
+ 
+
+위에 말한 것에 따르면 map(int,a)는 어떨까요?
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210082372-2eb5fb9f-9eb4-4c48-b6c3-4b3849efa9ca.png)
+
+map라는 객체가 튀어나오게 됩니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210082403-0ea95a57-6148-4b4f-be16-6991bc71c3af.png)
+
+이제 제대로 list형태로 나오는 것을 볼 수 있습니다.
+
+그렇다면 input에서 값을 입력받을때 공백을 기준으로 한꺼번에 받는 방법이 있습니다.
+
+코딩테스트에서 자주나오는 것으로 이 한줄정도는 외우는 편이 좋은데요
+
+```python
+a = list(map(int,input().split()))
+```
+
+이렇게 하면 공백을 기준으로 a에 값을 삽입할 수 있습니다.
+
+ ![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210082445-972d31a5-d055-43f1-a21a-9fe0052c90d9.png)
+
+ 마찬가지로 리스트의 인덱스 [0],[1]등으로 바로 접근하면 확인 할 수 있습니다.
+
+```python
+n, m, k = map(int, input().split())
+```
+
+list없이 이렇게하면 각각의 변수는 하나의 값을 입력할 수 있습니다.

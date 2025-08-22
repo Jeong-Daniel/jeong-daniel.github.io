@@ -1,0 +1,112 @@
+---
+title: 파이썬 문자열을 포멧팅하는 3가지 방법 1편 format
+date:   2022-07-19 11:13:41 +0900
+categories: [Languages, Python]
+tags: [python, coding, string, format]
+---
+
+C언어에서 문자열을 사용할때 %d, %f, %c 하는 것처럼 파이썬에서도 어떤 변수, 값을 출력할때 굉장히 다양하게 접근 할 수 있습니다. 개인적으로 여기서 나오는 속도 차이는 없기 때문에 자신에게 가장 편리하고 직관적인 것을 사용하면 될거 같네요
+
+
+### 1. format 공식문서 참고 링크
+일단 포매팅을 하는 이유는 문자열, 그리고 코드를 이쁘게 보기 위해서 입니다. 구구단을 만들때도 하드 코딩으로 때려 박는 것보다 깔끔하게 for문을 쓰고 변수를 반복하는게 훨씬 편리하겠지요
+
+```
+'{인덱스0}, {인덱스1}'.format(값0, 값1)
+```
+format의 사용 방법은 위와 같습니다. 문자열 중괄호에다가 인덱스 번호를 쓰고 format안에다가 값을 순서대로 넣으면 나오게 됩니다. 한번 확인해봅시다.
+
+```py
+a=5
+b=6
+s = '곱하기 {0} x {1} = {2}'.format(a,b,a*b)
+print(s)
+```
+
+![multiple result](https://user-images.githubusercontent.com/85277660/210792520-1c812810-bdb5-4d3a-a29c-7f8df5bf6ae2.png)
+
+결과는 위 처럼 나왔습니다. 그러면 인덱스 번호를 바꾸면요?
+
+![change index](https://user-images.githubusercontent.com/85277660/210794278-8b588be6-b0cd-4e91-87b7-abe7ec2c9895.png)
+
+0과 1 인덱스 번호를 바꾸니 위 처럼 순서가 달라졌습니다. format에 있는 인자는 순서대로 들어가지만 출력단에서 얼마든지 조절 할 수 있습니다.
+
+![change another](https://user-images.githubusercontent.com/85277660/210794330-df2ca37c-1725-4b1d-a671-938798ec9def.png)
+
+인덱스를 여러곳에 지정해도 마찬가지로 값이 출력이 됩니다.
+
+두번째로는 인덱스 번호가 아닌 이름을 붙일 수 있습니다.
+
+```py
+temp = 'number:{numa}, gender:{numb}'.format(numa=11,numb=0)
+print(temp)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210794453-f7fa848d-d0d8-4f6a-8ab8-d5a8eb8633ed.png)
+
+이렇게 중괄호안에다가 인덱스 번호 대신에 변수이름을 쓰고 format에다가 해당 변수의 값을 지정해주면 됩니다.
+
+![foramt 2](https://user-images.githubusercontent.com/85277660/210794484-63125639-48a3-45e2-a69d-1221cab00497.png)
+
+당연히 지정해주는 값은 다른 변수를 받아서 위처럼 작성 할 수도 있습니다.
+
+포멧안에다가 정렬 기호를 지정할 수 있습니다.
+
+> {인덱스번호/이름:정렬기준}
+
+인덱스를 지정을 하고 콜론으로 구분한다음 정렬기준을 지정해주는 것입니다.
+
+```py
+temp_a = '왼쪽 정렬 {location:<10}'.format(location='left')
+temp_b = '중앙 정렬 {location:^10}'.format(location='center')
+temp_c = '오른쪽 정렬 {location:>10}'.format(location='right')
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210794578-59c92d01-9784-43a3-b750-4ff4579cef08.png)
+
+10은 칸의 숫자입니다. 10칸으로 지정을 할것이고 비어있는 곳은 공백으로 처리를 합니다. <은 왼쪽부터 ^은 중앙 >는 오른쪽 정렬인 것을 확인 할 수 있습니다.
+
+물론 공백이 아닌 값을 지정할 수 있습니다.
+
+```py
+temp_a = '왼쪽 정렬 {location:@<10}'.format(location='left')
+temp_b = '중앙 정렬 {location:#^10}'.format(location='center')
+temp_c = '오른쪽 정렬 {location:$>10}'.format(location='right')
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210794619-e1da92f3-8bdf-4c69-9f2b-89c4c2e0be21.png)
+
+/<, ^, /> 기호 앞에다가 채울 문자를 넣어주면 됩니다. 
+
+ 
+
+마지막으로 정수/실수 표현을 살펴봅시다.
+
+```py
+ss_a = '정수 표현 {first:03d}, {second:04d}'.format(first=12345,second=123)
+print(ss_a)
+```
+
+앞과 마찬가지로 인덱스번호 또는 이름을 넣어주고 콜론으로 구분한다음에 자리수를 지정해줍시다. 정수 3자리와 정수 4자리를 표현하게 했을때 결과는
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210794757-8631b297-3d02-42f1-806b-36abc1744d82.png)
+
+
+표현할 정수보다 더 많을 경우에는 그냥 전체 주어진 값을 표시하고 부족할 경우에는 0으로 채우게 됩니다.
+
+그러면 다른거 채울 수 있나요?
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210794788-6c850f9e-8298-4950-adcd-465841a62b7c.png)
+
+그렇지는 않습니다.
+
+```py
+ss_b = '실수 표현 {first:0.2f}, {second:0.5f}'.format(first=123.123,second=1.234)
+print(ss_b)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210794826-4d0d2405-bc13-4687-92e3-3a41dc91dea4.png)
+
+실수표현의 경우 더 자리수가 있더라도 잘라버리고 부족할 경우에는 0을 채워줍니다. 실수를 다루는 문제에서는 정확도를 가지기 때문으로 보이네요
+
+마찬가지로 깃에다가 전체 코드가 업로드 되어 있습니다. 필요하신분은 확인하시면 됩니다.

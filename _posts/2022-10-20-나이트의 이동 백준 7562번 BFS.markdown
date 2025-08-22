@@ -1,0 +1,51 @@
+---
+title: 나이트의 이동 백준 7562번 BFS
+date:   2022-10-20 10:53:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, bfs]
+---
+
+[https://www.acmicpc.net/problem/7562](https://www.acmicpc.net/problem/7562)
+
+문제
+
+체스판 위에 한 나이트가 놓여져 있다. 나이트가 한 번에 이동할 수 있는 칸은 아래 그림에 나와있다. 나이트가 이동하려고 하는 칸이 주어진다. 나이트는 몇 번 움직이면 이 칸으로 이동할 수 있을까?
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211186283-5ac42acd-a2fb-4572-8558-434116954453.png)
+
+마찬가지로 BFS문제입니다. 이전 코드에서 dx,dy를 상하좌우로 설정을 했다면 이번에는 8방향임을 코드를 고려해서 작성하면 됩니다.
+
+
+```py
+from collections import deque
+loop = int(input())
+dx = [0,-2,-1,1,2,-2,-1,1,2]
+dy = [0,-1,-2,-2,-1,1,2,2,1]
+for i in range(loop):
+    num = int(input())
+    map_list = [[0]*num for _ in range(num)]
+    x,y = map(int,input().split())
+    nx,ny = map(int,input().split())
+    queue = deque([[y,x]])
+    out = True
+    while out:
+        ty,tx=queue.popleft()
+        for k in range(9):
+            nnx = tx + dx[k]
+            nny = ty + dy[k]
+            if nnx>=num or nnx<0 or nny>=num or nny<0:
+                continue
+            if map_list[nny][nnx]:
+                continue
+            if nnx==nx and nny==ny:
+                print(map_list[ty][tx])
+                out = False
+                break
+            queue.append([nny,nnx])
+            map_list[nny][nnx] = map_list[ty][tx]+1
+```
+
+다만 이동 횟수를 8번이 아니라 9번으로 한거는 시작지점과 도착지점이 동일할때가 있는데 맨 처음에 그렇습니다. 처음에만 필요하기에 조금 비효율적이기는한데.... 그냥 이렇게 하는게 깔끔하게 떨어져서 이대로 했습니다.
+
+
+덤으로 x랑 y위치 하나 바꿔서 뭐가 잘못됬는지 한참을 고민하고 있었네요

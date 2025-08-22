@@ -1,0 +1,61 @@
+---
+title: 더 맵게 프로그래머스 Lv2
+date:   2022-09-01 10:25:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/42626](https://school.programmers.co.kr/learn/courses/30/lessons/42626)
+
+
+사실 문제 분류가 힙이라고 해서 힙으로 접근했지 안했으면 또 멍청하게 list를 sorting 돌렸을거 같은 기분이다. 앞으로 이런 순서나 차이가 중요할때는 힙을 사용하는 것을 잊지 말자.....
+
+![score](https://user-images.githubusercontent.com/85277660/211155864-18ab2a7f-1ccd-4752-b9e4-d0544356149d.png)
+
+```py
+import heapq
+def solution(scoville, K):
+    heapq.heapify(scoville)
+    count = 0
+    while len(scoville)!=1:
+        now = heapq.heappop(scoville)
+        if now >= K:
+            return count
+        curr = heapq.heappop(scoville)
+        new_item = now + curr*2
+        heapq.heappush(scoville,new_item)
+        count += 1
+    return -1
+```
+
+그런데 문제는 거기서 오는게 아니었는데 이상하게 딱 하나. 하나를 통과를 못하고 있다.
+
+보통 실행을 어거지로 다 돌리고 효율성 똥망인데 이런 경우는 처음이다.
+
+일단 주어진 녀석을 heap으로 타입변환을 시켜주고 이때 pop를 하면 가장 작은 값이 튀어나온다. 이때 값이 우리가 기준에 설정한 K값을 만족하는가? 현재 값이 만족을 한다면 나머지는 안봐도 만족을 하기에 바로 count를 반환한다.
+
+이제 만족을 하지 않는다면 하나 더 뽑아본다. 그리고 새로운 매운 녀석을 만들어서 scoville에 집어 넣고 count를 1증가한다. 이러고보니 뭐가 잘못됬는지 보였다.
+
+마지막으로 만든 녀석이 조건을 만족할 수 있는데 무조건 두개 이상일때만 생각하고 한개 남았을때는 틀렸다고 처리했던거다.....
+
+```py
+import heapq
+def solution(scoville, K):
+    heapq.heapify(scoville)
+    count = 0
+    while scoville:
+        now = heapq.heappop(scoville)
+        if now >= K:
+            return count
+        if len(scoville)==0:
+            return -1
+        curr = heapq.heappop(scoville)
+        new_item = now + curr*2
+        heapq.heappush(scoville,new_item)
+        count += 1
+    return -1
+```
+
+그래서 하나를 더 pop하기전에 더 남아 있는지 물어보고 아니라면 -1을 반환하게 했더니 통과했다.
+
+컴퓨터는 거짓말을 하지 않는다. 내가 멍청해서 그렇지 ㅠ

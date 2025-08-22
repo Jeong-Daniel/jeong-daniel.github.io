@@ -1,0 +1,40 @@
+---
+title: 구간 합 구하기 4 백준 11659번 DP
+date:   2022-10-31 21:18:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, dp, dynamic]
+---
+
+[https://www.acmicpc.net/problem/11659](https://www.acmicpc.net/problem/11659)
+
+문제
+
+수 N개가 주어졌을 때, i번째 수부터 j번째 수까지 합을 구하는 프로그램을 작성하시오.
+
+---
+
+당연히 이번 문제도 DP입니다. 그때그때 i부터 j까지 합을 구하는 것보다 O(n)으로 모든 합을 구한 다음 입력받는 조건에 따라서 반환하는 것이 훨씬 빠르고 좋다는 것을 느낄 수 있습니다.
+
+```py
+import sys
+input = sys.stdin.readline
+
+n, m = map(int,input().split())
+dp = [0]*(n+1)
+num_list = [0]
+num_list+=list(map(int,input().split()))
+dp[1] = num_list[1]
+for i in range(1,n+1):
+    dp[i] = num_list[i]+dp[i-1]
+for j in range(m):
+    a,b = map(int,input().split())
+    print(dp[b]-dp[a-1])
+```
+
+다만 백준에서는 sys로 input을 변경해줘야 통과합니다.
+
+[input 에러 ValueError not enough values to unpack (expected 2, got 0) 해결방법](https://jeong-daniel.github.io/posts/input-%EC%97%90%EB%9F%AC-ValueError-not-enough-values-to-unpack-(expected-2,-got-0)-%ED%95%B4%EA%B2%B0%EB%B0%A9%EB%B2%95/)
+
+제가 예전에 어차피 큰 차이 없을거니 지워도 상관없을거라는 식으로 이야기했는데...
+
+파이썬코드를 작성할때는 그대로하고 만약 백준에 제출할때 시간초과로 통과가 되지 않는다면 그때 적용해보는 식으로 하면 될거 같습니다.

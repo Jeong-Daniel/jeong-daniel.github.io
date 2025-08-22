@@ -1,0 +1,95 @@
+---
+title: 파이썬 랜덤모듈 사용방법 random
+date:   2022-07-18 14:49:11 +0900
+categories: [Languages, Python]
+tags: [python, random, module]
+comment: true
+---
+파이썬 랜덤모듈의 사용방법을 살펴봅시다.
+
+```py
+import random
+```
+가장먼저 라이브러리를 호출 해야겠지요 별도의 별명을 붙이지말고 그대로 random을 사용합시다.
+
+ 
+
+### 1. random.random()
+
+random.random() 함수는 0.0에서부터 1.0 사이의 실수(float)를 반환 [0.0, 1.0)
+
+[은 포함하고 )은 포함한다는 뜻 '<=' 이 '['에 대응하고 '<'이 ')'에 대응한다고 보면 됩니다. 
+```py
+random.random()
+```
+
+![random](https://user-images.githubusercontent.com/85277660/210786867-cb1c7d26-11b3-4cc1-8462-139f4f0dbf00.png)
+
+![error random](https://user-images.githubusercontent.com/85277660/210786872-a2d9b35e-689d-4093-8e74-a872311dfc2f.png)
+
+당연히 괄호안에다가 숫자를 집어 넣으면 takes no arguments 아무 인자도 취하지 않는다고 알려줌
+
+
+### 2. random.uniform(a, b)
+
+random.uniform 함수는 인자로 들어온 a~b 사이의 실수(float)를 반환. uniform 함수의 랜덤 범위는 a <= x <= b
+
+```py
+random.uniform(5, 10)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210786953-64b81c3a-f95f-479c-98bb-8efd912065b7.png)
+
+### 3. randint(a, b)
+
+randint 함수는 인자로 들어온 a, b 사이의 랜덤한 정수(int)를 반환, a, b를 포함한 범위 (a <= N <= b) randrange 함수에 a, b+1을 넣은것과 동일하게 동작
+
+```py
+random.randint(5, 10)
+```
+
+![randint](https://user-images.githubusercontent.com/85277660/210787004-3502b906-cd19-48d1-b5e6-b8d17ba3b781.png)
+
+
+### 4. randrange(a, b), randrange(b)
+
+randrange 함수는 매개변수가 두개 또는 하나인데 두개를 다 넣을 경우 a부터 b까지(b를 포함하지 않음)
+
+하나만 넣을 경우 0부터 b까지 마찬가지로 b를 포함하지 않는 범위
+```py
+random.randrange(5, 10)
+
+random.randrange(5)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210787082-b566f61d-b36f-4e2f-b011-66e4e0638f03.png)
+
+
+### 5. random.choice(seq)
+
+choice 함수는 매개변수로 seq 타입을 받습니다. 여기서 시퀀스 데이터 타입은 문자열, 튜플, range, 리스트 타입이 있습니다.
+
+시퀸스 데이터 타입에서 무작위로 하나의 원소를 추출하고 만약 비어있는 시퀸스를 넣으면 indexError 의 예외가 발생
+
+(indexError : 시퀀스의 인덱스가 범위를 벗어났을때 발생하는 에러)
+
+```py
+stirng_lsit = 'data backend'
+random.choice(stirng_lsit)
+```
+
+![img1 result](https://user-images.githubusercontent.com/85277660/210787135-15ef6e5a-3652-48c6-a730-7817ce37eaea.png)
+
+### 6. random.shuffle(seq)
+
+choice는 시퀸스에서 하나를 뽑는것데 shuffle는 뒤섞습니다.
+
+```py
+stirng_lsit = ['d','a','t','a' ,'b','a','c','k','e','n','d']
+random.shuffle(stirng_lsit)
+print(stirng_lsit)
+```
+
+![shuffle result](https://user-images.githubusercontent.com/85277660/210787179-3a510828-20ff-45c4-8c34-7f5282529629.png)
+
+이런거 알아두면 어디에 쓰나 그러는데 가끔 코테칠때 내장 함수 많이 알아두면 유용하게 쓸때가 있습니다...

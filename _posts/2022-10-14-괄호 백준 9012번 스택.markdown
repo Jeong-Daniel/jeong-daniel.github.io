@@ -1,0 +1,32 @@
+---
+title: 괄호 백준 9012번 스택
+date:   2022-10-14 16:26:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, stack]
+---
+
+[https://www.acmicpc.net/problem/9012](https://www.acmicpc.net/problem/9012)
+
+```py
+num = int(input())
+count = 0
+for i in range(num):
+    string = str(input())
+    stack = []
+    for j in range(len(string)):
+        if not stack:
+            stack.append(string[j])
+        elif (stack[-1]=="(" and string[j]==")"):
+            stack.pop()
+        else:
+            stack.append(string[j])
+    if stack:
+        print("NO")
+    else:
+        print("YES")
+```
+
+바로 앞의 좋은 단어와 풀이는 유사합니다.
+
+ 
+어차피 모든 문자열을 봐야하기 때문에 시간복잡도에서도 고민할 것은 딱히 없을 듯 합니다.

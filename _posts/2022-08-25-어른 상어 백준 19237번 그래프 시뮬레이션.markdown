@@ -1,0 +1,228 @@
+---
+title: 어른 상어 백준 19237번 그래프 시뮬레이션
+date:   2022-08-25 14:29:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, graph, simulation]
+---
+
+[https://www.acmicpc.net/problem/19237](https://www.acmicpc.net/problem/19237)
+
+> 문제
+> 청소년 상어는 더욱 자라 어른 상어가 되었다. ([그래프/시뮬레이션] 청소년 상어 백준 19236번)
+> 
+> 상어가 사는 공간에 더 이상 물고기는 오지 않고 다른 상어들만이 남아있다. 상어에는 1 이상 M 이하의 자연수 번호가 붙어 있고, 모든 번호는 서로 다르다. 상어들은 영역을 사수하기 위해 다른 상어들을 쫓아내려고 하는데, 1의 번호를 가진 어른 상어는 가장 강력해서 나머지 모두를 쫓아낼 수 있다.
+> 
+N×N 크기의 격자 중 M개의 칸에 상어가 한 마리씩 들어 있다. 맨 처음에는 모든 상어가 자신의 위치에 자신의 냄새를 뿌린다. 그 후 1초마다 모든 상어가 동시에 상하좌우로 인접한 칸 중 하나로 이동하고, 자신의 냄새를 그 칸에 뿌린다. 냄새는 상어가 k번 이동하고 나면 사라진다.
+> 
+> 각 상어가 이동 방향을 결정할 때는, 먼저 인접한 칸 중 아무 냄새가 없는 칸의 방향으로 잡는다. 그런 칸이 없으면 자신의 냄새가 있는 칸의 방향으로 잡는다. 이때 가능한 칸이 여러 개일 수 있는데, 그 경우에는 특정한 우선순위를 따른다. 우선순위는 상어마다 다를 수 있고, 같은 상어라도 현재 상어가 보고 있는 방향에 따라 또 다를 수 있다. 상어가 맨 처음에 보고 있는 방향은 입력으로 주어지고, 그 후에는 방금 이동한 방향이 보고 있는 방향이 된다.
+>
+> 모든 상어가 이동한 후 한 칸에 여러 마리의 상어가 남아 있으면, 가장 작은 번호를 가진 상어를 제외하고 모두 격자 밖으로 쫓겨난다.
+
+![그림 1](https://user-images.githubusercontent.com/85277660/211149278-e3eabe32-7018-419c-9134-742305077957.jpg "그림 1")
+
+|↓ ← ↑ →|↓ → ← ↑|→ ← ↓ ↑|← → ↑ ↓|
+| :- | :- | :- | :- |
+|→ ↑ ↓ ←|↓ ↑ ← →|↑ → ← ↓|← ↓ → ↑|
+|← → ↓ ↑|← → ↑ ↓|↑ ← ↓ →|↑ → ↓ ←|
+|→ ← ↑ ↓|→ ↑ ↓ ←|← ↓ ↑ →|↑ → ↓ ←|
+
+<그림 1>은 맨 처음에 모든 상어가 자신의 냄새를 뿌린 상태를 나타내며, <표 1>에는 각 상어 및 현재 방향에 따른 우선순위가 표시되어 있다. 이 예제에서는 k = 4이다. 왼쪽 하단에 적힌 정수는 냄새를 의미하고, 그 값은 사라지기까지 남은 시간이다. 좌측 상단에 적힌 정수는 상어의 번호 또는 냄새를 뿌린 상어의 번호를 의미한다.
+
+![img1 2](https://user-images.githubusercontent.com/85277660/211149314-5e194bda-5bc7-456c-9f87-29a9a044ed3d.jpg "그림 2")
+
+![img1 3](https://user-images.githubusercontent.com/85277660/211149321-6b0b1649-1d8d-48da-9115-d9c7ec41816e.jpg "그림 3")
+
+<그림 2>는 모든 상어가 한 칸 이동하고 자신의 냄새를 뿌린 상태이고, <그림 3>은 <그림 2>의 상태에서 한 칸 더 이동한 것이다. (2, 4)에는 상어 2과 4가 같이 도달했기 때문에, 상어 4는 격자 밖으로 쫓겨났다.
+
+![img1 4](https://user-images.githubusercontent.com/85277660/211149332-89628d0e-da47-433c-ae49-ddab4d424c34.jpg "그림 4")
+
+![img1 5](https://user-images.githubusercontent.com/85277660/211149339-a28b6852-4399-4021-95bb-09cb0313bd30.jpg "그림 5")
+
+<그림 4>은 격자에 남아있는 모든 상어가 한 칸 이동하고 자신의 냄새를 뿌린 상태, <그림 5>는 <그림 4>에서 한 칸 더 이동한 상태를 나타낸다. 상어 2는 인접한 칸 중에 아무 냄새도 없는 칸이 없으므로 자신의 냄새가 들어있는 (2, 4)으로 이동했다. 상어가 이동한 후에, 맨 처음에 각 상어가 뿌린 냄새는 사라졌다.
+
+이 과정을 반복할 때, 1번 상어만 격자에 남게 되기까지 몇 초가 걸리는지를 구하는 프로그램을 작성하시오.
+
+입력
+
+첫 줄에는 N, M, k가 주어진다. (2 ≤ N ≤ 20, 2 ≤ M ≤ N2, 1 ≤ k ≤ 1,000)
+
+그 다음 줄부터 N개의 줄에 걸쳐 격자의 모습이 주어진다. 0은 빈칸이고, 0이 아닌 수 x는 x번 상어가 들어있는 칸을 의미한다.
+
+그 다음 줄에는 각 상어의 방향이 차례대로 주어진다. 1, 2, 3, 4는 각각 위, 아래, 왼쪽, 오른쪽을 의미한다.
+
+그 다음 줄부터 각 상어의 방향 우선순위가 상어 당 4줄씩 차례대로 주어진다. 각 줄은 4개의 수로 이루어져 있다. 하나의 상어를 나타내는 네 줄 중 첫 번째 줄은 해당 상어가 위를 향할 때의 방향 우선순위, 두 번째 줄은 아래를 향할 때의 우선순위, 세 번째 줄은 왼쪽을 향할 때의 우선순위, 네 번째 줄은 오른쪽을 향할 때의 우선순위이다. 각 우선순위에는 1부터 4까지의 자연수가 한 번씩 나타난다. 가장 먼저 나오는 방향이 최우선이다. 예를 들어, 우선순위가 1 3 2 4라면, 방향의 순서는 위, 왼쪽, 아래, 오른쪽이다.
+
+맨 처음에는 각 상어마다 인접한 빈 칸이 존재한다. 따라서 처음부터 이동을 못 하는 경우는 없다.
+
+---
+
+이제 물고기를 잡아먹는 상어는 없고 상어만 남아있습니다. 주어진 조건에 따라서 상어가 움직이며 상어 한마리 남을때까지 얼마나 시간이 필요한지 구합니다.
+
+다른 시뮬레이션 문제와 차이점은 상어마다 방향 우선순위 정보가 주어진다는 점이고 상어마다 다른 방향으로 이동하기 때문에 모든 방향 정보를 담을 리스트를 별도로 선언을 해야 합니다.
+
+삼성공채는 두문제 나오고 커트라인이 한문제 이상 푸는사람이었던걸로 봤는데 이런거 한문제씩 푼다는게 쉬운일은 아니네요
+
+```py
+n,m,k = map(int,input().split())
+
+#모든 상어의 위치와 방향 정보를 포함하는 2차원 리스트
+array = []
+for i in range(n):
+    array.append(list(map(int,input().split())))
+    
+#모든 상어의 현재 방향 정보
+directions = list(map(int,input().split()))
+
+#각 위치마다 [특정 냄새의 상어 번호, 특정 냄새의 남은 시간을 저장하는 2차원 리스트]
+smell = [[[0,0]]*n for _ in range(n)]
+
+#각 상어의 회전 방향 우선순위 정보
+priorities = [[] for _ in range(m)]
+for i in range(m):
+    for j in range(4):
+        priorities[i].append(list(map(int,input().split())))
+        
+#특정 위치에서 이동 가능한 4가지 방향
+dx = [-1,1,0,0]
+dy = [0,0,-1,1]
+```
+
+시작은 늘 그렇듯이 초기화 하는 것으로 시작을 합니다. 상어의 위치와방향정보를 입력받고
+
+모든 상어의 현재 방향 정보를 받은 다음, 냄새를 계산할 리스트를 또 하나 만들고
+
+상어에 대해서 우선순위 정보도 넣어줍시다.
+
+```py
+#모든 냄새 정보를 업데이트
+def update_smell():
+    #각 위치를 하나씩 확인하며
+    for i in range(n):
+        for j in range(n):
+            #냄새가 존재하는 경우, 시간을 1만큼 감소시키기
+            if smell[i][j][1] > 0:
+                smell[i][j][1] -= 1
+            #상어가 존재하는 해당 위치의 냄새를 k로 결정
+            if array[i][j] != 0:
+                smell[i][j] = [array[i][j], k]
+```
+
+첫번째로 해당 위치에 존재하는 경우 해당 냄새의 시간을 1만큼 감소시키고 현재 상어가 위치하는 해당 위치의 냄새를 k로 결정합니다.
+
+```py
+#모든 상어를 이동 시키는 함수
+def move():
+    #이동 결과를 담기 위한 임시 결과 테이블 초기화
+    new_array = [[0]*n for _ in range(n)]
+    #각 위치를 하나씩 확인하며
+    for x in range(n):
+        for y in range(n):
+            #상어가 존재하는 경우
+            if array[x][y] != 0:
+                direction = directions[array[x][y]-1] #현재 상어의 방향
+                found = False
+                #일단 냄새가 존재하지 않는 곳이 있는지 확인
+                for index in range(4):
+                    nx = x + dx[priorities[array[x][y]-1][direction - 1][index]-1]
+                    ny = y + dy[priorities[array[x][y]-1][direction - 1][index]-1]
+                    if 0 <= nx and nx <n and 0 <= ny and ny < n:
+                        if smell[nx][ny][1] == 0: #냄새가 존재하지 않는 곳이라면
+                            #해당 상어의 방향 이동시키기
+                            directions[array[x][y]-1] = priorities[array[x][y]-1][direction-1][index]
+                            #(만약 이미 다른 상어가 있다면 번호가 낮은 상어가 들어가도록)
+                            #상어 이동 시키기
+                            if new_array[nx][ny] == 0:
+                                new_array[nx][ny] = array[x][y]
+                            else:
+                                new_array[nx][ny] = min(new_array[nx][ny], array[x][y])
+                            found=True
+                            break
+                if found:
+                    continue
+                #주변에 모두 냄새가 남아 있다면, 자신의 냄새가 있는 곳으로 이동
+                for index in range(4):
+                    nx = x + dx[priorities[array[x][y]-1][direction-1][index]-1]
+                    ny = y + dy[priorities[array[x][y]-1][direction-1][index]-1]
+                    if 0 <= nx and nx < n and 0 <= ny and ny < n:
+                        if smell[nx][ny][0] == array[x][y]: #자신의 냄새가 있는 곳이면
+                            #해당 상어의 방향 이동시키기
+                            directions[array[x][y]-1] = priorities[array[x][y]-1][direction-1][index]
+                            #상어 이동시키기
+                            new_array[nx][ny] = array[x][y]
+                            break
+                            
+    return new_array
+```
+이동하는 함수는 위와 같은데 좀 쪼개서 보겠습니다.
+
+일단 이동 결과를 담기 위해서 임시테이블을 전체 초기화를 하고 이중 for문으로 전체 맵을 탐색합니다.
+
+```py
+if array[x][y] != 0:
+                direction = directions[array[x][y]-1] #현재 상어의 방향
+                found = False
+                #일단 냄새가 존재하지 않는 곳이 있는지 확인
+                for index in range(4):
+                    nx = x + dx[priorities[array[x][y]-1][direction - 1][index]-1]
+                    ny = y + dy[priorities[array[x][y]-1][direction - 1][index]-1]
+                    if 0 <= nx and nx <n and 0 <= ny and ny < n:
+                        if smell[nx][ny][1] == 0: #냄새가 존재하지 않는 곳이라면
+                            #해당 상어의 방향 이동시키기
+                            directions[array[x][y]-1] = priorities[array[x][y]-1][direction-1][index]
+                            #(만약 이미 다른 상어가 있다면 번호가 낮은 상어가 들어가도록)
+                            #상어 이동 시키기
+                            if new_array[nx][ny] == 0:
+                                new_array[nx][ny] = array[x][y]
+                            else:
+                                new_array[nx][ny] = min(new_array[nx][ny], array[x][y])
+                            found=True
+                            break
+```
+해당 array가 0이 아닐때가 상어가 존재할때이고 해당 상어의 방향을 확인을 합ㄴ다.그리고 냄새가 존재하지 않는 곳이 있는지 확인을 4방향으로 하게 됩니다.그리고 첫번째 조건(지도 밖을 벗어나지 않는다)을 만족하면서 냄새가 존재하지 않는 곳이라면 해당 상어를 이동 시킵니다. 이때 이미 다른 상어가 있다면(0이 아니라면) 번호가 낮은 상어(더 높은 우선순위를 지닌)를 집어넣게 됩니다. 이제 그러면 상어가 자연스럽게 하나 사라졌습니다. 
+
+```py
+		if found:
+                    continue
+                #주변에 모두 냄새가 남아 있다면, 자신의 냄새가 있는 곳으로 이동
+                for index in range(4):
+                    nx = x + dx[priorities[array[x][y]-1][direction-1][index]-1]
+                    ny = y + dy[priorities[array[x][y]-1][direction-1][index]-1]
+                    if 0 <= nx and nx < n and 0 <= ny and ny < n:
+                        if smell[nx][ny][0] == array[x][y]: #자신의 냄새가 있는 곳이면
+                            #해당 상어의 방향 이동시키기
+                            directions[array[x][y]-1] = priorities[array[x][y]-1][direction-1][index]
+                            #상어 이동시키기
+                            new_array[nx][ny] = array[x][y]
+                            break
+    return new_array
+```
+
+상어를 만약 찾았다면 아래 for문을 건너 띄고 상어를 찾지 못했을때 (주변에 냄새가 남아있을때) 자신의 냄새가 있는 곳으로 이동을 합니다.
+
+이 과정이 끝나면 new_array로 지도를 업데이트 해줍시다.
+
+
+```py 
+time = 0
+while True:
+    update_smell() #모든 위치의 냄새를 업데이트
+    new_array = move()
+    array = new_array #맵업데이트
+    time += 1 #시간 증가
+    
+    #1번 상어만 남았는지 체크
+    check = True
+    for i in range(n):
+        for j in range(n):
+            if array[i][j] > 1:
+                check = False
+    if check:
+        print(time)
+        break
+    
+    #1,000초가 지날때까지 끝나지 않는다면 종료
+    if time >= 1000:
+        print(-1)
+        break
+```
+그리고 시작을 합니다. 모든 위치의 냄새를 업데이트 하고, 이동을 하고 맵 업데이트를 하고 시간을 올리고 상어가 한마리만 남았는지 체크하고 이를 반복하게 됩니다.

@@ -1,0 +1,35 @@
+---
+title: 파도반 수열 백준 9461번 DP
+date:   2022-11-03 17:37:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, dp, dynamic]
+---
+
+[https://www.acmicpc.net/problem/9461](https://www.acmicpc.net/problem/9461)
+
+문제
+
+![img example](https://user-images.githubusercontent.com/85277660/211191395-724d6aa8-6b4c-4844-9b65-4f756a01e6f2.png)
+
+오른쪽 그림과 같이 삼각형이 나선 모양으로 놓여져 있다. 첫 삼각형은 정삼각형으로 변의 길이는 1이다. 그 다음에는 다음과 같은 과정으로 정삼각형을 계속 추가한다. 나선에서 가장 긴 변의 길이를 k라 했을 때, 그 변에 길이가 k인 정삼각형을 추가한다.
+
+파도반 수열 P(N)은 나선에 있는 정삼각형의 변의 길이이다. P(1)부터 P(10)까지 첫 10개 숫자는 1, 1, 1, 2, 2, 3, 4, 5, 7, 9이다.
+
+N이 주어졌을 때, P(N)을 구하는 프로그램을 작성하시오.
+
+뭔가 그림도 있고 복잡해보이는데 천천히보면 삼각형이 규칙적인 순서로 이루어진것을 볼 수 있습니다.
+
+결국 점화식은 6이후로 dp[i] = dp[i-1] + dp[i-5]  형태를 가져가게 됩니다.
+
+```py
+loop = int(input())
+dp=[0]*(100+1)
+dp[1],dp[2],dp[3],dp[4],dp[5],dp[6] = 1,1,1,2,2,3
+for i in range(loop):
+    num = int(input())
+    for j in range(7,num+1):
+        dp[j] = dp[j-1]+dp[j-5]
+    print(dp[num])
+```
+
+어차피 입력되는 N은 100ㅇ로 제한되어 있으니 밖에서 100까지 모두 계산해버리고 들어와도 될듯합니다.

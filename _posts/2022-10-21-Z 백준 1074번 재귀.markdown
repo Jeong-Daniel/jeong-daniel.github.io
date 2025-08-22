@@ -1,0 +1,46 @@
+---
+title: Z 백준 1074번 재귀
+date:   2022-10-21 18:11:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, recursive]
+---
+
+[https://www.acmicpc.net/problem/1074](https://www.acmicpc.net/problem/1074)
+
+문제
+한수는 크기가 2N × 2N인 2차원 배열을 Z모양으로 탐색하려고 한다. 예를 들어, 2×2배열을 왼쪽 위칸, 오른쪽 위칸, 왼쪽 아래칸, 오른쪽 아래칸 순서대로 방문하면 Z모양이다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211186585-d7d79d80-9735-4a00-bbab-93cbbc74f849.png)
+
+N > 1인 경우, 배열을 크기가 2N-1 × 2N-1로 4등분 한 후에 재귀적으로 순서대로 방문한다.
+
+다음 예는 22 × 22 크기의 배열을 방문한 순서이다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211186588-44fe2a9c-1e70-4229-bc1f-255a08836d5a.jpg)
+
+N이 주어졌을 때, r행 c열을 몇 번째로 방문하는지 출력하는 프로그램을 작성하시오.
+
+다음은 N=3일 때의 예이다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211186591-1b5ac52c-3fbf-4c2d-9d02-7a43229b863f.jpg)
+
+```py
+n, x, y = map(int,input().split())
+def func(n,x,y):
+    if n==0:
+        return 0
+    half = 2**(n-1)
+    if x<half and y<half:
+        return func(n-1,x,y)
+    if x<half and y>=half:
+        return half*half + func(n-1,x,y-half)
+    if x>=half and y<half:
+        return 2*half*half + func(n-1,x-half,y)
+    return 3*half*half + func(n-1, x-half, y-half)
+
+print(func(n,x,y))
+```
+
+조건에 따라서 크기는 n으로 받지만 2^n의 형태로 들어오게 됩니다. 각 조건에 따라서 z의 위치가 1,2,3,4분면중 어디인지 half를 기준으로 구하게되고 그렇게 제일 작게 쪼개진 (2x2)까지 들어갔다가 나오게 됩니다.
+
+특정 위치가 4분면에 있다면 일단 3분면을 거쳐와야하는데 3분면을 거쳐오는데 걸리는 시간은 half*half*3의 시간을 소요하고오니 더하고 그 쪼개진 곳에서 3분면이라면 2분면을 거쳐서 이렇게 들어가는 식입니다.

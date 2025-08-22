@@ -1,0 +1,86 @@
+---
+title: 파이썬 주석 정리 한줄, 여러줄 주석, IDE별 정리
+date:   2022-07-21 14:20:10 +0900
+categories: [Languages, Python]
+tags: [python, coding]
+---
+
+전에 C언어랑 파이썬으로 동시에 개발할일이 있었는데 멍청하게 //랑 /* 하고 #, ''' 가끔 햇갈렸네요
+
+파이썬에서는 주석처리 하는 방법은 두가지 방법이 있습니다.
+
+### 1. 한줄 주석 처리
+```py
+#프린터문 출력
+print("출력")
+```
+#을 사용하면 한줄 주석 처리가 됩니다. 당연히 해당 부분은 무시 되는 것이기 때문에
+
+```py
+print("출력") #프린터문 출력
+```
+
+![PC result](https://user-images.githubusercontent.com/85277660/210799415-ba8dbdea-039c-435e-a617-437502368b0e.png)
+
+코드 뒤에다가 붙여도 문제는 없습니다.
+
+
+### 2. 여러줄 주석 처리
+여러줄 주석은 따움표를 이용해서 처리합니다.
+
+ 
+"""
+주석 여러줄 내용
+"""
+
+이런식입니다. 그리고 쌍따움표가 아니어도 됩니다.
+
+```py
+print("예제 출력하기")
+"""
+쌍따움표
+111111
+222222
+333333
+"""
+print("주석 이후 출력하기")
+
+print("예제 출력하기")
+'''
+홑따움
+111111
+222222
+333333
+'''
+print("주석 이후 출력하기")
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210799640-426674b8-bbf1-4b1c-be0b-11c1de722b83.png)
+
+
+개발통합환경에서도 똑같지만 좀더 간단하게 단축키를 제공합니다.
+
+
+* 파이참, vscode, vs같은 idle의 주석 단축키  
+Window : CTRL + /  
+Mac OS : Command + /
+  
+*  파이썬 IDLE 주석 단축키  
+주석 생성 : ALT + 3  
+주석 제거 : ALT + 4
+
+주석 처리할 부분을 드래그하고 단축키 입력하면 끝!
+
+그리고 주석을 할때 들여쓰기를 통해서 줄맞춤을 해야한다고 하는데
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210799679-4e804125-ff0c-465a-92c8-ec3d6431fa6b.png)
+
+주피터 노트북 / 파이참에서는 # 한줄 주석은 문제가없지만
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210799705-f5bdd257-c2df-439a-97d0-48b938591436.png)
+
+여러줄 주석 처리를 하면 에러가 납니다.
+
+![img1 venv](https://user-images.githubusercontent.com/85277660/210799741-270191b5-be58-44c2-a33c-294ce61db5eb.png)
+
+들여쓰기를 하면 여러줄 주석도 문제가 없습니다.

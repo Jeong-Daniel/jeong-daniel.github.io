@@ -1,0 +1,144 @@
+---
+title: heapq 힙 파이썬 우선순위큐 알고리즘 사용방법
+date:   2022-08-19 18:33:11 +0900
+categories: [Languages, Python]
+tags: [python, coding, heapq]
+---
+
+[Deque를 이용한 스택, 큐 구현하기](https://jeong-daniel.github.io/posts/Deque%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-%EC%8A%A4%ED%83%9D,-%ED%81%90-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0/)
+
+지난번 파이썬 내장 함수인 deque를 이용해서 간단하게 스택과 큐처럼 사용하는 방법을 작성했습니다.
+
+이어서 코딩테스트에서 유용하게 사용할 수 있는 우선순위큐에 대해서 살펴보겠습니다.
+
+먼저 이를 위해서 힙이라는 개념도 알고 있으면 좋습니다.
+
+![progress heapq sort](https://user-images.githubusercontent.com/85277660/211029850-d373c52d-6cec-4548-84d6-3e780b476a98.png)
+
+힙 정렬이란 최대 힙 트리나 최소 힙 트리를 구성해 정렬을 하는 방법으로서, 내림차순 정렬을 위해서는 최소 힙을 구성하고 오름차순 정렬을 위해서는 최대 힙을 구성하면 됩니다.
+
+즉 우선순위 큐는 들어온 순서가 아닌 지정된 값을 기준으로 자동으로 정렬이 되는 큐이고
+
+이를 오름차순/내림차순기준으로 설정을 할때 힙으로 자동 설정이 가능합니다. 사용자는 어떤 것을 기준으로 사용할 것인지만 알려주면 알아서 정렬이 되고 이를 큐로 이용할 수 있습니다. 굉장히 유용하지요
+
+[https://docs.python.org/ko/3/library/heapq.html](https://docs.python.org/ko/3/library/heapq.html)
+
+> 힙은 모든 부모 노드가 자식보다 작거나 같은 값을 갖는 이진 트리입니다. 이 구현에서는 모든 k 에 대해heap[k] <= heap[2*k+1] 과 heap[k] <= heap[2*k+2]인 배열을 사용합니다, 요소는 0부터 셉니다. 비교를 위해, 존재하지 않는 요소는 무한으로 간주합니다. 힙의 흥미로운 특성은 가장 작은 요소가 항상 루트인 heap[0] 이라는 것입니다.
+
+힙은 위의 설명처럼 부모 노드가 자식보다 작거나(오름차순) 같은 이진트리입니다. 트리에서 pop이나 push가 일어날때마다 자동으로 계산을 해서 트리의 정렬을 맞추게 됩니다.
+
+heapq의 대표적인 연산은 아래 4가지로 힙에 넣거나 빼거나 아니면 넣고 동시에 빼거나 리스트를 힙으로 변경하는 등의 작동을 합니다.
+
+---
+
+heapq.heappush(heap, item)
+힙 불변성을 유지하면서, item 값을 heap으로 푸시합니다.
+
+heapq.heappop(heap)
+힙 불변성을 유지하면서, heap에서 가장 작은 항목을 팝하고 반환합니다. 힙이 비어 있으면, IndexError가 발생합니다. 팝 하지 않고 가장 작은 항목에 액세스하려면, heap[0]을 사용하십시오.
+
+heapq.heappushpop(heap, item)
+힙에 item을 푸시한 다음, heap에서 가장 작은 항목을 팝하고 반환합니다. 결합한 액션은 heappush()한 다음 heappop()을 별도로 호출하는 것보다 더 효율적으로 실행합니다.
+
+heapq.heapify(x)리스트 x를 선형 시간으로 제자리에서 힙으로 변환합니다.
+
+---
+
+힙을 만드는 두가지 방법이 있습니다.
+
+1. []로 초기화된 리스트를 사용하거나
+
+2. 함수 heapify()를 통해 값이 들어 있는 리스트를 힙으로 변환 할 수 있습니다.
+
+일단 리스트를 만들어서 heapify()로 변환을 해봅시다.
+
+```py
+list_example = [5,1,7,3,3,10,38,15,6]
+heapq.heapify(list_example)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211030142-8aa3353e-88ab-4dc0-87e0-460d1751fe65.png)
+
+정렬이 되었는데 우리가 생각한거랑은 사뭇 다릅니다. 다시 첫번째 사진을 보고 옵시다.
+
+1번은 루트노드이고 제일 작은 1이 오게 됩니다. 그러면 자식노드로 1보다 큰 3과 7이 내려오게 됩니다. 
+
+그리고 3보다 같거나큰 3과 5, 7보다 같거나큰 10과 38이 자식 노드로 있게 됩니다.
+
+그러면 1에서 -> 3, 7
+
+3에서 -> 3,5 가 되었습니다.
+
+그리고 각 노드는 왼쪽에서부터 순서대로 채워지기 때문에 마지막에 있는 3에 자식 노드로 6이 들어가게 됩니다.
+
+이런 규칙을 이용해서 자식노드와 부모 노드의 순서를 알 수 있으며 자동적으로 처음에 있는 1이 빠지게되면 다시 힙 정렬을 수행을 합니다. 그렇다면 한번 빼봅시다.
+
+```py
+heapq.heappop(list_example)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211030186-1a47e147-1279-48c6-ae21-e156eef75765.png)
+
+노드에서 1이 빠지게 되었고 그 자리를 3이 채워졌습니다. 그리고 뒤에 있는 숫자도 사뭇 달라진 것을 확인 할 수 있습니다.
+
+여기서 다시 작은 수를 하나 추가를 하면
+
+```py
+heapq.heappush(list_example,2)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211030216-b1842814-ca2c-41f5-9f13-2f3f6ee4e732.png)
+
+2가 맨처음에 오고 힙정렬이 다시 수행되었습니다! 간단하지요
+
+여기서는 하나의 단일 값에 대해서만 했는데 리스트역시 가능합니다.
+
+```py
+h = []
+heappush(h, (5, 'write code'))
+heappush(h, (7, 'release product'))
+heappush(h, (1, 'write spec'))
+heappush(h, (3, 'create tests'))
+print(heappop(h))
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211030257-5540243b-5e28-45ae-bef1-6874b4727db0.png)
+
+pop를 하니 1이 먼저 나오는군요
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211030285-3ceb5d72-0ee0-4d0d-9f60-cf259ad0b1aa.png)
+
+물론 넣기만 했을 뿐인데 첫번째를 기준으로 쭉 정렬이 이루어졌습니다.
+
+
+최대 힙 응용하기
+
+기본적으로 파이썬에서 제공하는 heap은 최소힙입니다. 이를 간단한 요령을 사용하면 최대 힙으로 바꿀 수 있는데 우선순위에 대한 내용을 튜플로 넣으면 됩니다. 바로 위의 내용을 응용한 것입니다.
+
+```py
+min_heap = []
+heapq.heappush(min_heap,1)
+heapq.heappush(min_heap,3)
+heapq.heappush(min_heap,5)
+heapq.heappush(min_heap,7)
+heapq.heappush(min_heap,9)
+min_heap
+```
+
+이렇게 되면 min_heap은 안봐도 1부터 9까지 차례대로 있겠지요
+
+```py
+max_heap = []
+heapq.heappush(max_heap,(-1,1))
+heapq.heappush(max_heap,(-3,3))
+heapq.heappush(max_heap,(-5,5))
+heapq.heappush(max_heap,(-7,7))
+heapq.heappush(max_heap,(-9,9))
+max_heap
+```
+
+값을 넣을때 우선순위를 표시하기 위해서 -가 들어 있는 값을 넣어 줍시다. 그러면 제일큰 수의 9는 우선순위가 -9가 되어서 먼저 오게 됩니다.
+
+![max_heapq](https://user-images.githubusercontent.com/85277660/211030459-5046168e-5140-4b75-a7ea-dbfb842a1cdf.png)
+
+그러면 이제 값을 받아서 사용할때 첫번째 우선순위는 버리고 사용하면 됩니다.

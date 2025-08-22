@@ -1,0 +1,142 @@
+---
+title: 빅분기 실기대비 이기적 13주차 작업형 1유형 문제풀이
+date:   2022-05-12 23:30:30 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [bigdata, data, python, pandas]
+---
+
+데이터 출처 :[https://www.kaggle.com/unsdsn/world-happiness](https://www.kaggle.com/unsdsn/world-happiness)
+(참고, 데이터 수정)
+데이터 설명 : 전세계 행복도 지표 조사
+data url = [https://raw.githubusercontent.com/Datamanim/datarepo/main/happy2/happiness.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/happy2/happiness.csv)
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210565015-00427897-4d16-4495-ac1f-63cab2df4773.png)
+
+```py
+import pandas as pd
+df =pd.read_csv('https://raw.githubusercontent.com/Datamanim/datarepo/main/happy2/happiness.csv',encoding='utf-8')
+```
+
+### Q1.  데이터는 2018년도와 2019년도의 전세계 행복 지수를 표현한다. 
+각년도의 행복랭킹 10위를 차지한 나라의 행복점수의 평균을 구하여라
+
+```py
+df[df['행복랭킹']==10]['점수'].mean()
+```
+행복랭킹에 조건을 걸고 점수 뽑아서 평균!
+
+
+### Q2. 데이터는 2018년도와 2019년도의 전세계 행복 지수를 표현한다. 
+각년도의 행복랭킹 50위이내의 나라들의 각각의 행복점수 평균을 데이터프레임으로 표시하라
+
+```py
+df[df.행복랭킹<=50][['년도','점수']].groupby('년도').mean()
+```
+결국 필요한 것은 행복랭킹 50이내(조건)에 해당하는 년도와 점수만 있으면 됩니다. 그리고 년도로 index를 삼으면 자연스럽게 점수가 남게되겠고 이를 평균내면 됩니다.
+
+
+### Q3. 2018년도 데이터들만 추출하여 행복점수와 부패에 대한 인식에 대한 상관계수를 구하여라
+```py
+df[df.년도==2018][['점수','부패에 대한인식']].corr()
+```
+18년도라는 조건을 걸어주고 행복점수와 부패 열만 가져와서 corr를 걸면 됩니다.
+
+
+### Q4. 2018년도와 2019년도의 행복랭킹이 변화하지 않은 나라명의 수를 구하여라
+```py
+len(df[['행복랭킹','나라명']]) - len(df[['행복랭킹','나라명']].drop_duplicates())
+```
+이거는 좀 재미있게 풀었네요, 저는 2018년도와 2019년도의 행복랭킹을 따로 구해서 쭉 비교할려고 했는데 여기서는 일단 행복랭킹과 나라명을 가져옵니다. 그리고 랭킹과 나라명이 똑같다면(18년도와 19년도가) 중복제거로 날려버립니다. 그러면 변하지 않은 나라는 사라지게 됩니다. 전체 - 중복제거를 하게 되면 변하지 않은 나라만 남게 됩니다.
+
+그런데 막상 적으려고하니 더 복잡해지네요... 이거는 이대로 이해하는게 좋겠습니다.
+
+```py
+df[['행복랭킹','나라명']].duplicated().sum()
+```
+저는 좀더 간단하게 행복랭킹이랑 나라명만 가져오고 중복확인(값 안바꿈)을 해서 sum으로 True인것을 다 더했습니다. 동일하게 15 나옵니다.
+
+
+### Q5. 2019년도 데이터들만 추출하여 각변수간 상관계수를 구하고 내림차순으로 
+정렬한 후 상위 5개를 데이터 프레임으로 출력하라
+컬럼명은 v1,v2,corr으로 표시하라
+
+```py
+temp = df[df.년도 ==2019].corr().unstack().to_frame().reset_index().dropna()
+```
+corr은 NxN형태로 모든 것을 보여줍니다. 이대로는 사용하기 어려우니 unstack()을 사용합니다. 기본값으로는 가장안쪽의 인덱스 값을 기존으로 해체를 한다음에 새로 구성합니다.
+
+[https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.unstack.html?highlight=unstack#pandas.DataFrame.unstack](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.unstack.html?highlight=unstack#pandas.DataFrame.unstack)
+
+```py
+temp[temp[0]!=1].sort_values(0,ascending=False).drop_duplicates(0)
+```
+여기서 temp[0]이라는 것은 첫번째가 아니라 컬럼 이름 입니다. 상관계수값이 들어 있는데 1이 나왔다는 것은 자기 자신과의 상관관계이니 당연히 1이지만 이는 필요없는 값이므로 제외하고 상관관계를 기준으로 정렬을 합니다. 마찬가지로 0의 값이 같다는 것은 순서만 다르지 결국 같은 값이니 날리게 됩니다.
+
+```py
+answer = result.head(5).reset_index(drop=True)
+answer.columns = ['v1','v2','corr']
+```
+상위 5개 값만 뽑아오고, columns를 재설정합니다.
+
+
+### Q6. 각 년도별 하위 행복점수의 하위 5개 국가의 평균 행복점수를 구하여라
+
+(이기적도 문제내기 귀찮은지 이상하게 쓰기 시작하네요 주어가 뭐고 목적어가 뭔지)
+
+```py
+df.groupby('년도').tail(5).groupby('년도').mean()[['점수']]
+```
+개인적으로 문제가 이상해서 넘어가도록 하겠습니다.
+
+ 
+### Q7.2019년 데이터를 추출하고  해당데이터의 상대 GDP 평균 이상의 나라들과
+
+평균 이하의 나라들의 행복점수 평균을 각각 구하고  그 차이값을 출력하라
+```py
+over = df[df.상대GDP >= df.상대GDP.mean()]['점수'].mean()
+under = df[df.상대GDP <= df.상대GDP.mean()]['점수'].mean()
+over - under
+```
+조건문과 .mean으로 쉽게 풀 수 있습니다.
+
+
+### Q8.  각년도의 부패에 대한인식을 내림차순 정렬했을때 상위 20개 국가의 부패에 대한인식의 평균을 구하여라
+
+```py
+df.sort_values(['년도','부패에 대한인식'],ascending=False).groupby('년도').head(20).groupby(['년도']).mean()[['부패에 대한인식']]
+```
+가독성은 엉망이지만 쭉 봅시다. 일단 년도와 부패에 대한 인식 기준을 거지고 정렬을 합니다. 아직 데이터를 뽑은 것은 아니니까 년도를 중심으로 뽑는데 다시 head(20)으로 상위 20개 국가를 재지정 한다음 다시 년도로 걸어줍시다.
+
+ 
+### Q9. 2018년도 행복랭킹 50위 이내에 포함됐다가 2019년 50위 밖으로 밀려난 국가의 숫자를 구하여라
+
+생각보다 쉽습니다. 2018년도의 50위 랭킹 국가를 뽑은 다음에 2019년도의 50위 랭킹 국가를 뽑습니다. 그런다음 set를 이용하셔서 차집합을 사용하시고 남은 국가의 숫자가 바로 밀려난 국가의 숫자와 동일합니다.
+
+```py
+result = set(df[(df.년도==2018) & (df.행복랭킹 <=50)].나라명)  -set(df[(df.년도==2019) & (df.행복랭킹 <=50)].나라명)
+len(result)
+```
+set는 집합으로 자동으로 중복을 제거한 값만 남기게 됩니다. 그리고 set(A) - set(B) 하게되면 A와 B의 중복된 값들이 A에서 자동으로 빠지게 됩니다. 사칙연산에서 뺄셈이랑 집합의 빼기는 조금 다릅니다. 원소 a는 있어도 원소 -a는 없지요
+
+[https://wikidocs.net/1015](https://wikidocs.net/1015)
+
+set 집합 자료형은 위 링크를 참고해주세요 생각해보니 set을 쓰면 문제를 편리하게 풀 수 있을 지도 모르겠네요
+
+ 
+### Q10. 2018년,2019년 모두 기록이 있는 나라들 중 년도별 행복점수가 가장 증가한 나라와 그 증가 수치는?
+
+```py
+count = df.나라명.value_counts()
+target = count[count>=2].index
+df2 =df.copy()
+multiple = df2[df2.나라명.isin(target)].reset_index(drop=True)
+multiple.loc[multiple['년도']==2018,'점수'] = multiple[multiple.년도 ==2018]['점수'].values * (-1)
+result = multiple.groupby('나라명').sum()['점수'].sort_values().to_frame().iloc[-1]
+```
+
+애초에 2018년도와 2019년도의 자료밖에 없기 때문에 세어보았을때 두개 이상인 나라의 index를 가져와서 계산을 수행했습니다.
+
+대충 이기적 카페의 작업형 1유형 문제를 모두 둘러보았습니다. 여유가 있었다면 Pandas 공식문서나 좀더 꼼꼼하게 봤을건데 졸업논문부터해서 일이 겹쳐서 2주 안되는 기간동안 벼락치기를 하는 중입니다. 개인적으로는 Groupby문제는 안나올거 같기는 한데 어디까지나 절대는 없기에 ㅋㅋ... 그래도 연도별 문제라던가 datatime을 다루는 문제는 나올 수도 있으니 함수 다루는거 정도만 익혀두시면 도움이 도움이 될거 같습니다. sort_vlaue, sort_index, value_counts, count, 등 개수를 카운트하거나 정렬 하는 것들 ascending 사용 여부와 인덱스 반환, 컬럼값 반환등 부족하다 싶은거 위주로 꼼꼼하게 더 살펴보시면 도움이 될거 같습니다. 그리고 음.. 요구하는 조건에 해당하는 데이터만 가져오는데 성공하셔도 아마 절반은 풀수 있지 않을까 합니다.
+
+아마 오늘 8~9시 쯤에 제 2유형 문제 푸는거 다시 한번 쭉 정리하는 포스팅이 빅분기 실기 대비 마지막 포스팅일거 같습니다. 평소에 관리 안하고 방치해서 블로그 방문자가 10명이하였는데 빅분기 실기를 쓰기 시작한 지난주 부터 블로그 방문자가 100명내외로 껑충 뛰네요 모두들 내일 시험 잘치시길 바랍니다.

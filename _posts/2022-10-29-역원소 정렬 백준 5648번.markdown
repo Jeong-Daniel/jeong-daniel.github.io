@@ -1,0 +1,40 @@
+---
+title: 역원소 정렬 백준 5648번
+date:   2022-10-29 17:17:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, sorting]
+---
+
+[https://www.acmicpc.net/problem/5648](https://www.acmicpc.net/problem/5648)
+
+문제
+모든 원소가 양의 정수인 집합이 있을 때, 원소를 거꾸로 뒤집고 그 원소를 오름차순으로 정렬하는 프로그램을 작성하세요.
+
+단, 원소를 뒤집었을 때 0이 앞에 선행되는 경우는 0을 생략해야합니다.
+
+쪼끔 번거롭기는한데 쉽게 풀 수는 있습니다.
+
+그리고 맨 처음에 나오는 숫자는 전체 숫자의 개수입니다. 문제를 대충보고 10은 왜 반환을 안하지 이러고 있었네요 이게 없으면 종료조건이 없는건데 ㅋㅋ....
+
+```py
+num_list = list(map(int,input().split()))
+num = num_list[0]
+answer = num_list[1:]
+while len(answer)!=num:
+    answer+=list(map(int,input().split()))
+```
+
+처음에 리스트를 받으면 반복하는 숫자의 개수와 나머지를 분리하고 쭉 넣어줍니다.
+
+그러다가 리스트의 길이가 주어진 값에 도달하면 반환
+
+```py
+final = []
+for i in range(num):
+    final.append(int(str(answer[i])[::-1]))
+final.sort()
+for j in range(num):
+    print(final[j])
+```
+
+쭉 뒤집어서 넣어주고 정렬한다음에 다시 쭉 출력하면 됩니다.

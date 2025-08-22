@@ -1,0 +1,63 @@
+---
+title: 가장 큰 증가 부분 수열 백준 11055번 DP
+date:   2022-11-03 17:16:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, dp, dynamic]
+---
+
+[https://www.acmicpc.net/problem/11055](https://www.acmicpc.net/problem/11055)
+
+문제
+수열 A가 주어졌을 때, 그 수열의 증가 부분 수열 중에서 합이 가장 큰 것을 구하는 프로그램을 작성하시오.
+
+예를 들어, 수열 A = {1, 100, 2, 50, 60, 3, 5, 6, 7, 8} 인 경우에 합이 가장 큰 증가 부분 수열은 A = {1, 100, 2, 50, 60, 3, 5, 6, 7, 8} 이고, 합은 113이다.
+
+[연속합 백준 1912번 DP](https://jeong-daniel.github.io/posts/%EA%B0%80%EC%9E%A5-%ED%81%B0-%EC%A6%9D%EA%B0%80-%EB%B6%80%EB%B6%84-%EC%88%98%EC%97%B4-%EB%B0%B1%EC%A4%80-11055%EB%B2%88-DP/)
+
+바로 앞에서 연속합을 풀었기에 문제의 접근/풀이 방법도 유사하겠다는 생각을 해볼 수 있습니다.
+
+그러면 전과 마찬가지로 두개의 테이블을 넣고 아래와 같이 값을 채워넣은다음 제일 큰 값을 출력하면 되겠다는 생각이 듭니다. 
+
+|1|100|2|50|60|3|5|6|7|8|
+| :- | :- | :- | :- | :- | :- | :- | :- | :- | :- |
+|1|101|3|53|113|6|11|17|24|32|
+
+생각을 해보면 100에서 2, 60에서 3 뒤에 나오는 숫자가 더 작아지는 지점이 발생하고
+
+먼저 나온 것을 중심으로 2보다 작은 것은 1, 3보다 작은 것은 2라는 생각이 떠오릅니다. 그리고 이는 인덱스로 쉽게 접근할 수도 있습니다.
+
+```py
+import copy
+num = int(input())
+num_list = list(map(int,input().split()))
+dp = copy.deepcopy(num_list)
+for i in range(1,num):
+    if num_list[i]<num_list[i-1]:
+        temp = i-2
+        while temp!=-1:
+            if num_list[i]>num_list[temp]:
+                dp[i] = dp[temp]+num_list[i]
+                break
+            temp-=1
+    else:
+        dp[i] = dp[i-1]+num_list[i]
+print(max(dp))
+```
+
+제가 접근한 방법은 만약 보다 작은 수가 나오면 거기서 1을 빼면서 조건에 맞는수가 나올때까지 확인하는 방법이었습니다. 테스트케이스는 통과하였지만 오답으로 나옵니다.
+
+```py
+import copy
+num = int(input())
+num_list = list(map(int,input().split()))
+dp = copy.deepcopy(num_list)
+for i in range(num):
+    for j in range(i):
+        if num_list[j] < num_list[i]:
+            dp[i] = max(dp[i], dp[j]+num_list[i])
+print(max(dp))
+```
+
+i부터 num까지, 0부터 i까지 이중for문을 돌면서 조건에 맞을 경우만 dp를 갱신해줍니다.
+
+이렇게보니 모든 경우를 볼 수가 있겠네요

@@ -1,0 +1,35 @@
+---
+title: N과 M (3) 백준 15651번 백트래킹
+date:   2022-10-25 10:15:20 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, backtracking]
+---
+
+[https://www.acmicpc.net/problem/15651](https://www.acmicpc.net/problem/15651)
+
+문제
+자연수 N과 M이 주어졌을 때, 아래 조건을 만족하는 길이가 M인 수열을 모두 구하는 프로그램을 작성하시오.
+
+1부터 N까지 자연수 중에서 M개를 고른 수열
+같은 수를 여러 번 골라도 된다.
+
+```py
+n,m = map(int,input().split())
+arr = [0]*m
+isused = [False]*(n+1)
+def func(k):
+    if k==m:
+        for i in range(m):
+            print(arr[i], end=' ')
+        print()
+        return
+    for j in range(1,n+1):
+        if not isused[j]:
+            arr[k] = j
+            func(k+1)
+func(0)
+```
+
+복붙 1초컷... 이전과는 달리 그냥 중복체크를 안하면 됩니다. 복붙한다고 isused도 같이 딸려왔는데 이거는 사실상 아무일도 안하지 지워도 됩니다.
+
+아니면 파이썬 permutation 조합같은 라이브러리를 사용하셔도 될거기는한데 세세한 조건을 따져야한다면 그냥 DFS, 재귀로 푸는게 나을 겁니다.

@@ -1,0 +1,49 @@
+---
+title: 타겟 넘버 프로그래머스
+date:   2022-09-01 11:39:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/43165](https://school.programmers.co.kr/learn/courses/30/lessons/43165)
+
+보자마자 이 문제가 떠올랐다.
+
+[연산자 끼워 넣기 백준 14888번 BFS DFS](https://jeong-daniel.github.io/posts/%EC%97%B0%EC%82%B0%EC%9E%90-%EB%81%BC%EC%9B%8C-%EB%84%A3%EA%B8%B0-%EB%B0%B1%EC%A4%80-14888%EB%B2%88-BFS-DFS/)
+
+```py
+#깊이 우선 탐색(DFS) 매서드
+count = 0
+def dfs(i, now):
+    global count
+    if i == len(numbers):
+        if now == target:
+            count += 1
+    else:
+        dfs(i+1, now+numbers[i])
+        dfs(i+1, now-numbers[i])
+dfs(0, 0)
+```
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211156785-5dd3c469-8eee-457e-ac2a-85cd8429beca.png)
+
+평소에는 주로 주피터노트북에다가 인터프리터로 바로 받아 본다고 이러는데
+
+실제 다른 환경하고는 조금 차지가 있는거 같아서 에러가 났다. 백준환경에서 global을 사용했을때와 똑같이 했는데 프로그래머스에서는 계속 에러가나서.... 로직은 맞는데 어디서 문제가 있는지 파악을 못했다.
+
+```py
+def solution(numbers, target):
+    answer = DFS(numbers, target, 0)
+    return answer
+
+def DFS(numbers, target, depth):
+    answer = 0
+    if depth == len(numbers):
+        if sum(numbers) == target:
+            return 1
+        else: return 0
+    else:
+        answer += DFS(numbers, target, depth+1)
+        numbers[depth] *= -1
+        answer += DFS(numbers, target, depth+1)
+        return answer
+```

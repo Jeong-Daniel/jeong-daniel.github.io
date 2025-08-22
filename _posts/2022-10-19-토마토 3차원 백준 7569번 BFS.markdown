@@ -1,0 +1,73 @@
+---
+title: 토마토 3차원 백준 7569번 BFS
+date:   2022-10-19 20:08:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, bfs]
+---
+
+[https://www.acmicpc.net/problem/7569](https://www.acmicpc.net/problem/7569)
+
+문제
+
+철수의 토마토 농장에서는 토마토를 보관하는 큰 창고를 가지고 있다. 토마토는 아래의 그림과 같이 격자모양 상자의 칸에 하나씩 넣은 다음, 상자들을 수직으로 쌓아 올려서 창고에 보관한다.  
+
+![tomato](https://user-images.githubusercontent.com/85277660/211186198-6c2e1655-1765-4a72-811b-0c11ece847eb.jpg)
+
+창고에 보관되는 토마토들 중에는 잘 익은 것도 있지만, 아직 익지 않은 토마토들도 있을 수 있다. 보관 후 하루가 지나면, 익은 토마토들의 인접한 곳에 있는 익지 않은 토마토들은 익은 토마토의 영향을 받아 익게 된다. 하나의 토마토에 인접한 곳은 위, 아래, 왼쪽, 오른쪽, 앞, 뒤 여섯 방향에 있는 토마토를 의미한다. 대각선 방향에 있는 토마토들에게는 영향을 주지 못하며, 토마토가 혼자 저절로 익는 경우는 없다고 가정한다. 철수는 창고에 보관된 토마토들이 며칠이 지나면 다 익게 되는지 그 최소 일수를 알고 싶어 한다.  
+
+토마토를 창고에 보관하는 격자모양의 상자들의 크기와 익은 토마토들과 익지 않은 토마토들의 정보가 주어졌을 때, 며칠이 지나면 토마토들이 모두 익는지, 그 최소 일수를 구하는 프로그램을 작성하라. 단, 상자의 일부 칸에는 토마토가 들어있지 않을 수도 있다.
+
+---
+
+[토마토 백준 7576번 BFS](https://jeong-daniel.github.io/posts/%ED%86%A0%EB%A7%88%ED%86%A0-%EB%B0%B1%EC%A4%80-7576%EB%B2%88-BFS/)
+
+지난번 토마토는 2차원이었는데 이제는 3차원 토마토가 나왔습니다. 그래도 크게 달라진 것은 없습니다. x,y에서 z가 추가된 것뿐입니다.
+
+```py
+from collections import deque
+queue = deque()
+x,y,z = map(int,input().split())
+vist = [[[0 for col in range(x)] for row in range(y)] for depth in range(z)]
+map_list = []
+for i in range(z):
+    map_list_c = []
+    for j in range(y):
+        temp = list(map(int,input().split()))
+        map_list_c.append(temp)
+        for k in range(x):
+            if temp[k]==1:
+                queue.append([i,j,k])
+            elif temp[k]==0:
+                vist[i][j][k] = -1
+    map_list.append(map_list_c)
+
+dx = [1,-1,0,0,0,0]
+dy = [0,0,1,-1,0,0]
+dz = [0,0,0,0,1,-1]
+max_num = 0
+clear = True
+while queue:
+    curr = queue.popleft()
+    for n in range(6):
+        nz = curr[0] + dz[n]
+        ny = curr[1] + dy[n]
+        nx = curr[2] + dx[n]
+        if nx>=x or x<0 or ny>=y or y<0 or nz>=z or z<0:
+            continue
+        if vist[nz][ny][nx]>=0:
+            continue
+        vist[nz][ny][nx] = vist[curr[0]][curr[1]][curr[2]]+1
+        queue.append([nz,ny,nx])
+        max_num = max(max_num, vist[nz][ny][nx])
+
+for i in range(z):
+    for j in range(y):
+        if -1 in vist[i][j]:
+            clear=False
+            print(-1)
+            break
+if clear:
+    print(max_num)
+```
+
+테스트케이스에서는 문제가 안보이고 코드도 뭐가 잘못됬는지 모르겠는데 틀렸습니다가 나오네요 나중에 다시 고민해보고 돌아와야겠습니다.

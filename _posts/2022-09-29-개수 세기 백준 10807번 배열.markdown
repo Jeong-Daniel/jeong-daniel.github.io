@@ -1,0 +1,29 @@
+---
+title: 개수 세기 백준 10807번 배열
+date:   2022-09-29 12:30:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, array]
+---
+
+[https://www.acmicpc.net/problem/10807](https://www.acmicpc.net/problem/10807)
+
+문제
+총 N개의 정수가 주어졌을 때, 정수 v가 몇 개인지 구하는 프로그램을 작성하시오.
+
+입력
+첫째 줄에 정수의 개수 N(1 ≤ N ≤ 100)이 주어진다. 둘째 줄에는 정수가 공백으로 구분되어져있다. 셋째 줄에는 찾으려고 하는 정수 v가 주어진다. 입력으로 주어지는 정수와 v는 -100보다 크거나 같으며, 100보다 작거나 같다.
+
+이전 문제와 똑같이 배열로 풀면 되는데 이번 문제는 범위도 딱 -100~100으로 정해져있습니다. 다만 인덱스로 접근할때 음수는 없으니 100을 더해주는 걸로 합시다.
+
+다만 -100~100의 인덱스 개수는 200이 아니고 201이라는 것
+
+```py
+num = int(input())
+num_list = list(map(int,input().split()))
+target = int(input())
+
+check_list = [0]*200+1
+for idx,number in enumerate(num_list):
+    check_list[number+100]+=1
+print(check_list[target+100])
+```

@@ -1,0 +1,161 @@
+---
+title: 2048 (Easy) 백준 12100번 BFS 시뮬레이션
+date:   2022-08-28 15:49:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, graph, simulation]
+---
+
+[https://www.acmicpc.net/problem/12100](https://www.acmicpc.net/problem/12100)
+
+> 문제
+> 2048 게임은 4×4 크기의 보드에서 혼자 즐기는 재미있는 게임이다. 이 링크를 누르면 게임을 해볼 수 있다.
+> 
+> 이 게임에서 한 번의 이동은 보드 위에 있는 전체 블록을 상하좌우 네 방향 중 하나로 이동시키는 것이다. 이때, 같은 값을 갖는 두 블록이 충돌하면 두 블록은 하나로 합쳐지게 된다. 한 번의 이동에서 이미 합쳐진 블록은 또 다른 블록과 다시 합쳐질 수 없다. (실제 게임에서는 이동을 한 번 할 때마다 블록이 추가되지만, 이 문제에서 블록이 추가되는 경우는 없다)
+
+---
+
+해당 문제 같은 경우에 5번 이동 할 수있다고 제약 조건이 있습니다. 그러면 각 방향으로 이동하는 모든 경우의수는 4x4x4x4x4 = 1024로 여기서 대게 이동할때마다 숫자가 줄어들지는 않습니다. 늘어나거나 그대로이기 때문에 마지막 5번째에서만 찾아보거나 아니면 각 경우의 수에 대해서 최대 값을 기억하고 있으면 결국 어떤 하나의 값을 구할 수 있을 것입니다.
+
+4가지 방향을 하나의 함수로 구현하기보다 따로 구현하는 편이 훨씬 쉽게 문제를 풀 수 있을 듯합니다.
+
+마찬가지로 이것도 BFS 재귀 함수로 문제를 푸는 방법이 적절 할 듯 합니다.
+
+```py
+n = int(input())
+map_list = []
+for i in range(n):
+    map_list.append(list(map(int,input().split())))
+    
+direction = ['l', 'u', 'r', 'd']
+```
+
+먼저 지도를 입력받고 움직일 수 있는 4방향을 정의를 합시다.
+
+```py
+def max_element(matrix):
+    result = 0
+    for rows in matrix:
+        rows.append(result)
+        result = max(rows)
+    return result
+```
+
+전체 리스트(맵)에서 가장 큰 수를 도출 하는 함수를 하나 정의 했습니다.
+
+```py
+def move_left(mat):
+    result = []
+    for rows in mat:
+        new_row = []
+        temp = 0
+        for num in rows:
+            if num == 0: continue
+            if temp == num:
+                new_row[-1] *= 2
+                temp = 0
+            else:
+                new_row.append(num)
+                temp = num
+        new_row += [0] * (len(rows) - len(new_row))
+        result.append(new_row)
+
+    return result
+```
+
+왼쪽으로 지도를 이동 시켰을때입니다. 빈리스트를 만들고 첫번째 for문은 한 row 단위로 수행을 하게되고 안에 있는 for문은 row에 있는 각 원소에 대해서 동작을 수행합니다. 일단 비어 있는 리스트를 만들고 만약 해당하는 원소가 0이라면 아무 동작도 하지 않고 그대로 넘어갑니다.
+
+여기서 if문과 else는 총 3가지로 나누어져있는데 총 3가지 경우의 수를 계산하면 됩니다.
+
+들어오눈 숫자가 0이거나 이전과 같거나(합쳐야하거나) 또는 다르거나
+
+일단 [2,2,2] 라는 첫번째 리스트가 들어간다고 가정을 해봅시다. 그리고 temp는 0으로 초기화 되어 있는 상황에서 첫번쩨 2가 들어와봐야 0은 아니고 0과도 다르니 마지막 else로 가게 됩니다. 다른 상황이니 이는 새롱s now_row에 넣고 temp는 2로 갱신을 해줍시다. 그러면 두번째 2의 경우 temp == num과 성립을 합니다.
+
+그러면 마지막으로 들어온 num(num_row(-1))을 2를 곱한 값을 넣어주고 다시 temp는 0으로 초기화를 합시다.
+
+또 초기화를 하는 이유는 예시로 설명을 해보겠습니다.
+
+[2,2,4] 일때 두번째 for문이 돌고나면 [4,4]이 됩니다. 하지만 이때 4,4는 서로 합쳐지지 않습니다. 하지만 초기화를 하지 않으면 합쳐지기 때문에 이를 막기 위해서 다시 temp를 초기화합니다.
+
+```py
+from collections import deque
+def move_left(mat):
+    result = []
+    for i in range(len(mat)):
+        q = deque(mat[i])
+        now = q.popleft()
+        stack_list = []
+        stack_list.append(now)
+        while q:
+            curr = q.popleft()
+            if now != curr:
+                stack_list.append(curr)
+                now = curr
+            else:
+                now = stack_list.pop()*2
+                stack_list.append(now)        
+        num = len(mat[i]) - len(stack_list)
+        num_zero = [0]*num
+        stack_list += num_zero
+        result.append(stack_list)
+    return result
+```
+
+저 같은 경우는 조금 난잡할 수 있는데 큐와 스택을 사용했습니다. 현재 숫자와 들어간 숫자를 비교하고 같다면 pop을 해서 2를 곱한다음 다시 집어넣고 아니라면 넘어가는 식으로
+
+계속해서 봅시다.
+
+```py
+def move_up(mat):
+    result = move_left(list(map(list, zip(*mat))))
+    return list(map(list, zip(*result)))
+```
+up은 어떻게 하나하고 고민을 했는데... 역시 제가 다른 언어보다도 파이썬을 선택한 이유는 이런곳에 있는거 같습니다. zip로 간단하게 해결을 하는군요 zip같은 경우에는 따로 게시글을 하나 작성할 계획이지만 일단 여기서 간단하게 살펴보면
+
+zip함수는 인자를 묶어서 반환을 해주는데 여기서 묶어 준다는 것은 다음과 같은 의미가 있습니다.
+
+```py
+x = [1,2,3]
+y = [4,5,6]
+z = [7,8,9]
+
+print(list(zip(x,y)))
+print(list(zip(x,y,z)))
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211150041-0e72f08e-44ec-4b94-b7ea-d3ed645a452f.png)
+
+이렇게 두개 또는 여러개의 인자를 하나씩 묶어서 반환을 해줍니다. 2차원 행렬의 경우
+
+```py
+print(list(zip(map_list)))
+print(list(zip(*map_list)))
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211150050-2a76ea78-5164-4161-945d-fa163d0a72ba.png)
+
+그냥 할경우 하나의 리스트를 하나의 공간에 담아버리는데 * 표시를 붙여주면 대칭변환(symmetric transformation)을 시킨 값을 묶어서 위 처럼 반환 받을 수 있습니다.
+
+이제 이거를 move_left에 넣어버리고 다시 돌려버리면 됩니다.
+
+나머지 오른쪽의 경우 reverse로 역순으로 뒤집어서 실행하면 되고
+
+down역시 마찬가지로 move_right에다가 zip를 사용하면 됩니다.
+
+```py
+def dfs(board, n):
+    global answer
+    if n == 5:
+        answer = max(answer, max_element(board))
+        return
+
+    else:
+        dfs(move_left(board), n+1)
+        dfs(move_right(board), n+1)
+        dfs(move_up(board), n+1)
+        dfs(move_down(board), n+1)
+
+answer = 0
+dfs(original_board, 0)
+print(answer)
+```
+마지막으로 재귀함수로 마무리를 하면 됩니다. 이때 answer의 경우 함수 밖에서 사용하니 global로 전역을 선언을 해줍시다.

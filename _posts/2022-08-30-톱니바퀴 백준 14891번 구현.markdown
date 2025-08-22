@@ -1,0 +1,99 @@
+---
+title: 톱니바퀴 백준 14891번 구현
+date:   2022-08-30 14:36:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, implemnets]
+---
+
+[https://www.acmicpc.net/problem/14891](https://www.acmicpc.net/problem/14891)
+
+문제
+총 8개의 톱니를 가지고 있는 톱니바퀴 4개가 아래 그림과 같이 일렬로 놓여져 있다. 또, 톱니는 N극 또는 S극 중 하나를 나타내고 있다. 톱니바퀴에는 번호가 매겨져 있는데, 가장 왼쪽 톱니바퀴가 1번, 그 오른쪽은 2번, 그 오른쪽은 3번, 가장 오른쪽 톱니바퀴는 4번이다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211152028-6ec60172-d427-4e2d-941d-08a6ce84967b.png)
+
+이때, 톱니바퀴를 총 K번 회전시키려고 한다. 톱니바퀴의 회전은 한 칸을 기준으로 한다. 회전은 시계 방향과 반시계 방향이 있고, 아래 그림과 같이 회전한다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211152038-1d2e8b39-d093-42d3-8329-2e1824f1fee5.png)
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211152050-6b5ac927-3ed1-424f-9a21-6a5c35d7afff.png)
+
+톱니바퀴를 회전시키려면, 회전시킬 톱니바퀴와 회전시킬 방향을 결정해야 한다. 톱니바퀴가 회전할 때, 서로 맞닿은 극에 따라서 옆에 있는 톱니바퀴를 회전시킬 수도 있고, 회전시키지 않을 수도 있다. 톱니바퀴 A를 회전할 때, 그 옆에 있는 톱니바퀴 B와 서로 맞닿은 톱니의 극이 다르다면, B는 A가 회전한 방향과 반대방향으로 회전하게 된다. 예를 들어, 아래와 같은 경우를 살펴보자.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211152053-0ebbd4d6-650f-437d-8fb9-4f9135c7ec24.png)
+
+두 톱니바퀴의 맞닿은 부분은 초록색 점선으로 묶여있는 부분이다. 여기서, 3번 톱니바퀴를 반시계 방향으로 회전했다면, 4번 톱니바퀴는 시계 방향으로 회전하게 된다. 2번 톱니바퀴는 맞닿은 부분이 S극으로 서로 같기 때문에, 회전하지 않게 되고, 1번 톱니바퀴는 2번이 회전하지 않았기 때문에, 회전하지 않게 된다. 따라서, 아래 그림과 같은 모양을 만들게 된다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211152058-c29a6d61-8d84-47f7-8935-cdd41d493a9e.png)
+
+위와 같은 상태에서 1번 톱니바퀴를 시계 방향으로 회전시키면, 2번 톱니바퀴가 반시계 방향으로 회전하게 되고, 2번이 회전하기 때문에, 3번도 동시에 시계 방향으로 회전하게 된다. 4번은 3번이 회전하지만, 맞닿은 극이 같기 때문에 회전하지 않는다. 따라서, 아래와 같은 상태가 된다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211152067-19f586a7-e352-4843-bf92-328e8f577506.png)
+
+톱니바퀴의 초기 상태와 톱니바퀴를 회전시킨 방법이 주어졌을 때, 최종 톱니바퀴의 상태를 구하는 프로그램을 작성하시오.
+
+먼저드는 생각은 함수가 두가지가 필요 할거 같습니다. 하나는 조건에 따라서 톱니바퀴를 회전시키는 함수와 이후 다시 한번 조정하는 함수 이렇게 잘 '구현'하면 될거 같네요
+
+```py
+from collections import deque
+wheels = []
+for i in range(4):
+    wheel = deque(list(input()))
+    wheels.append(wheel)
+
+n = int(input())
+for _ in range(n):
+    a,b = map(int,input().split())
+    check(a-1,b)
+```
+
+먼저 요구한것을 따라서 필요한 입력을 받읍시다.
+
+그런데 각 톱니바퀴는 회전이라는 동작을 하는데 이는 맨 앞 뒤의 요소를 특정 방향으로 이동하는 식으로 이루어집니다. 예를 들어서 12시 방향이 0번이라고 했으니 시계방향 회전이라면 마지막에 있는 요소를 빼서 첫번째에 넣어주면 되고 반대로 반시계방향이라면 마지막을 빼서 첫번째로 넣어주면 되는데 이 과정은 popleft나 appendleft을 이용하면 간단하게 사용 할 수 있습니다.
+
+
+그리고 톱니바퀴의 이동은 순차적으로 이루어지니 들어올때마다 돌려줍시다. 그러면 두 함수를 봅시다.
+
+```py
+def rotate(number,direct):
+    if int(direct)==1:
+        wheels[number].appendleft(wheels[number].pop())
+    else:
+        wheels[number].append(wheels[number].popleft())
+회전하는 함수 입니다. 시계방항과 반시계방향으로 돌아갈때 wheels의 배열이 동작을 합니다.
+
+def check(w,d): 
+    is_rotate = [False for _ in range(4)]
+    is_rotate[w] = True
+    #휠의 왼쪽 탐색
+    for i in range(w-1,-1,-1):
+        if wheels[i][2] != wheels[i+1][-2]:
+            is_rotate[i] = True
+        else:
+            break
+    #휠의 오른쪽 탐색
+    for i in range(w+1,4):
+        if wheels[i][-2] != wheels[i-1][2]:
+            is_rotate[i] = True
+        else:
+            break
+
+    for i in range(4):
+        if is_rotate[i] and (w-i)%2 == 0:
+            rotate(i,d)
+        elif is_rotate[i] and (w-i)%2 == 1:
+            rotate(i,d)
+```
+
+우리는 지금부터 두가지 조건을 사용해야 하는데 첫번째는 휠에서 가까운 순서로 움직이게 되고 한번 움직인 휠은 더는 안움직이게 됩니다.
+
+그래서 휠이 움직였는지 체크하기 위해서 isrotate라는 True/False 값을 담고 있는 배열을 만들며 아직 모든 휠은 움직이지 않았으니 False로 초기화를 합니다. 그러나 시작하는 시점의 휠은 움직이게되니 True로 넣어줍시다.
+
+그리고 휠의 왼쪽/오른쪽을 탐색하는데 (어느쪽을 먼저 탐색할지는 상관없습니다) 여기서는 왼쪽부터 탐색하니 한번 봅시다. w-1부터 그러니까 휠의 왼쪽부터 마지막까지 -1 스텝으로 움직이게 됩니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211152090-038e00b6-e277-491b-bbee-73aa5cd66d90.png)
+
+예시코드 입니다. 3부터 0까지 가는 것을 볼 수 있고 이는 휠도 마찬가지입니다. 이렇게 휠을 비교를 하고 (왼쪽에 있는 휠과 오른쪽에 있는 비교하는 인덱스 위치를 고려해서) 회전을 하고 이는 오른쪽에 놓여진 휠도 마찬가지입니다.
+
+
+마지막 조건으로 휠의 방향을 결정합니다. 휠과 붙어 있다면 다른 방향으로 한칸 떨어져있다면 같은 방향으로 움직이게 됩니다.

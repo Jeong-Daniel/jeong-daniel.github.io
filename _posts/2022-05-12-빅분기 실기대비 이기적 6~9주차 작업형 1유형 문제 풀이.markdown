@@ -1,0 +1,271 @@
+---
+title: 빅분기 실기대비 이기적 6~9주차 작업형 1유형 문제 풀이
+date:   2022-05-12 16:30:30 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [bigdata, data, python, pandas]
+---
+
+## 6주차 작업형 1유형
+
+데이터 출처 :[https://www.kaggle.com/uciml/red-wine-quality-cortez-et-al-2009](https://www.kaggle.com/uciml/red-wine-quality-cortez-et-al-2009(참고, 데이터 수정)
+
+데이터 설명 : 레드 와인 퀄리티 예측문제
+
+Data url :[https://raw.githubusercontent.com/Datamanim/datarepo/main/redwine/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/redwine/train.csv)
+
+​
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210371283-c8c9eb57-3167-4e77-8185-7c681d191d64.png)
+
+
+### Q1. quality 값이 3인 그룹과  8인 데이터그룹의 각 컬럼별 독립변수의 표준편차 값의 차이를 구할때  가장 큰 컬럼을 구하여라
+
+문제를 풀면 풀수록 느끼는건데 뭔가 문제를 위한 문제 같네요, 일단 무슨 말인지 한눈에 안들어오는데... 해봅시다.
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/redwine/train.csv")
+df.loc[df.quality==8].std()
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210371339-11cf4e12-f46e-41c8-8881-0ce84ee7ead6.png)
+
+loc와 조건을 주고 거기에다가 std를 걸어버리면 각 변수의 표준편차를 일괄적으로 구할 수 있습니다. 그렇다면 여기에다가 빼기를 하면 각 표준편차의 차가 그대로 나오겠네요
+
+```py
+df.loc[df.quality==8].std()-df.loc[df.quality==3].std()
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210371371-a7d52be2-d99f-46cf-965f-36c37f7e9f33.png)
+
+하지만 우리는 제일 큰 차이를 보고 싶습니다. sort_value를 가지고 정렬을 해봅시다.
+
+```py
+(df.loc[df.quality==8].std()-df.loc[df.quality==3].std()).sort_values()
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210371414-d74a6232-6414-4d1d-9776-7ee18d1ad1f1.png)
+
+여기서 제일큰 마지막을 불러와도 되지만 인덱스 슬라이싱을 통해서 불러줍시다.
+
+```py
+(df.loc[df.quality==8].std()-df.loc[df.quality==3].std()).sort_values().index[-1]
+```
+
+인덱스에서 -1은 마지막을 뜻합니다. 또는 sort_value에다가 ascending=False를 넣어준다면 내림차순으로 정리가 되고 인덱스는 0번으로 반환하는 것도 가능합니다. 작업형 2유형은 데이터 전처리하고 불러오고 저장하는게 반복적이라서 1유형만 쭉 살펴봅시다.
+
+---
+
+## 7주차 작업형 1유형
+
+데이터 출처 :[https://www.kaggle.com/prathamtripathi/drug-classification](https://www.kaggle.com/prathamtripathi/drug-classification(참고, 데이터 수정)
+
+데이터 설명 : 투약하는 약을 분류
+
+Data url :[https://raw.githubusercontent.com/Datamanim/datarepo/main/drug/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/drug/train.csv)
+
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210371511-8b4adefe-7b2a-490b-a1eb-2bd4c0ff5d09.png)
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/drug/train.csv")
+```
+### Q1. 남성들의 연령대별 (10살씩 구분 0~9세 10~19세 ...) Na_to_K값의 평균값을 구해서 데이터 프레임으로 표현하여라
+
+한가지씩 해봅시다. 일단 남성열을 뽑아 봅시다.
+
+```py
+New_df = df[df['Sex']=='M']
+```
+그리고 Age를 10살씩 구문하라고 합니다. 어떤 값을 10으로 나눈 몫을 구한다음에 거기에다가 10을 곱해준 새로운 featrue를 만들어 줍시다. 파이썬에서 몫은 "//" 나머지는 "%" 입니다. "/" 는 나누는 것
+
+```py
+New_df['Age_new'] = (New_df.Age//10*10)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210371629-bd689b39-9f6d-43cc-89bf-b42e353ef48e.png)
+
+에러가 뜨기는 하는데 일단 진행해보겠습니다. Age_new에서 새로운 항목이 생성되었습니다.
+
+이제 남은 것은 "연령대별 Na_to_K값의 평균값"입니다. 연령대별이라고 했으니 일단 groupby로 묶어야 겠네요
+
+```py
+New_df.groupby('Age_new').mean()
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210371677-22489527-5a79-4064-86ed-68f119a27cbd.png)
+
+Age_new로 묶으니 이렇게 새로운 각 평균이 나왔습니다. 여기서 우리에게 필요한 Na_to_K 값만 가져오면 됩니다.
+
+하지만 값을 불러오면 데이터 프레임이 아니라 시리즈로 반환을 합니다.
+
+```py
+pd.DataFrame(New_df.groupby('Age_new').mean()['Na_to_K'])
+New_df.groupby('Age_new').mean()['Na_to_K'].to_frame()
+```
+이 둘중에 어느 것을 사용하셔도 결과는 똑같이 나옵니다. 편한 것을 사용하시면 됩니다.
+
+---
+데이터 출처 :[https://www.kaggle.com/sid321axn/audit-data](https://www.kaggle.com/sid321axn/audit-data(참고, 데이터 수정)
+
+데이터 설명 : 사기회사 분류
+
+Data url :[https://raw.githubusercontent.com/Datamanim/datarepo/main/audit/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/audit/train.csv)
+
+​데이터 상위 5개 컬럼
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/audit/train.csv")
+```
+
+### Q1. 데이터의 Risk 값에 따른 score_a와 score_b의 평균값을 구하여라
+
+리스크로 묶은(groupby) 다음에 평균을 내고 score_a와 score_b를 구하면 되겠네요
+
+```py
+df.groupby('Risk').mean()[['Score_A','Score_B']]
+```
+
+주의하실 것은 대괄호가 한개가 아니라 두개가 들어 갑니다. 밖에 있는 대괄호는 프레임을 뜻하고 안에 있는 대괄호는 컬럼의 리스트라고 이해하시면 편하실 겁니다.
+
+---
+
+## 8주차 작업형 1유형
+
+데이터 출처 :[https://www.kaggle.com/kyr7plus/emg-4](https://www.kaggle.com/kyr7plus/emg-4(참고, 데이터 수정)
+
+데이터 설명 : 센서데이터로 동작 유형 분류
+
+Data url :[https://raw.githubusercontent.com/Datamanim/datarepo/main/muscle/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/muscle/train.csv)
+
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210371960-d13ec6ac-65a6-4016-97df-6871252d6a10.png)
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/muscle/train.csv")
+```
+
+### Q1. pose값에 따른 각 motion컬럼의 중간값의 가장 큰 차이를 보이는 motion컬럼은 어디이며 그값은?
+
+진짜 문제 풀면 풀수록 무슨말인지 모르겠네요..?
+
+```py
+df.groupby('pose').median()
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210372033-80bc0d04-4941-4425-9da8-fdd292278460.png)
+
+일단 pose로 묶어서 중간값을 쭉 뽑아보았습니다. 그렇다면 문제의도는 아마 pose 0과 pose 1을 비교했을때 차이가 가장 큰 것을 찾나 봅니다. 전치 행렬을 통해서 보기 좋게 합시다. 쉽게 할 수 있습니다 .T를 쓰면 끝입니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210372059-f02c5c59-24be-4583-b855-ecea9ce6ee35.png)
+
+```py
+abs(df_2[0] - df_2[1]).sort_values(ascending=False)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210372100-4eb0ada7-49d5-4254-bd97-e6c8dfccc6b1.png)
+
+54와 62가 되네요
+
+---
+
+데이터 출처 :[https://www.kaggle.com/mysarahmadbhat/hyundai-used-car-listing](https://www.kaggle.com/mysarahmadbhat/hyundai-used-car-listing(참고, 데이터 수정)
+
+데이터 설명 : 현대 차량가격 분류문제
+
+Data url :[https://raw.githubusercontent.com/Datamanim/datarepo/main/hyundai/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/hyundai/train.csv)
+
+데이터 상위 5개 컬럼
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210372201-e6f4ab07-7bc6-4986-aa54-81ad6a309c7c.png)
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/hyundai/train.csv")
+```
+
+### Q1. 정보(row수)가 가장 많은 상위 3차종의 price값의 각 평균값은?
+
+정보가 많은 상위 차종이라니까 결국 model을 기준으로 value_counts를 보시면 되겠습니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210372430-51cc0c88-a88b-4c7b-bd8f-727933798043.png)
+
+상위 3개의 차량은 Tucson, I10, I30이네요 인덱스로 뽑아봅시다.
+
+```py
+df.model.value_counts().index[:3]
+```
+인덱스를 뽑으면 쉽게 나옵니다. 
+
+```py
+df.loc[df.model.isin(df.model.value_counts().index[:3])].groupby('model').mean()['price'].to_frame()
+```
+천천히 봅시다 일단 df.loc에다가 조건을 줍시다. model에 isin을 통해서 원하는 값을 뽑온다음, model로 묶고 그 평균을 구하면 각 열의 평균이 나오겠지요 거기서 price를 다시 한번더 가져올 수있겠네요
+---
+
+## 9주차 작업형 1유형
+데이터 출처 :[https://www.kaggle.com/pritsheta/diabetes-dataset](https://www.kaggle.com/pritsheta/diabetes-dataset(참고, 데이터 수정)
+
+데이터 설명 : 당뇨여부 판단하기
+
+Data url :[https://raw.githubusercontent.com/Datamanim/datarepo/main/diabetes/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/diabetes/train.csv)
+
+​
+
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210372528-6719b805-ff96-431e-861a-a4236d351ad7.png)
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/diabetes/train.csv")
+```
+
+### Q1. Outcome 값에 따른 각 그룹의 각 컬럼의 평균 차이를 구하여라
+
+```py
+df.groupby('Outcome').mean().diff().iloc[1,:]
+```
+Outcome 값을 기준으로 묶은 다음에 평균을 구하고 각 컬럼의 평균 차이를 구한다고 하는데 diff() 함수가 있습니다.
+
+diff()는 계차함수 입니다.
+
+```py
+x = numpy.array([1, 2, 4, 7, 0])
+print( numpy.diff(x) )
+```
+출력값은 [1, 2, 3, -7]이 됩니다.
+
+---
+
+데이터 출처 :[https://www.kaggle.com/pritsheta/netflix-stock-data-from-2002-to-2021](https://www.kaggle.com/pritsheta/netflix-stock-data-from-2002-to-2021) (참고, 데이터 수정)
+
+데이터 설명 : 넷플릭스 주식데이터
+
+Data url :[https://raw.githubusercontent.com/Datamanim/datarepo/main/nflx/NFLX.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/nflx/NFLX.csv)
+
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210372663-045c89fb-985e-44ea-8047-ff6a1bec57df.png)
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/nflx/NFLX.csv")
+```
+
+### Q1. 매년 5월달의 open가격의 평균값을 데이터 프레임으로 표현하라
+
+일단 5월달의 값을 뽑아 내야겠네요 일단 Date를 형변환을 한다음 5를 뽑으면 되겠네요
+
+```py
+df['Date']  = pd.to_datetime(df['Date'])
+target = df.groupby(df['Date'].dt.strftime('%Y-%m')).mean()
+target.loc[target.index.str.contains('-05')].Open
+```
+ 
+strftime()는 Date 오브젝트의 형변환을 한것입니다. 월별 데이터만 필요하지 일값은 필요가 없습니다. 그리고 같은 열로 묶을 수 있다면 일일이 더할거 없이 월별로 묶이지요

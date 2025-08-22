@@ -1,0 +1,52 @@
+---
+title: scanf 입력 버퍼 지우기, 초기화 하는 방법
+date:   2022-06-13 14:04:30 +0900
+categories: [Languages, C]
+tags: [c,coding,input,io]
+---
+[scanf에서 변수를 받을때 &를 사용하는 이유](https://jeong-daniel.github.io/posts/scanf%EC%97%90%EC%84%9C-%EB%B3%80%EC%88%98%EB%A5%BC-%EB%B0%9B%EC%9D%84%EB%95%8C-&%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EC%9D%B4%EC%9C%A0/)
+
+scanf를 사용하게 되면 변수에 입력을 받을 수 있지만 이를 반복문으로 어떤 것을 계속해서 받아야 하거나 어떤 특정한 문자가 일어나면 문제가 발생 할 수 있습니다. 이는 버퍼가 비워지지 않아서 생기는 문제입니다.
+
+![buffer input](https://user-images.githubusercontent.com/85277660/210750402-fd9827ff-ee5f-4ac8-b13d-260e48ce6601.png)
+
+버퍼가 비워지지 않으면 사용자가 입력을 하지 않았는데 프로그램이 버퍼에 있는 문자열이나 내용을 넣어버립니다. 그래서 입력을 받을때 가급적이면 버퍼 초기화/비우는 작업을 명시를 해줘야 문제 없이 작동 할 수 있습니다.
+
+ 
+### 1. fflush(FILE *_Stream) 함수 사용하기 (컴파일러 따라 작동 안함)
+```c
+fflush(stdin);
+```
+fflush 함수는 함수의 매개변수로 파일 포인터의 포인터를 전달 받아서 해당주소 스트림의 버퍼를 비운다. 성공시 리턴값은 0이며 실패시에는 EOF를 반환한다.
+
+다만 GCC(GNU Compiler Collection 컴파일러 종류)에서는 보안을 문제로 작동 하지 않는다. 비쥬얼스튜디오(Visual studio 2015버전 이상)에서도 사용 불가능
+
+ 
+### 2. getchar() 함수 사용하기
+```c
+getchar();
+```
+getchar함수는 입력 버퍼에서 문자 하나를 가져오는 함수인데 아무것도 넣지 않으면 입력버퍼에 '\0'을 가져오게 되는데 입력버퍼가 자동으로 비워진다. c언어에서 \0은 마지막, 비어있다는 뜻이다.
+
+getchar은 문자 하나만을 가져오기 때문에 입력 버퍼에서 문자 전체를 가져와서 입력 버퍼를 비우고 싶다면 while(getchar()!='\n')을 적어주면 된다. whlie문이므로 getchar이 계속해서 실행이 되는데 개행문자(\n)을 만나게 될때까지 하나씩 모두 뽑아서 입력 버퍼를 비워준다.
+
+
+### 3. scanf %*c 사용하기
+```c
+scanf("%*c%c", &ch);
+```
+scanf함수에서 '%*c' 는 'read the data but do not assign it to a variable in the argument list' 이다. 입력버퍼의 값을 읽어오지만, 그 값을 변수에 대입하지는 않는다.
+```c
+//scanf("%c", &c); 대신 앞에 공백 삽입
+scanf(" %c", &c);
+```
+또는 %c 앞에 공백을 추가하면 white space를 구분자로 인식
+
+
+### 4. void rewind ( FILE * stream )
+```c
+rewind(stdin);
+```
+rewind함수는 스트림의 위치를 재설정하는 함수 스트림의 위치를 스트림의 시작점으로 이동하게 하는 함수다. rewind를에다가 stdin를 주게 되면, 입력스트림의 위치를 처음 위치로 이동시키게 된다. 그러면 rewind함수를 이용 후 값을 입력하게 되면, 이전에 쓰여있던 값을 덮어 쓰고, 입력하게 된다.
+
+비슷한 에시로 fseek함수가 있다.

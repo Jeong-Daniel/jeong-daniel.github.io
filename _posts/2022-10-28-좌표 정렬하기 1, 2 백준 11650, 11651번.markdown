@@ -1,0 +1,39 @@
+---
+title: 좌표 정렬하기 1, 2 백준 11650, 11651번
+date:   2022-10-28 18:20:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, sorting]
+---
+
+[https://www.acmicpc.net/problem/11650](https://www.acmicpc.net/problem/11650)
+
+문제
+2차원 평면 위의 점 N개가 주어진다. 좌표를 x좌표가 증가하는 순으로, x좌표가 같으면 y좌표가 증가하는 순서로 정렬한 다음 출력하는 프로그램을 작성하시오.
+
+```py
+num = int(input())
+num_list = []
+for i in range(num):
+    num_list.append(list(map(int,input().split())))
+
+num_list = sorted(num_list, key = lambda x: (x[0],x[1]))
+for i in range(num):
+    print(*num_list[i])
+```
+
+앞에서 푼문제와 비슷합니다. 입력받고 조건에 따라서 정렬
+
+[https://www.acmicpc.net/problem/11651](https://www.acmicpc.net/problem/11651)
+
+```py
+num = int(input())
+num_list = []
+for i in range(num):
+    num_list.append(list(map(int,input().split())))
+
+num_list = sorted(num_list, key = lambda x: (x[1],x[0]))
+for i in range(num):
+    print(*num_list[i])
+```
+
+람다 x에서 위치만 바꾸면 됩니다. 다만 파이썬으로하면 시간초과가나와서 pypy로 하셔야 합니다. 

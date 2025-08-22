@@ -1,0 +1,29 @@
+---
+title: 2×n 타일링 백준 11726번 DP
+date:   2022-10-31 19:56:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, dp, dynamic]
+---
+
+[https://www.acmicpc.net/problem/11726](https://www.acmicpc.net/problem/11726)
+
+문제
+2×n 크기의 직사각형을 1×2, 2×1 타일로 채우는 방법의 수를 구하는 프로그램을 작성하시오.
+
+아래 그림은 2×5 크기의 직사각형을 채운 한 가지 방법의 예이다.
+
+![tile assmemble](https://user-images.githubusercontent.com/85277660/211191009-71f4c330-73f4-458b-8cd2-f876b901877c.png)
+
+사실상 피보나치 수열과 비슷합니다. 다만 숫자가 너무 커질경우 출력하기어려우니 조건에 따라서 10,007로 나눈 나머지를 출력합니다. 그리고 1과 2가 들어올때에는 바로 출력하고 종료할 수 있게 해줍니다.
+
+```py
+num = int(input())
+mod = 10007
+dp = [0]*(num+1)
+dp[1] = 1
+dp[2] = 2
+for i in range(3,num+1):
+    dp[i] = (dp[i-1]+dp[i-2])%mod
+    
+print(dp[num])
+```

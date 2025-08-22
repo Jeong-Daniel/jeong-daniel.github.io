@@ -1,0 +1,65 @@
+---
+title: 종이의 개수 백준 1780번 재귀
+date:   2022-10-22 16:47:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, recursive]
+---
+
+[https://www.acmicpc.net/problem/1780](https://www.acmicpc.net/problem/1780)
+
+문제
+N×N크기의 행렬로 표현되는 종이가 있다. 종이의 각 칸에는 -1, 0, 1 중 하나가 저장되어 있다. 우리는 이 행렬을 다음과 같은 규칙에 따라 적절한 크기로 자르려고 한다.
+
+* 만약 종이가 모두 같은 수로 되어 있다면 이 종이를 그대로 사용한다.
+* (1)이 아닌 경우에는 종이를 같은 크기의 종이 9개로 자르고, 각각의 잘린 종이에 대해서 (1)의 과정을 반복한다.
+이와 같이 종이를 잘랐을 때, -1로만 채워진 종이의 개수, 0으로만 채워진 종이의 개수, 1로만 채워진 종이의 개수를 구해내는 프로그램을 작성하시오.
+
+```py
+global count
+count = [0,0,0]
+num = int(input())
+paper = []
+for i in range(num):
+    paper.append(list(map(int,input().split())))
+    
+def check(x,y,n):
+    for i in range(x,x+n):
+        for j in range(y,y+n):
+            if paper[x][y]!=paper[i][j]:
+                return False
+    return True
+
+def solve(x,y,z):
+    if check(x,y,z):
+        count[paper[x][y]+1] += 1
+        return
+    n = int(z/3)
+    for i in range(3):
+        for j in range(3):
+            solve(x+i*n, y+j*n, n)
+            
+solve(0,0,num)
+for i in range(3):
+    print(count[i])
+```
+
+파이썬 내장함수로 어떻게 간단하게 해볼 수 있지 않을까 하다가 결국 그대로 생각난대로 했습니다. 방법이 없는지는 모르겠고 아직 제가 모르는거겠지요
+
+일단 두가지 함수가 필요합니다. 재귀로 탐색할 함수와 탐색하는 공간이 모두 같은지 확인하는 함수 입니다.
+
+결국 NxN의 공간을 탐색하면서 같은게 있는지 없는지 확인을 하면서 완전탐색을 합니다. 모두 같다면 True를 아니라면 False를 반환합니다.
+
+만약 모든 구성이 같다면 count를 카운트합니다. count는 [0,0,0]의 배열로 선언을 하는데
+
+-1이라면 1을 더해서 인덱스 0에 추가하고
+
+1이라면 인덱스 1에 추가를 2라면 인덱스 1에 추가를 해서 전체 개수를 세어보게 됩니다.
+
+만약 같지 않다면 이제 종이를 9개로 쪼개야 겠지요 여기서 자료형을 int로 명시해주어야 합니다.
+
+정수와 정수로 나누더라도 실수가 나올 수 있기 때문에 자료형이 float로 자동으로 변하게 되는데
+
+2차원리스트[1][1]은 있어도 [1.0][1.0]은 없기 때문에 타입에러가 나옵니다.
+
+
+이제 2중 for문으로 3개 3개로 총 9번을 반복하게 됩니다. 그렇게 종이의 제일 작은 부분인 n=1이 될때까지 탐색을 합니다.

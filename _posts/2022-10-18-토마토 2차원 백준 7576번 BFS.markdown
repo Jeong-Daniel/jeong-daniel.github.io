@@ -1,0 +1,67 @@
+---
+title: 토마토 2차원 백준 7576번 BFS
+date:   2022-10-18 16:53:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, bfs]
+---
+
+[https://www.acmicpc.net/problem/7576](https://www.acmicpc.net/problem/7576)
+
+문제
+철수의 토마토 농장에서는 토마토를 보관하는 큰 창고를 가지고 있다. 토마토는 아래의 그림과 같이 격자 모양 상자의 칸에 하나씩 넣어서 창고에 보관한다. 
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211185938-89059521-779c-4e23-bba1-4c8452ba095b.jpg)
+
+창고에 보관되는 토마토들 중에는 잘 익은 것도 있지만, 아직 익지 않은 토마토들도 있을 수 있다. 보관 후 하루가 지나면, 익은 토마토들의 인접한 곳에 있는 익지 않은 토마토들은 익은 토마토의 영향을 받아 익게 된다. 하나의 토마토의 인접한 곳은 왼쪽, 오른쪽, 앞, 뒤 네 방향에 있는 토마토를 의미한다. 대각선 방향에 있는 토마토들에게는 영향을 주지 못하며, 토마토가 혼자 저절로 익는 경우는 없다고 가정한다. 철수는 창고에 보관된 토마토들이 며칠이 지나면 다 익게 되는지, 그 최소 일수를 알고 싶어 한다.
+
+토마토를 창고에 보관하는 격자모양의 상자들의 크기와 익은 토마토들과 익지 않은 토마토들의 정보가 주어졌을 때, 며칠이 지나면 토마토들이 모두 익는지, 그 최소 일수를 구하는 프로그램을 작성하라. 단, 상자의 일부 칸에는 토마토가 들어있지 않을 수도 있다.
+
+결국 모든 토마토가 익기까지 얼마나 걸리는지 거리를 구하는 BFS문제로 볼 수 있습니다.
+
+```py
+from collections import deque
+n, m = map(int,input().split())
+map_list = []
+vist = [[0]*n for _ in range(m)]
+queue = deque()
+for i in range(m):
+    temp = list(map(int,input().split()))
+    for j in range(n):
+        if temp[j]==1:
+            queue.append([i,j])
+        elif temp[j]==0:
+            vist[i][j] = -1
+    map_list.append(temp)
+    
+dx = [0,0,1,-1]
+dy = [1,-1,0,0]
+max_num = 0
+
+while queue:
+    curr = queue.popleft()
+    for k in range(4):
+        nx = curr[0] + dx[k]
+        ny = curr[1] + dy[k]
+        if nx >= m or nx < 0 or ny >= n or ny < 0:
+            continue
+        if vist[nx][ny]!=-1:
+            continue
+        vist[nx][ny] = vist[curr[0]][curr[1]]+1
+        queue.append([nx,ny])
+        max_num = max(max_num,vist[nx][ny])
+        
+count = 0
+for x in range(m):
+    if -1 in vist[x]:
+        print(-1)
+        count = 1
+        break
+
+if count == 0:
+    print(max_num)
+```
+
+지난번과 사실 다를 것도 없습니다. 이번에는 방문을 체크하는 리스트를 따로 만들필요없이 한번에 할 수 있나 했는데 토마토가 있는 곳은 1로 시작을 하는데 이거를 그대로 두면 최대값에서 1+가 되는 것이니 0이나 -1로 바꾸면 예외 상황이 따르고... 해서 결국 vist로 토마토가 있지만 익지 않은 곳을 -1로 두고 계산을 했습니다.
+
+
+그리고 마지막에 max값을 출력하는 부분이 조금 지저분하게 됬는데 함수안에 다 담아버리면 좀더 깔끔하게 나올 듯 합니다.

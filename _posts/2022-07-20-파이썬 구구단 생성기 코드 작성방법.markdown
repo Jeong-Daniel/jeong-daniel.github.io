@@ -1,0 +1,44 @@
+---
+title: 파이썬 구구단 생성기 코드 작성방법
+date:   2022-07-20 11:00:10 +0900
+categories: [Languages, Python]
+tags: [python, coding]
+---
+
+이번에는 for문을 배우게 된다면 필수적으로 나오는 예제인 구구단을 만들어 보겠습니다. 당연하게 2중 for문을 사용하고 입력을 받아서 만들어도 되지만 그냥 2부터 9까지 반복해서 돌리는 걸로 하겠습니다.
+
+구구단은 이중 for문 이외에 다른 방법이 사실상 없기에 간단합니다.
+
+```py
+for n in range(2,10):
+    for m in range(1,10):
+        print(f'{n}x{m}={n*m}')
+```
+
+![multiply result](https://user-images.githubusercontent.com/85277660/210797941-bdef8f60-788b-49b4-8dc7-2318a629fc3e.png)
+
+일단 나오기는 하는데 일렬로 쭉나와서 이쁘지가 않네요 가로나 세로로 출력시켜 봅시다.
+
+```py
+for n in range(2,10):
+    for m in range(1,10):
+        print(f'{n}x{m}={n*m}',end='\t')
+    print()
+```
+
+print은 작서을 하면 자동으로 개행문자가 삽입되어 줄바꿈이 일어납니다. 이때 end를 쓰고 어떤 행동을 할지 지정 할 수 있는데 \t는 탭을 한번 사용합니다. \n은 기본값이고 이 밖에도 다른 문자를 넣으면 print문이 끝날때마다 자동으로 해당 문자가 들어가게 됩니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210798029-62c7d456-99ee-4919-a144-e4b1b90a06fb.png)
+
+그러면 옆으로 말고 밑으로 출력할 수는 없을까? 가능은 하지만 코드를 약간 변경해야 합니다. 줄 순서대로 내려오기 때문
+
+```py
+for n in range(1,10):
+    for m in range(2,10):
+        print(f'{m}x{n}={n*m}',end='\t')
+    print()
+```
+
+범위를 바꾸고 m과 n의 위치를 바꾸면 됩니다.
+
+![multiply](https://user-images.githubusercontent.com/85277660/210798080-6649d383-7c79-4bdd-bb1b-f969acda181a.png)

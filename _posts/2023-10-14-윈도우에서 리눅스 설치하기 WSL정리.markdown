@@ -1,0 +1,167 @@
+---
+title:  윈도우에서 리눅스 설치하기 WSL정리
+date:   2023-10-14 19:57:46 +0900
+categories: [Tech, Ubuntu]
+tags: [docker, linux, OS, virture]
+---
+
+예전에는 머신러닝이나 GPU컴퓨팅 환경이 필요해도 하드하게 굴리는 수준이 아니었기 때문에 윈도우에 CUDA-Pytorch 연결해두고 사용하는 정도가 다였는데 일을 진행을 하다보니 리눅스에서만 돌아간다거나...하는 몇 가지 일이 있어서 거의 윈도우와 리눅스에서 작업하는게 반반일 정도로 늘어난거 같습니다.
+
+최근 UDP통신 모의테스트를 마련해야하는데 실험실 한구석에 있는 엔비디아의 개발보드인 Jetson AGX Xavier을 가지고 물리적인 네트워크 모의기를 만들려고 시도를 하고 있습니다. 그런데 이전에 사용하던 사람이 비밀번호를 까먹어서 새로 셋팅을 해야하는데 웬걸 젯슨 제비어는 리눅스 환경의 Host 컴퓨터가 있어야 초기화를 할 수 있다고 하네요 그렇게 찾고 찾다가 WSL을 알게되었고 정리를 한번 해보고자 합니다. 뭔가 자주 보게될거라는 느낌이 들기도 했습니다. 그 이유가
+
+[도커(Docker)는 무엇인가?](https://jeong-daniel.github.io/posts/%EB%8F%84%EC%BB%A4(Docker)%EB%8A%94-%EB%AC%B4%EC%97%87%EC%9D%B8%EA%B0%80/)
+
+지난번 포스팅에서 도커에 대해서 간단하게 설명하면서 마지막줄에 WSL2에 대해서 언급을하는데 저도 그 의미를 모르고 남들이 그렇다고 하니 그런가보다~ 했던 식으로 쓴적이 있기 때문입니다.
+
+찾아보니 한빛미디어에서 WSL에 대해서 설명하는 도서도 있는데 올해 사업이 무사하게 끝난다면... 한번 스터디를 해봐야 겠습니다.
+
+### 1. WSL(Windows Subsystem for Linux)
+
+[https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)
+
+위키피디아 설명에 따르면 WSL는 축약어 그대로 이해할 수 있듯이 윈도우 안에서 돌아가는 리눅스라는 의미이며 분리된 가상화(VM웨어, 버츄얼박스)와 듀얼(멀티)부팅을 사용하지 않는 차이가 있습니다. 비교적 최근에 릴리즈되었으며 윈도우 10부터 지원한다는 것입니다. 그렇다면 WSL을 사용하는게 분리된 가상화보다 나은점이 분명히 있다는 건데 그점은 나중에 후술 하겠습니다. 저도 처음에 가상화컴퓨팅으로 할려다가 이내 이게 불가능하다는 것을 알고 WSL로 진행하게 되었습니다....
+
+왜 MS에서는 리눅스를 지원해주는 것이지? 라고 생각을 해볼때 제 개인적인 뇌피셜로는 아마 구글-안드로이드때문이 아닌가라는 생각이듭니다. MS는 사실상 IOS-안드로이드 시장경쟁에서 탈락하여 모바일운영체제를 포기하였지만 그 파이는 포기하지 않았다는 생각이 듭니다. 최근들어서는 유용한 어플리케이션이 나오지만 PC버전이 따로 없어서 아쉬울때가 있는데 그렇다고 애뮬레이터 NOX, 블루스택같은 것으로 띄우자니 번거롭고 무거운감이 있습니다. 마치 가상머신을 띄우는 것처럼 작동하기 때문에 따로 할당을 해야한다는 일도 있지요
+
+그렇다면 어플리케이션 하나만 윈도우상에서 다른 것없이 단독으로 구동이 가능하다면? 윈도우 입장에서는 사용자 파이를 넓힐 수 있다는 생각도 듭니다. 앱 개발자는 안드로이드 어플만 만들었는데 윈도우에서도 동작이 보장된다면 이는 좋으면 좋았지 나쁠 이유가 없다고도 생각됩니다. 안드로이드는 리눅스 커널기반인데 리눅스가 잘 돌아갈때 안드로이드 어플리케이션이 잘 안돌아간다면 그게 더 이상하겠지요 WSL처럼 WSA(Android)도 있지만 아직 정식으로 릴리즈 된것은 아니고 베타버전 그것도 아마존앱스토어를 통해 제한적으로 사용이 가능한 것으로 알고 있습니다. 아마 나중에는 안드로이드 앱도 윈도우 상에서 자유롭게 돌아가는 날이 올겁니다.
+
+### 2. WSL1과 WSL2 구조 차이점
+
+위에 도커를 비롯하여 보통 WSL2를 기준으로 설명을 진행할 것인데, 사실 하드하게 들어갈 것이 아니라면 바로 3번으로 넘어가도 됩니다.
+
+![wsl1and2-comparison](https://github.com/Jeong-Daniel/jeong-daniel.github.io/assets/85277660/ab045eea-fa33-4143-83dd-45b803d48c1b)
+
+윈도우 커널위에 Linux 시스템을 WSL이 Emulating하여 처리하는 방식으로 모든 사용자의 명령/인터페이스는 WSL을 거치게 됩니다. 그러면 뭐다? 병목이 발생할 가능성도 있으며 느려지는 문제가 직관적으로 보이게 됩니다. 실제 Linux를 사용한다기 보다 Linux를 가상화하여 결과를 보여주는 방식
+
+반면 WSL2에는 실제 Linux Kernel을 올리고 윈도우내 모든 리눅스 시스템 명령을 처리하게 될 수 있습니다. 
+
+![wsl1and2-comparison_2](https://github.com/Jeong-Daniel/jeong-daniel.github.io/assets/85277660/2a63b29e-183b-4dee-a853-6f5c7027cae4)
+
+그러면 비교는 간단하게 하고 넘어가고 그래서 WSL2를 사용하면 되나요? "네"로 정리하겠습니다.
+
+
+### 3. WSL에서 우분투 설치하기 / 실행하기
+
+[WSL을 사용하여 Windows에 Linux를 설치하는 방법 MS공식문서](https://learn.microsoft.com/ko-kr/windows/wsl/install#step-4---download-the-linux-kernel-update-package)
+
+한번 WSL2에서 우분투를 실행해보겠습니다. 사용조건은 몇 가지가 있지만 제일 먼저 윈도우10 20H1이상 버전을 사용하셔야 합니다.
+
+참고로 구버전이나 일부 최신사양이 아닐경우 몇가지 다른 명령어나 설치파일을 필요로 하지만 여기서는 최신사양으로 가정하고 최소한의 방법으로 쭉 진행하도록 하겠습니다.
+
+![Powershell_관리자 권한으로 실행하기](https://github.com/Jeong-Daniel/jeong-daniel.github.io/assets/85277660/deb47aac-d5e6-4ce9-9163-222032a0ad6b)
+
+검색창에서 PowerShell을 관리자 권한으로 실행을하고 다음과 같은 명령어를 차례대로 입력을 합니다.
+
+```
+$ wsl --install  
+$ wsl --update  
+$ wsl --set-default-version 2  
+```
+wsl을 설치와 업데이트(당장은 필요 없지만 적어두었습니다) wsl2를 기본값으로 설정합니다.
+
+사실 이게 wsl을 설정의 끝입니다. 보통 여기서 바로 마이크로소프트 스토어로 넘어가서 우분투를 검색을해서 진행을 하는데 저는 그대로 PowerShell에서 진행을 하겠습니다.
+
+```
+$ wsl --list --online
+```
+
+![사용가능한 리눅스 목록](https://github.com/Jeong-Daniel/jeong-daniel.github.io/assets/85277660/fc835064-b7bd-4277-a189-85530e360ff8)
+
+위 명령어를 입력할 경우 사용할 수 있는 리눅스 목록을 볼 수 있습니다.
+
+저는 여기서 우분투 22.04버전을 설치하도록 하겠습니다.
+
+```
+wsl --install -d Ubuntu-22.04
+```
+
+만약 다시 설치 등록을 취소하고 제거하고 싶다면 다음과 같은 명령어를 내리면 됩니다.
+
+```
+wsl --unregister <DistributionName>
+```
+
+
+
+설치가 완료되었다면 바로 우분투 CLI환경을 구동하게 됩니다. 여기서 유저명과 비밀번호를 입력하게되면 모든 사용준비를 마치게 되는 것입니다. 간단하지요
+
+PowerShell에서 다음과 같은 명령어를 통해서 바로 설치해둔 우분투로 넘어가거나 또는 종료할 수 있습니다.
+
+```
+/// 특정 wsl실행
+wsl --distribution <Distribution Name> --user <User Name>
+/// 모든 wsl종료
+wsl --shutdown
+/// 특정 wsl종료
+wsl --terminate <Distribution Name>
+```
+
+![우분투 환경 실행](https://github.com/Jeong-Daniel/jeong-daniel.github.io/assets/85277660/62a0a861-8e86-4021-9ca6-0af52ce96d7c)
+
+이제 바로 여기서 필요한 작업을 수행하시면 됩니다.
+
+![리눅스 드라이브](https://github.com/Jeong-Daniel/jeong-daniel.github.io/assets/85277660/c3b9aef4-cb61-45b6-ab26-9376bb28229f)
+
+그리고 내 컴퓨터에 들어가면 이렇게 Linux라는 드라이브가 만들어지는데
+
+![리눅스 폴더](https://github.com/Jeong-Daniel/jeong-daniel.github.io/assets/85277660/bc37bf5a-a318-4c6c-a6b7-fd36ee85b9c8)
+
+C드라이브에 들어가듯이 바로 리눅스가 설치된 환경에서 파일을 자유롭게 쓰기/읽기가 가능해집니다.
+
+
+그리고 지금 wsl에 설치된 리눅스 목록을 확인하고 싶다면
+
+![리눅스 목록 확인](https://github.com/Jeong-Daniel/jeong-daniel.github.io/assets/85277660/574acca3-8213-43b2-ae77-1f809a705055)
+
+```
+$ wsl -l -v
+```
+해당 명령어를 입력하면 다음과 같이 지금 설치된 리눅스의 목록과 상태가 나옵니다.
+
+[WSL의 기본 명령](https://learn.microsoft.com/ko-kr/windows/wsl/basic-commands#unregister-or-uninstall-a-linux-distribution)
+
+그 밖에 드라이브 마운트나, ip 주소 식별등은 위 링크를 참고하시면 됩니다.
+
+
+
+### 4. USB통신 물리기
+
+앞에서 말한 VMware나 버츄얼박스가 할 수 없는 일이 있다는게 이거 때문입니다. 예를 들면 내가 A라는 물리적 장치를 가상컴퓨터에 연결을하고 싶은데 호스트를 거치게 되면서 권한을 독점하거나 제대로 전달하지 못하는 문제가 있습니다. 제가 Jetson AGX Xavier을 초기화 하지 못하는 것도 보드를 바로 우분투 호스트에 연결 해야하는데 맥 버츄얼박스에서는 가능한것으로 보이나 윈도우 가상환경에서는 안된다는 글을 보았습니다. 하지만 WSL을 사용할 경우 호스트PC가 독점하지 않고 바로 권한을 넘겨주고 바이딩하는 것이 가능하다고 합니다.
+
+usbipd를 먼저 설치 해야한다. 아래 경로로 들어가서 msi파일을 실행해준다.
+
+[https://github.com/dorssel/usbipd-win/releases](https://github.com/dorssel/usbipd-win/releases)
+
+![usbipd](https://github.com/Jeong-Daniel/jeong-daniel.github.io/assets/85277660/372a07ea-8167-4c2d-acd3-fb631a248894)
+
+특별한 것은 없고 설치를 해준다음 다시 PowerShell로 들어가보자
+
+```
+usbipd list
+```
+
+![PowerShell usbipd](https://github.com/Jeong-Daniel/jeong-daniel.github.io/assets/85277660/789151f9-4c7b-41d8-83da-bf5850ceb528)
+
+그러면 위와 같이 맨 처음에 나오는 Busid를 얻을 수 있고 이 id를 바탕으로 Wsl에다가 바로 물릴 수 있다.
+
+```
+//wsl attach
+usbipd wsl attach --busid <busid> --auto-attach
+//wsl dettach
+usbipd wsl detach --busid <busid>
+```
+
+auto attach 명령이 없다면 중간에 끊어졌을때 다시 Host가 권한을 독점을하지만 해당 명령어를 붙여주면 중간에 끊어지더라도 다시 감지되면 wsl로 계속해서 붙을 수 있게 해줍니다. 참고로 이 기능 자체가 WSL2에서만 가능한것으로 나옵니다.
+
+[USB 디바이스 연결 공식문서](https://learn.microsoft.com/ko-kr/windows/wsl/connect-usb)
+
+만약 감지를 잘 하지 못하거나 붙지 않는다면
+
+```
+sudo apt install linux-tools-generic hwdata
+sudo update-alternatives --install /usr/local/bin/usbip usbip /usr/lib/linux-tools/*-generic/usbip 20
+```
+
+ 우분투에 직접 해당 명령어를 통해서 Linux에서 USBIP 도구 및 하드웨어 데이터베이스 설치를 하면 된다고 합니다.
+
+ 여기까지 간단하게 wsl 환경으로 리눅스를 가동해보고 설치와 기본적인 동작 USB 연결등을 해보았습니다. SSH 네트워크 통신, 드라이브 마운트, GPU환경등 할려면 아직 많은 것이 기다리고 있는데 이것도 주말에 한번씩 정리를 해보면 도움이 되겠지요

@@ -1,0 +1,95 @@
+---
+title: 줄 서는 방법 프로그래머스 Lv2
+date:   2022-09-01 15:50:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/12936](https://school.programmers.co.kr/learn/courses/30/lessons/12936)
+
+처음에는 모든 순열을 구해서 가져오면 되지 않을까 했지만
+
+```py
+from itertools import permutations
+def solution(n, k):
+    arr = []
+    for i in range(n):
+        arr.append(i+1)
+    result = list(permutations(arr, n))
+    return list(result[k-1])
+```
+
+일부 문제에서 시간 초과되었습니다. 결국 내가 필요한 순열은 k번째까지인건데 모든 순열을 탐색할 이유는 없다는 것이겠지요
+
+그렇다면 이 문제는 지난 문제와는 달리 DFS로 풀어야 하겠습니다. 그러면 해당 재귀함수의 종료 조건은 K번째일때가 되겠네요
+
+```py
+n=3
+k=5
+s = []
+count = 0
+answer = ''
+
+def dfs(m,k):
+    global count, answer
+    if len(s)==m:
+        count += 1
+        if count == k:
+            answer = list(map(int,s))
+    for i in range(1,n+1):
+        if i not in s:
+            s.append(i)
+            dfs(m,k)
+            s.pop()
+            
+def solution(n, k):
+    dfs(n,k)
+    return answer
+```
+
+그래서 백준 재귀 N과 M을 응용해서 문제를 풀었는데... 전혀 안맞았고 다른 풀이를 대충 보니 대부분 팩토리얼로 풀었다.
+
+```py
+def factorial(n):
+    v = 1
+    for i in range(1, n+1):
+        v *= i
+    return v
+
+def solution(n, k):
+    answer = []
+    lst = [x for x in range(1, n+1)]
+    
+    while lst:
+        temp = factorial(n-1)
+        q, r = divmod(k, temp)
+        q = q-1 if r == 0 else q
+        
+        answer.append(lst.pop(q))
+        
+        n -= 1
+        k = r
+        
+    return answer
+```
+
+팩토리얼을 구하는 함수 하나를 먼저 구현해 놓고 lst라는 1부터 n까지 배열을 하나 만들고 쭉 돌린다.
+
+첫번째 예시인 n=3, k=5으로 보았을때
+
+맨 처음 숫자로 올 수 있는 숫자는 1, 2, 3이다.
+
+그리고 1,2,3일때 뒤에 올 수 있는 경우의수는 2!(=n-1!)
+
+나눗셈을 통해 몫으로 큰 순서를 잡아 나가는 것이다.
+
+k=5를 2!으로 나누어주면 몫이 2, 나머지가 1이다.
+
+몫이 의미하는것은 index 2번째(python은 0부터 시작하니 직관적으로는 3번째) 값의 숫자가 와야한다는 뜻이다.
+
+그리고 첫번째 숫자가 결정되었기 때문에 그다음 1,2 뒤에 올수있는 경우는 1!이다. n을 1감소시키는것이다
+
+그리고 k번째는 나머지 r번째이기 때문에 줄이고 lst값을 다 쓸때까지 while문으로 반복해준다.
+
+
+(나중에 한번더 봐야겠다)

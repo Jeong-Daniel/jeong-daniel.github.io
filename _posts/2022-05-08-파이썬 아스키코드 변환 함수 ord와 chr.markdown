@@ -1,0 +1,25 @@
+---
+title: 파이썬 아스키코드 변환 함수 ord와 chr
+date:   2022-05-08 13:45:41 +0900
+categories: [Languages, Python]
+tags: [python]
+comment: true
+---
+
+아스키코드의 뜻은 미국 정보교환 표준 부호 (American Standard Code for Information Interchange)이다. 줄여서는 ASCII라고 표현합니다.
+
+컴퓨터는 0과1 2비트로 모든것을 연산하는데 그렇다면 글자는 어떻게 표현하는가에 대해서 각문자에 대해서 숫자를 매칭시켜 버립니다.
+
+![아스키 코드 표](https://user-images.githubusercontent.com/85277660/210082134-bce7fcea-7cb9-4fe3-a5fc-797443fd5441.jpg)
+
+아스키코드표
+
+ord
+문자열을 아스키코드로 반환할 수 있는 함수
+ord(문자) 형태로 이용합니다. 괄호 안에 문자를 넣으면 그 문자에 해당하는 아스키코드(숫자)를 반환하게 됩니다.
+
+chr은 반대입니다. 아스키코드를 집어넣으면 그에 해당하는 문자를 반환하게 됩니다.
+
+![작동 예시](https://user-images.githubusercontent.com/85277660/210082166-8b242392-d909-47be-88c3-62e43112713f.png)
+
+코테에서도 가끔 문자를 숫자로 처리하는게 편할때가 있는데 직접 변환하는 코드를 짜기보다 주로 영문자로 입력을 주니 이런 ord나 chr을 사용하면 간단하게 문제를 풀 수 있습니다.

@@ -1,0 +1,83 @@
+---
+title: N과 M (9) 백준 15663번 백트래킹
+date:   2022-10-25 16:01:20 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, backtracking]
+---
+
+[https://www.acmicpc.net/problem/15663](https://www.acmicpc.net/problem/15663)
+
+입력
+첫째 줄에 N과 M이 주어진다. (1 ≤ M ≤ N ≤ 8)
+
+둘째 줄에 N개의 수가 주어진다. 입력으로 주어지는 수는 10,000보다 작거나 같은 자연수이다.
+
+출력
+한 줄에 하나씩 문제의 조건을 만족하는 수열을 출력한다. 중복되는 수열을 여러 번 출력하면 안되며, 각 수열은 공백으로 구분해서 출력해야 한다.
+
+수열은 사전 순으로 증가하는 순서로 출력해야 한다.
+
+---
+
+쉽게 풀 수 있을줄 알았다가 얕은복사 문제가 일어나서 한참을 고민했네요
+
+리스트를 복사할때 [:] 만 넣어줘도 된다는 사실을 처음 알았습니다
+
+```py
+n,m = map(int,input().split())
+num_list = list(map(int,input().split()))
+num_list.sort()
+check = []
+arr = [0]*m
+isused = [False]*n
+
+def func(k):
+    if k==m:
+        if arr not in check:
+            check.append(arr[:])
+            for i in range(m):
+                print(arr[i], end=' ')
+            print()
+        return
+    
+    for j in range(n):
+        if not isused[j]:
+            arr[k]=num_list[j]
+            isused[j] = True
+            func(k+1)
+            isused[j] = False
+            
+func(0)
+```
+
+check를 가지고 추가할때 이미 들어 왔는지 확인해서 중복을 거르는 식이었습니다. 문제는 시간초과
+
+아마 들어왔는지 확인하는 과정에서 또 O(n)이 추가로 소요되서 그런거 같습니다.
+
+```py
+n,m = map(int,input().split())
+num = list(map(int,input().split()))
+num.sort()
+arr = [0]*m
+isused = [False]*n
+
+def func(k):
+    if k==m:
+        for i in range(m):
+            print(arr[i], end=' ')
+        print()
+        return
+    
+    temp = 0 #중복수열인지 확인하는 임시 변수
+    for i in range(n):
+        if (not isused[i] and temp!=num[i]):
+            isused[i] = True
+            arr[k] = num[i]
+            temp = arr[k]
+            func(k+1)
+            isused[i] = False
+            
+func(0)
+```
+
+예를 들어서 정렬을 한다음에 1, 7, 9, 9 가 있다면, 9가 들어온 다음에 또 9가 찍혀 있다면 중복된 숫자이니 추가하지 않고 넘어가게 됩니다. O(1)로 바로 중복 체크가 가능해졌습니다.

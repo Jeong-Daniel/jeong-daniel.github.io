@@ -1,0 +1,45 @@
+---
+title: N-Queen 백준 9663번 백트래킹
+date:   2022-10-24 17:15:20 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, backtracking]
+---
+
+[https://www.acmicpc.net/problem/9663](https://www.acmicpc.net/problem/9663)
+
+문제
+N-Queen 문제는 크기가 N × N인 체스판 위에 퀸 N개를 서로 공격할 수 없게 놓는 문제이다.
+
+N이 주어졌을 때, 퀸을 놓는 방법의 수를 구하는 프로그램을 작성하시오.
+
+문제 풀이 자체는 지난번 N과 M에서 구조는 유사합니다. 문제는 퀸을 둘 수 있는 곳과 없는 곳을 어떻게 구분하는가인데 첫번째 아이디어는 한줄에는 하나의 퀸만 놓을 수 있습니다. 퀸은 직선으로 어디든지 이동할 수 있기 때문지요
+
+두번째는 대각선 왼쪽, 오른쪽에 두는 경우를 체크합니다. 이부분은 제가 설명하는 것 보다 바킹독 강의를 보면 이해가 빠를 겁니다.
+
+```py
+n = int(input())
+isused1 = [False]*(40)
+isused2 = [False]*(40)
+isused3 = [False]*(40)
+cnt = 0
+def func(cur):
+    global n, cnt
+    if cur==n:
+        cnt+=1
+        return
+    for i in range(n):
+        if isused1[i] or isused2[i+cur] or isused3[cur-i+n-1]:
+            continue
+        isused1[i] = True
+        isused2[i+cur] = True
+        isused3[cur-i+n-1] = True
+        func(cur+1)
+        isused1[i] = False
+        isused2[i+cur] = False
+        isused3[cur-i+n-1] = False
+        
+func(0)
+print(cnt)
+```
+
+Python으로 하면 시간초과 나옵니다. PyPy로 하면 통과

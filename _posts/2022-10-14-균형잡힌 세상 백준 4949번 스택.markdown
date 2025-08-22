@@ -1,0 +1,66 @@
+---
+title: 균형잡힌 세상 백준 4949번 스택
+date:   2022-10-14 15:51:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, stack]
+---
+
+[https://www.acmicpc.net/problem/4949](https://www.acmicpc.net/problem/4949)
+
+문제
+세계는 균형이 잘 잡혀있어야 한다. 양과 음, 빛과 어둠 그리고 왼쪽 괄호와 오른쪽 괄호처럼 말이다.
+
+정민이의 임무는 어떤 문자열이 주어졌을 때, 괄호들의 균형이 잘 맞춰져 있는지 판단하는 프로그램을 짜는 것이다.
+
+문자열에 포함되는 괄호는 소괄호("()") 와 대괄호("[]")로 2종류이고, 문자열이 균형을 이루는 조건은 아래와 같다.
+
+모든 왼쪽 소괄호("(")는 오른쪽 소괄호(")")와만 짝을 이뤄야 한다.
+모든 왼쪽 대괄호("[")는 오른쪽 대괄호("]")와만 짝을 이뤄야 한다.
+모든 오른쪽 괄호들은 자신과 짝을 이룰 수 있는 왼쪽 괄호가 존재한다.
+모든 괄호들의 짝은 1:1 매칭만 가능하다. 즉, 괄호 하나가 둘 이상의 괄호와 짝지어지지 않는다.
+짝을 이루는 두 괄호가 있을 때, 그 사이에 있는 문자열도 균형이 잡혀야 한다.
+정민이를 도와 문자열이 주어졌을 때 균형잡힌 문자열인지 아닌지를 판단해보자.
+
+```py
+def bal(string):
+    stack = []
+    count = 0
+    for i in range(len(string)):
+        strn = string[i]
+        if strn == '[' or strn == '(':
+            stack.append(strn)
+        elif strn == ']':
+            if stack and stack[-1] == '[':
+                stack.pop()
+            else:
+                print('no')
+                count = 1
+                return 0
+        elif strn == ')':
+            if stack and stack[-1] == '(':
+                stack.pop()
+            else:
+                print('no')
+                count = 1
+                return 0
+        else:
+            continue
+    
+    if stack:
+        print('no')
+        return 0
+    else:
+        print('yes')
+        return 0
+
+while True:
+    string = str(input())
+    if string==".":
+        break
+    else:
+        bal(string)
+```
+
+잘푼건지는 모르겠고 그냥 조건 그대로 따라서 대충 맞았다고 나왔습니다. 괄호 문제는 스택으로 풀게 되는데 얼마전에 쳤던 코테에서 오랜만에 괄호문제가 나오기는 했는데 조건을 하나 까다롭게 주었더니 뇌정지가와서 당황했던 기억이 나네요
+
+아무튼 그냥 여기서는 중괄호도 없고 소괄호일때, 대괄호일때 나누어지는데 괄호가 올때 조건에 맞는지 모고 아니라면 바로 no를 출력한다음 return으로 함수를 종료시켜버립시다.

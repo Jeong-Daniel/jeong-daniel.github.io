@@ -1,0 +1,470 @@
+---
+title: 파이썬의 배열구조와 연결된 구조
+date:   2022-05-08 20:42:41 +0900
+categories: [Languages, Python]
+tags: [python, coding, algorithm, sorting]
+---
+
+## 들어가며
+
+파이썬을 배울때 C와 다른 언어에 비해서 초보자들이 쉽게 접근 할 수 있는 이유는 리스트에 있습니다. 이런 리스트 형식의 자료구조를 가지고 스택이나 큐, 덱과 같은 선형적인 자료구조를 간단하게 구현을 할 수 있으며 직관적이기에 편리합니다. 하지만 이런 배열 구조도 단점이 있으니 메모리 관리입니다.
+
+![리스트 자료구조](https://user-images.githubusercontent.com/85277660/210135077-3253caa8-9198-499a-80db-85b8c0f21273.png)
+
+우리가 얼핏 보기에는 메모리라는게 동적으로 늘어나는 것처럼 보이지만, 실제로는 리스트 생성과 동시에 특정 크기의 메모리를 할당받게 되고 만약 할당 받은 메모리보다 더 입력이 들어가게 된다면 새로운 메모리로 복사하는등의 비효율성이 발생합니다.
+
+그런 점에 있어서 배열이 아닌 단순 연결된 구조는 메모리 관리, 즉 메모리 누수 측면에서 큰 이점을 가질 수 있는데요
+
+![연결 리스트](https://user-images.githubusercontent.com/85277660/210135081-72d980ec-b460-47a8-a937-9a0682f86acc.jpg)
+
+각 노드는 두가지의 정보를 가지고 있습니다. 데이터와 나 다음의 데이터
+
+ 
+
+이렇게 설정을 하면 메모리를 할당하는 문제없이 그저 만들어두고 정보만 이어주면 마치 리스트처럼, 스택, 큐, 덱과 같은 역할을 수행할 수 있습니다.
+
+ 
+
+덧붙여서 삽입하거나 삭제하는 것이 용의합니다. 중간에 있는 데이터를 삭제를 한다면 빈 곳을 그대로 두는 곳이 아닌 비어있는 칸으로 데이터를 한칸씩 이동해야 하기 때문에 시간복잡도는 n이 소요됩니다.
+
+
+ 
+
+하지만 연결된 리스트 구조를 이용한다면 간단하게 삭제를 하고 노드의 방향만 수정해주거나 추가만 해주면 끝나기에 시간복잡도 역시 상수단위로 줄어들게 됩니다.
+
+ 
+
+다시 정의를 해봅시다. 연결된 구조는 흩어진 데이터를 링크로 연결해서 관리 한다. 지금부터 연결된 구조의 특징, 연결리스트의 구조, 연결리스트의 종류에 대해서 살펴봅시다.
+
+ 
+
+연결 리스트의 구조는 다음과 같습니다.
+
+ 
+
+## 노드(node)
+– 데이터 필드(data field)
+
+– 하나 이상의 링크 필드(link field)
+
+![노드](https://user-images.githubusercontent.com/85277660/210135093-a9e0c416-8b60-4f5f-8703-0cf9e1e1035b.png)
+
+## 헤드 포인터 (head pointer)
+헤드 포인터의 경우 자료의 시작 부분을 표시를 해줍니다.
+
+![헤드 포인터](https://user-images.githubusercontent.com/85277660/210135099-22d43526-877c-4eff-95a3-1eb5aa5f64b9.png)
+
+연결 리스트의 종류는 총 3가지가 있습니다.
+
+![연결리스트 구조](https://user-images.githubusercontent.com/85277660/210135105-663eae21-cb2e-4ed8-a78a-46ba8c88e8ac.png)
+
+단순 연결 리스트(Singly linked list)
+
+말그대로 한방향으로 연결되는 리스트로 차지하는 공간은 가장 적게 들어갑니다. 나 다음에 뭐가 올지만 기억하면 되니
+
+문제는 파일에 사고나 어떤 영향으로 인해서 중간이 단 하나라도 날라가게 되면 그때 부터 뒤에 있는 파일들은 모조리 같이 실종됩니다. 다음에 뭐가 있는지 아무도 모르거든요, 실제로 컴퓨터 초창기 자료구조가 단방향으로 설계되어서 종종 일부에 크랙이 발생하면 전체가 못쓰게 되는 사고가 빈번했다고 합니다.
+
+ 
+
+원형 연결 리스트(Circular linked list)
+
+원형 연결 리스트는 마지막과 처음의 노드가 이어져 있는 방식입니다.
+
+ 
+
+양방향 연결 리스트(Doubly linked list)는 단방향과는 달리 나 다음뿐 아니라 나 이전에 무엇이 있는지 같이 기억을 해두는 방식으로 단방향보다 안정성이 높은 특징이 있습니다.
+
+ 
+
+지금부터 단순연결리스트를 응용해서 스택을 구현해보도록 하겠습니다.
+
+ 
+
+노드 클래스는 다음과 같이 정의합시다.
+
+
+```python
+class Node:
+	def __init__ (self, elem, link=None):
+    	self.data=elem
+        self.link=link
+```
+
+노드 클래스는 data와 link 두가지의 구성요소로 이루어져있으며 링크의 기본값(내 다음)은 None로 설정을 해줍시다. 마지막에 넣는게 기본인 것이지요
+
+```python
+class LinkedStack:
+	def __init__(self):
+    	self.top = None
+        
+    def isEmpty(self): return self.top==None
+    def clear(self): self.top == None
+```
+
+연결된 스택클래스는 위와 같습니다. 스택에서는 선입선출 구조에 따라서 가장 마지막에 누가 들어 갔는지만 기억을 하면 됩니다. 해당하는 꼭대기를 top라고 합시다. 그렇다면 이게 비어있는지와 초기화는 꼭대기 top만 조작을 해주면 됩니다.
+
+ 
+
+비어있는가? -> top의 노드가 None인가?
+
+초기화 -> top를 None으로 설정
+
+
+![연결 리스트 작동 구조](https://user-images.githubusercontent.com/85277660/210135126-b9330694-469f-471d-a630-9717ee294390.png)
+
+```python
+def push(self, item):
+	n = Node(item,self.top)
+    self.top=n
+```
+
+다음은 삽입연산 구현입니다. Node 클래스에다가 아이템, 가르키는 것은 top(가장 최근에 넣은것)으로 만든다음
+
+꼭대기 top를 대체 합시다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210135141-3b46f4cb-2bf6-4c71-b099-7ae574c05a0a.png)
+
+다음은 삭제 연산입니다.
+
+```python
+def pop(self):
+	if not self.isEmpty():
+    		n=self.top
+        	self.top=self.n.link
+    		return n.data
+```
+
+일단 스택이 비어있는지 확인을 먼저 해준다음에 비어있지 않다면 top이 다음노드를 가르키게 해줍시다.
+
+그리고 n이 가르키는 노드를 반환을 해주는 것으로 간단하게 삭제 연산이 끝납니다.
+
+보시는것처럼 메모리 해제에 대해서 신경쓸 필요가 없습니다.
+
+그렇다면 이번에는 스택의 크기에 대해서 살펴봅시다.
+
+ ![추가 과정](https://user-images.githubusercontent.com/85277660/210135151-5c2fb82d-a71e-445d-b463-44a4020c8cf5.png)
+
+ ```python
+ def size(self):
+	node = self.top
+    count = 0
+    while not node == None:
+    	node = node.link
+        count +=1
+    return count
+```
+
+가장먼저 top가 어디인지 확인을 합시다. 그리고 link 다음 노드를 계속해서 확인을 하는데 이때 node가 None가 아닐때 while not 반복을 하고 반복을 할때마다 count를 1씩 추기를 합시다.
+
+ 
+
+함수가 종료될때에 반환되는 count값이 스택의 크기가 됩니다.
+
+
+```python
+def display( self, msg='LinkedStack:'):
+	print(msg, end='')
+	node = self.top
+	while not node == None :
+		print(node.data, end=' ')
+		node = node.link
+	print()
+```
+
+마찬가지로 출력을 해봅시다. 전체 틀에서는 size함수와 동일합니다. 다만 여기서는 count를 하는대신 출력을 한다는 점이 다릅니다. 첫번째 top을 확인을 하고 그 다음 노드로 이동하면서 출력을 하게 됩니다.
+
+```python
+def peek( self ):
+	if not self.isEmpty():
+		return self.top.data
+```
+
+peek는 스택에서 가장 위에 있는 값을 확인을 하는 겁니다. 일단 스택이 비어있는지 확인을하고 비어있지 않다면 data를 반환을 해주면 확인 할 수 있습니다.
+
+이번에는 단순연결리스트로 스택이 아니라 연결리스트 그대로 만들어 보도록 하겠습니다. 스택에서는 top가 처음으로 왔지만 연결리스트에서는 첫 시작을 표시할 head으로 대신하게 됩니다. 스택에서는 top만 신경을 써주면 되지만 리스트의 경우 중간에 있는 값도 수정이 가능하기에 좀더 많은 기능을 수행해야 합니다.
+
+```python
+class Node:
+	def __init__ (self, elem, link=None):
+		self.data = elem
+		self.link = link
+
+class LinkedList:
+	def __init__( self ):
+		self.head = None
+	def isEmpty( self ): return self.head == None
+	def clear( self ) : self.head = None
+	def size( self ):
+		node = self.head
+		count = 0
+		while not node == None :
+			node = node.link
+			count += 1
+		return count
+
+	def display( self, msg='LinkedList:'):
+		print(msg, end='')
+		node = self.head
+		while not node == None :
+			print(node.data, end=' ')
+		node = node.link
+		print()
+```
+
+여기 까지는 방금 스택과 똑같습니다 top에서 head로 바뀐게 전부입니다.
+
+계속해서 봅시다.
+
+```python
+def getNode(self,pos):
+	if pos < 0 : return None
+    node = self.head
+    while pos > 0 and node != None:
+    	node = node.link
+        pos-=1
+    return node
+```
+
+우리가 찾고자 하는 노드는 몇번째에 있는가? 찾는 것입니다. 만약 -1번째나 -2번째에 위치한다는 존재하지 않으니 pos가 음수로 받을 경우 이무것도 반환하지 말고 None를 해줍시다.
+
+ 
+
+시작은 head노드부터 시작을 합니다. 그리고 node.link 다음 노드로 반복해서 이동을 하며 이동을 할때마다 pos를 하나씩 차감을 합니다. 그러면 pos 크기만큼 노드의 이동을 반복하게 될것입니다.
+
+ 
+
+그리고 마지막에 반환되는 노드가 우리가 찾는 노드입니다.
+
+
+```python
+def getEntry(self, pos):
+	node = self.getNode(pos)
+    	if node == None : return None
+    	else : return node.data
+```
+
+이번에는 노드가 아닌 데이터만을 반환하는 getEntry를 만들어 봅시다. getNode를 앞서서 만들었으니 노드를 그대로 가져온다음 data를 읽어 들이면 됩니다.
+
+ 
+
+이 연산에서 시간복잡도는 배열에서는 1이었지만 연결된 리스트에서는 n이 됩니다. 배열에 비해서 비효율적인 것은 어쩔 수 없지만 항목들이 메모리에 흩어져 있기 때문에 발생한 단점입니다.
+
+ 
+
+대체하는 replace 연산은 getNode를 통해서 구현해봅시다.
+
+```python
+def replacE(self,pos,elem):
+	node = self.getNode(pos)
+    if node != None: node.data = elem
+```
+
+getNode를 이용해서 해당 위치의 노드를 불러온 다음 노드가 None가 아니라면 새로운 데이터 elem을 data에 대입을 시켜주면 끝입니다.
+
+항목을 찾는 find 역시 간단합니다. head에서부터 하나하나 방문을 해줍시다.
+
+
+```python
+def find(self, data):
+	node = self.head
+    while node is not None:
+    	if node.data == data : return node
+        node = node.link
+    return node
+```
+
+가장먼저 head를 가져온다음 node에 있는 data가 내가 찾는 데이터가 맞을때 까지 이동하면서 반복을 해주고 맞다면 해당 node를 반환하면 됩니다.
+
+![연결리스트 삽입](https://user-images.githubusercontent.com/85277660/210135208-19629c16-6325-49c8-a32f-8fe383e8a802.png)
+
+중간에 삽입하는 연산의 경우 link가 가르키는 위치를 조작을 해주면 됩니다.
+
+```python
+def insert(self, pos, elem):
+	before = self.getNode(pos-1)
+    if before == None:
+    	self.head = Node(elem,self.head)
+    else :
+    	node = Node(elem, before.link)
+        before.link = node
+```
+
+일단 앞에서 구현을 해둔 getNode를 통해서 넣고자하는 위치의 바로 앞 노드를 before에 넣어줍시다.
+
+그리고 해당 노드가 None이라면 이는 맨 처음이라는 뜻이 되니 head에다가 넣어줍시다.
+
+아니라면 삽입하는 노드는 다음을 가르키게 되고 삽입 직전읜 before 삽입하는 node를 가르키게 해주면 끝이 납니다.
+
+
+![연결 리스트](https://user-images.githubusercontent.com/85277660/210135216-89d7d5b3-afeb-435b-9e6b-2eded3b96144.png)
+
+삭제 연산의 경우 중간의 노드를 지워버리고 땡겨오면 되겠지요
+
+```python
+def delete(self, pos):
+	before = self.getNode(pos-1)
+    if before == None:
+    	if self.head is not None:
+        	self.head = self.head.link
+    elif before.link != None:
+    	before.link = before.link.link
+```
+
+삽입과 마찬가지로 일단 해당하는 지점의 바로 앞 노드를 불러옵시다. 이때 None라면 처음이라는 뜻이니 공백이 아니면 head를 다음으로 이동을 시켜줍시다.
+
+아닐경우에는 링크를 하나 건너 뛰어서 연결을 해주면 끝이 납니다.
+
+ 
+
+테스트 예제
+
+```python
+s = LinkedList()
+s.display('단순연결리스트로 구현한 리스트(초기상태):')
+s.insert(0, 10); s.insert(0, 20); s.insert(1, 30)
+s.insert(s.size(), 40); s.insert(2, 50)
+s.display("단순연결리스트로 구현한 리스트(삽입x5): ")
+s.replace(2, 90)
+s.display("단순연결리스트로 구현한 리스트(교체x1): ")
+s.delete(2); s.delete(s.size() - 1); s.delete(0)
+s.display("단순연결리스트로 구현한 리스트(삭제x3): ")
+s.clear()
+s.display("단순연결리스트로 구현한 리스트(정리후): ")
+```
+
+![출력 결과](https://user-images.githubusercontent.com/85277660/210135238-de735c73-c0e9-44cd-8c96-0162407a6332.png)
+
+이어서 스택과 리스트 마지막으로 원형연결 리스트의 응용으로 연결된 큐를 만들어 봅시다.
+
+ 
+
+단순연결리스트로 구현할 경우 front와 tail을 통해서 시작과 끝을 표시를 해주어야 하지만
+
+원형연결리스트의 경우 tail이 다시 head를 자동으로 가르키기에 rear와 front에 간단하게 접글할 수 있습니다.
+
+
+```python
+rear == tail
+front == tail.link
+```
+
+tail 한가지만을 가지고 머리와 꼬리에 둘다 접근 할 수 있습니다.
+
+ 
+
+바로 코드를 확인해봅시다.
+
+
+```python
+class CircularLinkedQueue:
+	def __init__(self):
+    		self.tail=None
+    
+    def isEmpty(self): return self.tail == None
+    def clear(sefl): self.tail = None
+    def peek(self):
+    	if not self.isEmpty():
+        	return self.tail.link.data
+```
+
+생성자는 tail하나만을 가지고 시작을 합시다. 그리고 기본값은 아무것도 정해주지 않습니다.
+
+비어있는지 확인하는 함수는 tail이 None인가 확인을 하면 되고, 초기화역시 tail을 None으로 처리하면 됩니다.
+
+
+가장 첫번째에 있는 것은 tail을 확인 -> 비어있지 않다면 -> tail이 가르키는 곳의 data를 불러오면 됩니다.
+
+ 
+
+이제 삽입 연산을 수행해봅시다.
+
+
+```python
+def enqueue(self, item):
+		node = Node(item, None)
+        if self.isEmpty():
+        	node.link = node
+            	self.tail = node
+       	else:
+        	node.link = self.tail.link
+            self.tail.link = node
+            self.tail = node
+```
+
+![공백 상태 입력](https://user-images.githubusercontent.com/85277660/210135278-ed7e7ef6-5a74-418a-9d7b-9ce9ef9522bb.png)
+
+여기서 생성자 Node는 위에서 바로 찾을 수 있습니다. data와 link로 구성되어있는 클래스입니다. if문을 이용해서 두가지 경우로 나누었습니다. 첫번째는 큐가 비어있는 경우입니다.
+
+ 
+
+큐가 비어있다면 새로 삽입하는 node는 자기자신을 가르키게 됩니다. 그리고 tail 역시 없었으니 자기 자신이 됩니다.
+
+![공백이 아닌 경우 입력](https://user-images.githubusercontent.com/85277660/210135293-7113a255-af23-4ed5-889d-53beb94c9422.png)
+
+두번째 경우는 큐가 이미 무언가가 들어있는 상황입니다. 일단 가장 먼저 새로 삽입하는 노드의 링크가 처음을 가르키도록 대입을 해줍시다. 그리고 tail의 link를 아에 node로 대처한 다음, tail역시 node로 대체를 해줍시다
+
+```python
+def dequeue(self):
+        if not self.isEmpty():
+        	data = self.tail.link.data
+            	if self.tail.link == self.tail:
+            		self.tail=None
+       		else:
+        	self.tail.link=self.tail.link.link
+        return data
+```
+
+dequeue도 일단 비슷합니다. 가장먼저 삭제를 할려는 큐가 비워져있는지 확인을 합시다. 비워져 있다면 바로 data를 반환할건데 들어있는게 없겠지요
+
+ 
+
+비워져 있지 않다면 일단 tail이 가르키는 링크의 데이터를 data에 삽입합시다. 그리고 이렇게 데이터가 비워지면 tail이 가르키는 링크를 재정의 해야합니다.
+
+
+첫번째 삭제를 하고 난뒤에 큐전체가 비워져 있다면 link는 자기 자신을 가르키게 될것이고 tail은 None이 됩니다.
+
+
+아니라면 한번 링크를 하고, 그 다음의 링크가 tail이 가르키는 링크가 되도록 tail의 링크를 수정합시다.
+
+
+```python
+def size(self):
+    if self.isEmpty(): return 0
+    else :
+    	count = 1
+        node = self.tail.link
+        while not node == self.tail:
+            node=node.link
+            count += 1
+        return count
+```
+
+size의 경우 tail부터해서 tail이 나올때 까지 방문을 하면 알 수 있습니다.
+
+일단 if문을 통해서 비어있는지 확인을 하고 비어있다면 0을 반환하고 종료 비어있지 않다면 최소 한개는 들어있을거니 count를 1로 주고 시작을 합시다. 그런다음 시작노드는 tail이 가르키는 머리부터 시작을 합시다.
+
+ 
+
+그리고 node.link를 이용해서 한칸씩 옆으로 이동을하고 이동을 할때마다 count를 1씩 증가 시켜 줍시다. 증가가 끝났다면 (노드와 tail이 같다면) 종료를 하고 count 를 반환을 하고 이게 크기가 됩니다.
+
+ 
+
+여기 까지 했다면 출력역시 size와 마찬가지로 하나씩 방문하면서 출력을 해주면 됩니다.
+
+![원형 큐 입력 결과](https://user-images.githubusercontent.com/85277660/210135318-34299e1b-8f37-42e2-bfa5-25473c4bd2c1.png)
+
+```python
+q = CircularLinkedQueue()
+for i in range(8): q.enqueue(i)
+q.display()
+for i in range(5): q.dequeue();
+q.display()
+for i in range(8,14): q.enqueue(i)
+q.display()
+```
+
+test 예제 0부터 7까지 큐에 삽입 -> 출력
+
+5번을 dequeue제거 -> 567만 남음
+
+그리고 다시 8부터 13까지 삽입

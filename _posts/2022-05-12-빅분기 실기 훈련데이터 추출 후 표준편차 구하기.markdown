@@ -1,0 +1,52 @@
+---
+title: 빅분기 실기 훈련데이터 추출 후 표준편차 구하기
+date:   2022-05-12 10:00:30 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [python, bigdata, data, pandas, ml]
+---
+
+*문제: 훈련 데이터 80%추출 후 결측치 중앙값으로 보정. 보정 전후의 표준편차 차이 구하기.
+
+사실 훈련 데이터를 80% 추출하라는게 어떤 기준을 주고 80%를 뽑아라는건지 의미를 잘 모르겠지만 일단 보스턴집값데이터에 train만 있다고 가정을 하고 진행을 해보겠습니다.
+
+```py
+import numpy as np
+import pandas as pd
+
+train = pd.read_csv("train.csv")
+y = train[['SalePrice']]
+X = train.drop(columns=['SalePrice'])
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+```
+
+우리가 알고 싶은 것은 y 집값이라고 가정을 합시다. 그리고 X는 그 이외의 것들로 채우고 sklearn의 model_selection에 있는 train_test_split를 사용했습니다. 해당 함수를 사용하면 자동으로 Train, Test 를 분리할 수 있습니다. test_szie를 0.2로 주거나 train_size를 0.8로 주면 결과는 똑같습니다. random_state는 고정된 랜덤값인데 저와 같이 설정하신다면 결과값은 똑같이 받아 볼 수 있습니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210171961-237784fc-9543-432c-9c95-fa9b0af1708b.png)
+
+일단 다른 것은 모르겠고 LotFrontage에 결측값이 있습니다. 이를 중앙값으로 보정해보겠습니다. 그리고 표준편차의 값을 비교하라고 했으니 먼저 표준편차와 중앙값을 함께 확인합시다. 많이 쓰는 describe()를 사용하면
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210171966-cdd581d9-5b3a-49e2-b5a1-f94191019e48.png)
+
+LotFrontage의 중앙값은 70이군요 그렇다면 바로 fillna를 써보겠습니다.
+
+[Pandas의 결측값 처리 방법 isnull, dropna, fillna](https://jeong-daniel.github.io/posts/Pandas%EC%9D%98-%EA%B2%B0%EC%B8%A1%EA%B0%92-%EC%B2%98%EB%A6%AC-%EB%B0%A9%EB%B2%95-isnull,-dropna,-fillna/)
+
+판다스 결측치 처리 하는 fillna는 위 게시글 참고
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210171991-3e4fda5e-240e-4869-8e97-f52d76e61ed1.png)
+
+바뀐뒤 다른 값은 어떻게 됬는지 별로 안궁금하지요 std()를 사용하면 이렇게 표준편차부터 바로 구할 수 있습니다. 
+
+```py
+X_train['LotFrontage'].std() - X_train['LotFrontage'].fillna(70).std()
+```
+
+좀더 예쁘게 아에 한줄로 만들어 버리면
+
+![img1 data](https://user-images.githubusercontent.com/85277660/210172001-a1da9efe-0819-4bb5-9087-43b3291e210a.png)
+
+차이가 이렇게 있다고 나오게 됩니다.
+
+다음에는 percentile로 이상값을 처리하는 방법을 해봅시다. loc와 iloc도 해볼 차례입니다.

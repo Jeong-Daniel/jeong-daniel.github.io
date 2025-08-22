@@ -1,0 +1,106 @@
+---
+title: 빅분기 실기 대비 이기적 5주차 예상 문제 풀이 2
+date:   2022-05-12 14:53:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [bigdata, data, python, pandas]
+---
+
+## 작업형 1유형
+
+데이터 출처 :[https://www.kaggle.com/harlfoxem/housesalesprediction](https://www.kaggle.com/harlfoxem/housesalesprediction) (참고, 데이터 수정)
+
+데이터 설명 : 킹카운티 주거지 가격 예측문제
+
+Data url :[https://raw.githubusercontent.com/Datamanim/datarepo/main/kingcountyprice/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/kingcountyprice/train.csv)
+
+​
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210370148-71b6e26b-1613-4f98-ae10-10c6112f14a3.png)
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/kingcountyprice//train.csv")
+```
+### Q1. bedrooms 의 빈도가 가장 높은 값을 가지는 데이터들의 price의 상위 10%와 하위 10%값의 차이를 구하여라
+
+bedrooms의 '빈도가 가장 높은 값'이라고 합니다. 이럴때 value_counts가 바로 떠오르시면 반은 성공하셨습니다. 거기에다가 price라고 다른 값으로 또 조건을 걸어 주었네요 그렇다면 이번에도 조건이 두번 걸리겠고 하나는 quantile겠네요
+
+```py
+df['bedrooms'].value_counts()
+```
+
+![img1 counts](https://user-images.githubusercontent.com/85277660/210370213-bb5bc4db-a395-443f-ba9f-81af60fdc561.png)
+
+bedrooms에다가 value_counts()를 하니 이렇게 나왔습니다. 자동으로 보기 좋게 정렬이 되었고 bedrooms가 3인것이 제일 많은 것도 알겠네요, 3이라는 값을 직접 쓰셔도 되지만 한가지 매소드를 더 붙이면 예쁘게 값을 가져올 수 있습니다.
+
+```py
+df['bedrooms'].value_counts().index[0]
+```
+
+![bedrooms view](https://user-images.githubusercontent.com/85277660/210370253-0ebb24f8-45fb-4685-82be-4023eaf7b2c9.png)
+
+첫번째 인덱스가 곧 제일 많은 값이지요 만약 세번째로 많은 것이라고 한다면 2를 넣어주시면 됩니다. 간단하지요 그렇다면 이제 해당 조건에 많은 값을 뽑아봅시다.
+
+```py
+lower = df.loc[df['bedrooms']==df['bedrooms'].value_counts().index[0]].price.quantile(0.1)
+upper = df.loc[df['bedrooms']==df['bedrooms'].value_counts().index[0]].price.quantile(0.9)
+print(upper-lower)
+```
+price열에다가 quantile를 걸어주시면 됩니다. 답은 505500.0
+
+---
+
+## 작업형 2유형
+데이터 출처 :[https://www.kaggle.com/harlfoxem/housesalesprediction](https://www.kaggle.com/harlfoxem/housesalesprediction) (참고, 데이터 수정)
+
+데이터 설명 : 킹카운티 주거지 가격 예측문제
+
+​평가지표 : r2 score
+
+trainData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/kingcountyprice/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/kingcountyprice/train.csv)
+
+testData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/kingcountyprice/test.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/kingcountyprice/test.csv)
+
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210370406-3972eb64-25e9-4006-a17b-ba86a8795979.png)
+
+
+이번에는 주거지 가격 예측 문제네요 price를 가지고 해봅시다. 일단 데이터를 보니 앞에 id와 date, zipcode는 버려도 되겠네요
+
+```py
+Main_name = 'kingcountyprice'
+
+trainData  = f'https://raw.githubusercontent.com/Datamanim/datarepo/main/{Main_name}/train.csv'
+testData  = f'https://raw.githubusercontent.com/Datamanim/datarepo/main/{Main_name}/test.csv'
+subData  = f'https://raw.githubusercontent.com/Datamanim/datarepo/main/{Main_name}/submission.csv'
+
+
+#데이터로드
+import pandas as pd
+
+train = pd.read_csv(trainData)
+test = pd.read_csv(testData)
+submission = pd.read_csv(subData)
+
+
+#불필요한 컬럼제거
+drop_col = ['date','id','zipcode']
+summit = pd.DataFrame(test['id'])
+
+train.drop(columns=drop_col,inplace=True)
+test.drop(columns=drop_col,inplace=True)
+
+y = train['price']
+train.drop(columns='price',inplace=True)
+
+from sklearn.ensemble import RandomForestRegressor
+model = RandomForestRegressor()
+model.fit(train,y)
+summit['price']=model.predict(test)
+summit.to_csv('price_pre.csv',index=False)
+```
+
+
+같은소리 계속 반복하는데 나눠서 뭐하나 싶어서.... 이제는 쭉쭉 결과만 뽑겠습니다.

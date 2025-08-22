@@ -1,0 +1,155 @@
+---
+title: 빅분기 실기 1985 Automobile 자동차 가격 예측 문제
+date:   2022-05-12 09:20:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [python, bigdata, data, pandas, ml]
+---
+
+[https://www.kaggle.com/fazilbtopal/auto85](https://www.kaggle.com/fazilbtopal/auto85)
+
+이번에는 캐글의 competition은 아니지만 자동차 데이터를 가지고 가격 예측을 한번 해보겠습니다. 데이터는 위 주소에서 받으시면 됩니다.
+
+앞서 했던 집값 예측이나 타이타닉 생존자 예측 정도의 난이도를 생각했는데, 누락이되고 지저분한 원데이터는 쓰기가 너무 어렵고 클린데이터는 워낙 깔끔하게 손댈것도 딱히 없어서 너무 쉬웠네요 학습데이터가 별로 없지만 정확도는 95%이상 나왔습니다. 그래도 간단하게 한번 해봅시다. 이번에는 좀 차례대로 순서를 적어보겠습니다.
+
+## 1. 데이터 확인
+
+```py
+import numpy as np
+import pandas as pd
+#train = pd.read_csv("auto.csv")
+train = pd.read_csv("auto_clean.csv")
+```
+
+![table view](https://user-images.githubusercontent.com/85277660/210241541-44f232d4-f492-4c9c-9fed-9e5fae7b0a79.png)
+
+각 자동차에 항목에 따라서 속성값들이 있습니다. 숫자는 모두 표준정규화 처리를 하고 범주는 원핫 인코딩을 하겠습니다. 그전에 결측값이 있는지부터 확인을 합시다.
+
+```py
+train.isnull().sum()
+```
+
+![data](https://user-images.githubusercontent.com/85277660/210241587-328d6c4f-6c14-452b-a019-5c86115db903.png)
+
+일부 항목에서 null값이 있는데 전체 데이터에서 비교를 해보면 그리 많은 양이 아닙니다. 그래도 날리기보다 표준정규화를 거친뒤에 0을 넣어서 처리하겠습니다.
+
+## 2. 데이터 전처리
+
+```py
+numeric = train.dtypes[train.dtypes !='object'].index
+```
+수치형과 범주형 데이터가 섞여 있습니다. dtypes는 열에 있는데이터가 어떤 종류인지 반환을 합니다. object가 아닌 것의 index(여기서는 열)을 반환한 값으로 수치 데이터를 먼저 확인합니다.
+
+*제가 빼먹었는데 여기서 예측해야하는 Price는 표준화처리를 하면 안됩니다. 제가 마지막에 하면서 통째로 해버렸는데 맨 처음에 하실때 Price는 시작할때 바로 y에다가 빼놓으시면 됩니다.
+
+```py
+train[numeric] = train[numeric].apply(lambda x : (x-x.mean())/(x.std()))
+```
+그런다음 apply(데이터프레임에 함수를 적용하는 함수)와 lambda를 이용해서 수치형 데이터를 표준처리를 해줍시다.
+
+```py
+train = train.fillna(0)
+```
+그리고 fillna를 가지고 데이터 결측값에다가 0으로 채웁시다.
+
+```py
+train = pd.get_dummies(train)
+```
+이어서 범주형데이터에 대해서 get_dummies를 이용해서 원핫인코딩을 적용합시다.
+
+```py
+X = train.copy()
+y = X.pop('price')
+```
+이제 X(독립변수)와 y(목표변수)를 구분합시다. X에다가는 여태 작업한 전처리 데이터를 전부 집어넣고 y에다가는 price만 넣어줍시다. pop를 하면 해당 열을 반환을 하고 원데이터에서는 제거가 됩니다.
+
+ 
+## 3. 모델 불러오기 & 학습하기
+```py
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test=train_test_split(X, y)
+```
+여태 train과 test데이터를 분리해서 받았습니다. 하지만 이번에는 따로 그런 작업을 거치지 않았으니 그냥 원데이터를 가지고 통째로 구분을 합시다. 기본값의 경우 테스트데이터 0.2, 훈련데이터 0.8로 구분이 될 것입니다. 만약 따로 조절을 하고 싶으시다면 test_szie또는 train_size로 0~1의 값을 넣어주시면 됩니다. 하나만 적용해주시면 나머지는 자동으로 결정합니다.
+
+일반적인 데이터 구분대신에 K-fold나 다른 파라미터를 사용해볼려고 했지만 데이터수가 너무 적은 관계로 의미가 없기에 넘어 갔습니다. 아마 실기문제에서도 이런식으로 데이터를 나누느 것을 요구하지는 않을거 같습니다.
+
+```py
+from sklearn.ensemble import RandomForestRegressor
+Random_modle = RandomForestRegressor()
+Random_modle.fit(X_train,y_train)
+Random_modle.score(X_train, y_train)
+```
+
+앙상블의 랜덤포레스트회귀를 가져 왔습니다. fit를 하고 score를 내보시면 됩니다.
+
+```py
+Random_modle.score(X_test, y_test)
+```
+
+마지막으로 test데이터에서의 정확도를 구해보았습니다.
+
+![table view](https://user-images.githubusercontent.com/85277660/210241726-a76266e4-32dc-4bc5-88c6-f34872413c4d.png)
+
+훈련데이터에서는 0.99를 테스트데이터에서는 0.88의 정확도를 보였습니다. 이게 끝이기도하고 제출할 곳은 따로 없지만 이번에도 csv파일을 만드는것까지 해보겠습니다.
+
+```py
+pred_train=Random_modle.predict(X_test)
+```
+predict로 X_test에 대한 예측값을 생성합시다.
+
+
+쓰는김에 이거 표로 정리하고 가면 좋을거 같습니다.
+
+|목적|명령어|독립변수 설정 (X)|목표변수 설정(y)|
+|---|---|---|---|
+|모델 훈련|	model.fit(X,y)|	O|	O|
+|모델 예측(범주)|	model.predict(X)|	O|	X|
+|모델 예측(확률)|	model.predict_proba(X)|	O|	X|
+|모델 정확도|	model.score(X,y)|	O|	O|
+
+작업형 유형2에서 사용했던 것은 확률인 model.predict_proba(X)였지요
+
+
+```py
+summit = pd.DataFrame()
+summit['Id'] = X_test.index
+summit['price'] = pred_train
+summit = summit.sort_values(by='Id')
+summit.to_csv('Car_price.csv', index=False)
+```
+
+CSV파일 생성이 끝났습니다! 궁금한점 있으면 덧글 달아주세요
+
+자동차 가격대신에 해당 자동차는 디젤일까 가솔린일까 범주예측 문제로도 풀어볼 수 있습니다. 다양하게 학습하시면 좋을거 같습니다.
+
+```py
+import numpy as np
+import pandas as pd
+#train = pd.read_csv("auto.csv")
+train = pd.read_csv("auto_clean.csv")
+#데이터 불러오기
+
+y = train.pop('price')
+numeric = train.dtypes[train.dtypes !='object'].index
+train[numeric] = train[numeric].apply(lambda x : (x-x.mean())/(x.std()))
+train = train.fillna(0)
+X = train.copy()
+X = pd.get_dummies(X)
+#데이터 전처리하고 X,y나누기
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test=train_test_split(X, y)
+#train, test데이터 나누기
+
+from sklearn.ensemble import RandomForestRegressor
+Random_modle = RandomForestRegressor()
+Random_modle.fit(X_train,y_train)
+pred_train=Random_modle.predict(X_test)
+#모델 학습하기
+
+summit = pd.DataFrame()
+summit['Id'] = X_test.index
+summit['price'] = pred_train
+summit = summit.sort_values(by='Id')
+summit.to_csv('Car_price.csv', index=False)
+#CSV파일 생성
+```

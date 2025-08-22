@@ -1,0 +1,66 @@
+---
+title: 빅분기 실기 복원 문제 Pandas 값 다루는 방법
+date:   2022-05-13 08:55:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [python, bigdata, data, pandas, ml]
+---
+
+*문제: 특정 칼럼의 가장 큰 값 10개를 그중 가장 작은 값으로 대치 후 다른 칼럼 값으로 조건을 걸어 특정 칼럼의 평균 구하기
+
+[https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data](https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data)
+
+복원문제중에 큰값 10개를 가장 작은 값으로 대치 후 ~ 뭐 하는 것이 있길래 한번 보스턴 데이터를 가지고 해봅시다. 해당 데이터는 위 링크를 통해서 캐글에 들어가시면 받을 수 있습니다.
+
+```py
+import numpy as np
+import pandas as pd
+
+train = pd.read_csv("train.csv")
+test = pd.read_csv("test.csv")
+```
+
+보스턴 데이터를 불러와서 몇가지 해보겠습니다. 데이터를 나누고 기계학습돌리는거는 마지막에 타이타닉이랑 같이해볼 계획입니다.
+
+![data view](https://user-images.githubusercontent.com/85277660/210171661-8781cfdd-7c6c-40a4-801c-73584b990cfe.png)
+
+여러가지 feature가 있었는데 그중에서도 LotArea를 사용해보겠습니다. 주택면적 넓이 입니다. 가장큰 10개의 값을 뽑아봅시다.
+
+일단 정렬하는 방법은 .sort_values()와 .sort_index()가 있습니다. 대충 값을 기준으로 할 것인가 index를 기준으로 할 것인가 알 수 있습니다. 자 그렇다면 한가지 조건이 더 들어가야 합니다.
+
+![img](https://user-images.githubusercontent.com/85277660/210171670-e08b162c-5c86-4497-8928-b77055065ba0.png)
+
+우리가 사용하는 열이 단 한개라고하도 어떤 열인지 명시적으로 정해주어야 합니다. 위와같이 LotArea라는 열에서 값을 가져올 수도 있고 아니라면
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210171675-5ecfa67b-4f41-4341-aab9-2523be8a5bef.png)
+
+매개변수 by를 사용해서 어느 열로 할것인지 명시적으로 적어주면 됩니다. 전자는 시리즈로 반환을하고 후자는 데이터프레임을 반환하네요 하지만 우리가 필요한 것은 큰 값 순서이지 작은 값이 아닙니다.
+
+![img1 view](https://user-images.githubusercontent.com/85277660/210171677-914c1b52-65de-429d-bd47-6d4f8558a470.png)
+
+ascending False를 추가적으로 넣어주니 값이 큰 순서대로 정렬되었습니다. 그러면 우리는 이제 큰 값 10개의 위치를 알 수 있습니다. 하지만 하나하나 바꾸기보다 좀더 우아한? 방식으로 한번에 바꿔보겠습니다.
+
+![describe](https://user-images.githubusercontent.com/85277660/210171692-79695aa9-373a-41e5-9d9e-c4ff290afab2.png)
+
+일단 가장 작은 값은 1300입니다. 해당 값을 적어두시고요
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210171828-5cc626a8-2e02-4b00-8c1c-ca732f395157.png)
+
+그 다음 10번째로 큰 값은 53107이 되는 것을 확인 할 수 있습니다.
+
+```py
+Sort_LotA.loc[Sort_LotA.LotArea>=53107,'LotArea']=1300
+Sort_LotA.head(10)
+```
+
+![Lotarea](https://user-images.githubusercontent.com/85277660/210171910-6465f5a7-7ff6-4637-860d-b9e92c4c541e.png)
+
+loc를 이용하면 이렇게 값을 일괄적으로 바꿀 수 있습니다. 이어서 loc와 iloc에 다룬 게시글을 작성해서 링크하겠습니다.
+
+```py
+New_Data = Sort_LotA[Sort_LotA['PoolArea']>100]
+New_Data['SalePrice'].mean()
+```
+
+![total mean](https://user-images.githubusercontent.com/85277660/210171921-fe46d880-851b-4e5d-8890-621a2085ca9d.png)
+
+마지막은 제가 정확히 어떤 문제인지 몰라서 대충 값을 처리를 하고, PoolArea가 100보다 큰 것을 기준으로 조건으로 걸어주고 SalePrice 평균을 내보았습니다.

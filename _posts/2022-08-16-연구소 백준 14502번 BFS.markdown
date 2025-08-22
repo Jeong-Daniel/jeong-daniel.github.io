@@ -1,0 +1,208 @@
+---
+title: 특정 거리의 도시 찾기 백준 18352번 BFS
+date:   2022-08-16 20:14:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, bfs]
+---
+
+[https://www.acmicpc.net/problem/14502](https://www.acmicpc.net/problem/14502)
+
+문제
+> 인체에 치명적인 바이러스를 연구하던 연구소에서 바이러스가 유출되었다. 다행히 바이러스는 아직 퍼지지 않았고, 바이러스의 확산을 막기 위해서 연구소에 벽을 세우려고 한다.
+> 
+> 연구소는 크기가 N×M인 직사각형으로 나타낼 수 있으며, 직사각형은 1×1 크기의 정사각형으로 나누어져 있다. 연구소는 빈 칸, 벽으로 이루어져 있으며, 벽은 칸 하나를 가득 차지한다.
+> 
+> 일부 칸은 바이러스가 존재하며, 이 바이러스는 상하좌우로 인접한 빈 칸으로 모두 퍼져나갈 수 있다.
+> 
+> 새로 세울 수 있는 벽의 개수는 3개이며, 꼭 3개를 세워야 한다.예를 들어, 아래와 같이 연구소가 생긴 경우를 살펴보자.
+
+이해는 했는데 풀이법은 또 안떠오른다. 다른 문제는 어찌어찌 풀어도 DFS/BFS는 아직 문제를 별로 접하지 못해서인지 유난히 약한 모습을 보이는거 같다.
+
+특히 벽을 3개 세워야 한다는 점이 이해 하지 못한 지점이었다. 최선의 방법으로 벽을 세우는 방법...?
+
+결국 이것도 완전 탐색으로 벽을 다 세워 본다는 결론에 도달했다.
+
+전체 맵의 최대 크기는 8x8이기에 벽을 설치할 수 있는(맵에 텅 비어있는 상황이라도)  경우는 64C3이 되는데 이는 100,000보다도 작은 수이기 때문에 제한 시간 안에 문제를 해결할 수 있다고 한다.
+
+모든 조합을 계산하는 방법은 combination 조합라이브러리를 사용하거나 DFS, BFS를 이용할 수도 있다. 따라서 벽의 개수가 3개가 되는 모든 조합을 찾은 뒤에 그러한 조합에 대해서 안전 영역의 크기를 계산하면 된다. 물론 안전 영역의 크기를 구하는것도 DFS나 BFS로 해결한다.
+
+*다만 이번 코드는 백준에서 시간초과로 통과를 못함
+
+```py
+n,m = map(int, input().split())
+data = [] #초기 맵 리스트
+temp = [[0]*m for _ in range(n)] #벽을 설치한 뒤의 맵 리스트
+
+for _ in range(n):
+    data.append(list(map(int,input().split())))
+                
+#4가지 이동 방향에 대한 리스트
+dx = [-1,0,1,0]
+dy = [0,1,0,-1]
+
+result = 0
+```
+
+입력이랑 변수 설정하는 부분입니다.
+
+```py
+#깊이 우선 탐색(DFS)를 이용해 각 바이러스가 사방으로 퍼지도록 하기
+def virus(x,y):
+    for i in range(4):
+        nx = x + dx[i]
+        ny = y + dy[i]
+        #상,하,좌,우 중에서 바이러스가 퍼질 수 있는 경우
+        if nx>=0 and nx < n and ny >= 0 and ny < m:
+            if temp[nx][ny]==0:
+                #해당 위치에 아무것도 없다면 바이러스를 배치하고 재귀
+                temp[nx][ny] = 2
+                virus(nx,ny)
+```
+
+많이 사용하는 재귀적으로 깊이 탐색을 하는 방법입니다. 4방향으로(상하좌우) 바이러스를 보내고 해당 값이 유효하며 0이면 2로 바꾸고 계속해서 탐색을 합니다.
+
+```py
+#현재 맵에서 안전 영역의 크기를 계산하는 메서드
+def get_score():
+    score = 0
+    for i in range(n):
+        for j in range(m):
+            if temp[i][j] == 0:
+                score += 1
+    return score
+```
+
+전체 맵에서 안전한 영역은 0이 될것이고 이 개수를 구하면 됩니다.
+
+```py
+#깊이 우선 탐색(DFS)을 이용해 울타리를 설치하면서, 매번 안전 영역의 크기 계산
+def dfs(count):
+    global result
+    #울타리가 3개 설치된 경우
+    if count == 3:
+        for i in range(n):
+            for j in range(m):
+                temp[i][j] = data[i][j]
+        #각 바이러스의 위치에서 전파 진행
+        for i in range(n):
+            for j in range(m):
+                if temp[i][j] == 2:
+                    virus(i,j)
+        #안전 영역의 최댓값 계산
+        result = max(result, get_score())
+        return
+    #빈공간에 울타리 설치
+    for i in range(n):
+        for j in range(m):
+            if data[i][j] == 0:
+                data[i][j] = 1
+                count += 1
+                dfs(count)
+                data[i][j] = 0
+                count -= 1
+dfs(0)
+print(result)
+```
+
+함수 밖에서 선언한 result를 전역변수로 선언을 하고
+
+재귀적으로 깊이 탐색이 들어가게 됩니다. 저는 개인적으로 어려웠던 부분이 그렇다면 3개의 울타리를 어디에 놓을 것인가? 였는데 마찬가지로 DFS나 BFS로 푼다는게 위 코드와 같은 의미 입니다.
+
+```py
+for i in range(n):
+        for j in range(m):
+            if data[i][j] == 0:
+                data[i][j] = 1
+                count += 1
+                dfs(count)
+                data[i][j] = 0
+                count -= 1
+```
+
+일단 위 코드에서 n부터 m까지 전체를 돌리게 됩니다. 그리고 만약 그 칸이 0이라면 일단 1로 만들어보고(count를 1올리고) dfs로 또 들어가게 됩니다. 그러면 여기에서도 한번더 1을 찾아서 count가 1증가하게 되고 재귀적으로 쭉 들어가는 형태가 보입니다.
+
+```py
+#울타리가 3개 설치된 경우
+    if count == 3:
+        for i in range(n):
+            for j in range(m):
+                temp[i][j] = data[i][j]
+        #각 바이러스의 위치에서 전파 진행
+        for i in range(n):
+            for j in range(m):
+                if temp[i][j] == 2:
+                    virus(i,j)
+        #안전 영역의 최댓값 계산
+        result = max(result, get_score())
+        return
+```
+
+그리고 울타리가 몇개까지? 3개까지라고 했지요 울타리가 3개일때 바이러스의 개수를 계산을 하고 result값을 최대로 갱신을 하게 됩니다.
+
+
+.... 제 생각에는 어느정도 코딩테스트에 익숙해지기 전까지는 문제를 최대한 많이 봐야 할거 같네요
+
+
+```py
+n,m = map(int, input().split())
+data = [] #초기 맵 리스트
+temp = [[0]*m for _ in range(n)] #벽을 설치한 뒤의 맵 리스트
+
+for _ in range(n):
+    data.append(list(map(int,input().split())))
+                
+#4가지 이동 방향에 대한 리스트
+dx = [-1,0,1,0]
+dy = [0,1,0,-1]
+
+result = 0
+
+#깊이 우선 탐색(DFS)를 이용해 각 바이러스가 사방으로 퍼지도록 하기
+def virus(x,y):
+    for i in range(4):
+        nx = x + dx[i]
+        ny = y + dy[i]
+        #상,하,좌,우 중에서 바이러스가 퍼질 수 있는 경우
+        if nx>=0 and nx < n and ny >= 0 and ny < m:
+            if temp[nx][ny]==0:
+                #해당 위치에 아무것도 없다면 바이러스를 배치하고 재귀
+                temp[nx][ny] = 2
+                virus(nx,ny)
+                
+#현재 맵에서 안전 영역의 크기를 계산하는 메서드
+def get_score():
+    score = 0
+    for i in range(n):
+        for j in range(m):
+            if temp[i][j] == 0:
+                score += 1
+    return score
+
+#깊이 우선 탐색(DFS)을 이용해 울타리를 설치하면서, 매번 안전 영역의 크기 계산
+def dfs(count):
+    global result
+    #울타리가 3개 설치된 경우
+    if count == 3:
+        for i in range(n):
+            for j in range(m):
+                temp[i][j] = data[i][j]
+        #각 바이러스의 위치에서 전파 진행
+        for i in range(n):
+            for j in range(m):
+                if temp[i][j] == 2:
+                    virus(i,j)
+        #안전 영역의 최댓값 계산
+        result = max(result, get_score())
+        return
+    #빈공간에 울타리 설치
+    for i in range(n):
+        for j in range(m):
+            if data[i][j] == 0:
+                data[i][j] = 1
+                count += 1
+                dfs(count)
+                data[i][j] = 0
+                count -= 1
+dfs(0)
+print(result)
+```

@@ -1,0 +1,30 @@
+---
+title: Pandas 데이터프레임 중간 생략없이 전체 보는 방법
+date:   2022-05-10 09:55:41 +0900
+categories: [Data_Sceince, Pandas]
+tags: [pandas, data, python]
+---
+
+판다스에서 데이터프레임이나 시리즈를 볼때 데이터가 너무 많으면 알아서? 중간을 생략해버립니다. 그런데 사실 하나하나 볼때가 있는데 너무 불편하지요
+
+![isnull sum result](https://user-images.githubusercontent.com/85277660/210140132-236f4340-b4c3-49e2-983e-2942437eea32.png)
+
+물론 다른 방법으로 확인이 가능하지만 일단은 귀찮습니다. 그냥 이대로 보는 방법은 옵션을 별도로 설정해주어야 합니다.
+
+```python
+import pandas as pd
+
+# 최대 줄 수 설정
+pd.set_option('display.max_rows', 500)
+
+# 최대 열 수 설정
+pd.set_option('display.max_columns', 500)
+
+# 표시할 가로의 길이
+pd.set_option('display.width', 1000)
+```
+
+![full screnn](https://user-images.githubusercontent.com/85277660/210140139-cc37a576-b59f-4ac4-a2f2-88978beb8d09.png)
+
+
+이제 생략없이 쭉 나옵니다. 다시 되돌리고 싶다면 최대 줄 술 설정을 다시 하시면 됩니다.

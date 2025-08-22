@@ -1,0 +1,36 @@
+---
+title: 부분수열의 합 백준 1182번 백트래킹
+date:   2022-10-24 17:33:20 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, backtracking]
+---
+
+[https://www.acmicpc.net/problem/1182](https://www.acmicpc.net/problem/1182)
+
+문제
+N개의 정수로 이루어진 수열이 있을 때, 크기가 양수인 부분수열 중에서 그 수열의 원소를 다 더한 값이 S가 되는 경우의 수를 구하는 프로그램을 작성하시오.
+
+```py
+cnt = 0
+def func(cur,tot):
+    global cnt
+    if cur==n:
+        if tot==s:
+            cnt+=1
+        return
+    func(cur+1, tot)
+    func(cur+1, tot+arr[cur])
+
+n, s = map(int,input().split())
+arr = list(map(int,input().split()))
+func(0,0)
+if s==0:
+    cnt-=1
+print(cnt)
+```
+
+부분 수열이라는 것은 결국 선택을 하거나 선택을 하지 않았거나 두가지 경우의수가 들어오게 됩니다.
+
+그래서 재귀로 들어가는 것은 다른게 아니라 하나씩 선택을 하는데 선택을 하는 경우와 선택을 하지 않는 경우로 들어가게 됩니다.
+
+그런데 이때 타겟 n과 같고 모든 것을 선택하거나 선택하지 않은 경우에 도달 했다 (tot==s)라면 cnt에 1을 더하고 넘어가게 됩니다. 만약 s가 0이라면 아무것도 선택하지 않은 공집합인 경우라면 1을 빼줘야 합니다.

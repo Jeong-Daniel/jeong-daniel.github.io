@@ -1,0 +1,41 @@
+---
+title: 동전 0 백준 11047번 그리디
+date:   2022-11-03 18:09:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, greedy]
+---
+
+[https://www.acmicpc.net/problem/11047](https://www.acmicpc.net/problem/11047)
+
+문제
+준규가 가지고 있는 동전은 총 N종류이고, 각각의 동전을 매우 많이 가지고 있다.
+
+동전을 적절히 사용해서 그 가치의 합을 K로 만들려고 한다. 이때 필요한 동전 개수의 최솟값을 구하는 프로그램을 작성하시오.
+
+그리디 문제는 조금 풀기 까다로운 면이 있습니다. 이번 동전 문제의 경우 그리디로 풀 수 있는 것이 동전이 1아니면 5로 나오기 때문입니다. 그러니까 500을 한번 쓰는게 100을 5번 쓰는 것보다 적다는 것이 전체적으로 보장이 되지만
+
+여기서 조금 틀어서 800원이나 900원 같은 값이 들어가버리면 그리디로 풀 수 없고 DP로 풀어야하기 때문입니다. 그래서  그리디로 풀 수 있다는 것만으로도 큰 힌트가 됩니다. 실제 문제를 만났을때 DP를 사용해야하는지 그리디로 풀 수 있는지도 판단을 해야지요 대표적으로 배낭에 짐넣기 문제등이 있습니다.
+
+ 
+```py
+num, total = map(int,input().split())
+coin_list = []
+ans = 0
+for i in range(num):
+    coin_list.append(int(input()))
+    
+for i in range(1,num+1):
+    if total//coin_list[-i] >= 1:
+        ans += total//coin_list[-i]
+        total = total%coin_list[-i]
+        if total == 0:
+            break
+    else:
+        continue
+        
+print(ans)
+```
+
+큰 것 순서대로 몫을 계산했을때 1보다 큰가 확인을 하고 1보다 크다면 몫을 ans에 더하고 나머지를 total에 갱신을 합니다. 그러다가 나머지가 0이 되는 순간 빠져나옵니다.
+
+조건에 따라서 오름차순으로 동전을 주어진다고 했으니 정렬을 할 필요가 없네요

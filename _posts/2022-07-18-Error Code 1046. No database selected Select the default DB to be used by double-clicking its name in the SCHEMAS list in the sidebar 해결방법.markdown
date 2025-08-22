@@ -1,0 +1,53 @@
+---
+title: Error Code 1046. No database selected Select the default DB to be used by double-clicking its name in the SCHEMAS list in the sidebar 해결방법
+date:   2022-07-18 16:59:10 +0900
+categories: [Tech, SQL]
+tags: [sql, db, query]
+---
+
+SQL WorkBranch에서 테이블을 생성할려고 하는데 위와 같은 에러가 발생했다.
+
+```sql
+CREATE TABLE board_categories(
+id int(10) not null auto_increment,
+category_code varchar(100) not null,
+category_type varchar(100) not null,
+category_name varchar(100) not null,
+category_desc varchar(200) not null,
+list_count int(10) default 20,
+authority int(1) default 0,
+creation_date datetime default current_timestamp,
+last_update_date datetime,
+primary key (id)
+);
+```
+
+분명히 코드에서는 에러를 못찾겠는데
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210790634-595778dd-86e4-4cd0-a6ed-6d3405f52e4c.png)
+
+```
+Error Code: 1046. No database selected Select the default DB to be used by double-clicking its name in the SCHEMAS list in the sidebar.
+```
+
+다시 영어를 살펴보니 기본 DB가 지정되지 않아서 생긴 문제라고 한다.
+
+앞에서 DB이름을 지정해주거나 기본 DB를 지정해주자
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210790679-d45c7c0a-52d5-4f1f-bd13-d6419a664b3f.png)
+
+옆에 네비게이션에서 Schemas에 들어가서 사용하려는 DB에 Default를 지정해주자
+
+![table view](https://user-images.githubusercontent.com/85277660/210790747-26886d7f-f96e-4e55-906d-59ccc8ca88a0.png)
+
+그리고 다시 쿼리문을 보내니 작동을 한다!
+
+또는 
+
+```sql
+CREATE TABLE board_categories(~
+
+CREATE TABLE DB이름.board_categories(~
+```
+
+이렇게 앞에다가 DB이름을 적으면 된다.

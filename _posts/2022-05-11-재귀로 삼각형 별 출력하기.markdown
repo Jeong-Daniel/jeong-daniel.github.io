@@ -1,0 +1,43 @@
+---
+title: 재귀로 삼각형 * 별 출력하기
+date:   2022-05-11 16:52:41 +0900
+categories: [Coding_Test, Others]
+tags: [coding, python, algorithm, recursive]
+---
+
+
+문제 풀면서 살짝 PTSD온줄 알았네요 학교에서 C언어 수업들을때 이상하게 반복문이 약했는데 별 출력하기 문제에서 조금만 꼬아버리면 그대로 해맸거든요
+
+ 
+
+그런데 재귀로 푼다... 흠..? 천천히 보면 딱히 어렵지는 않습니다.
+
+ 
+```py
+n = int(input())
+temp = []
+
+def start(num):
+    temp.append('*'*num)
+    if num!=1:
+        return start(num-1)
+    else:
+        return temp
+    
+def stack(num):
+    if len(num)!=0:
+        print(num.pop())
+        return stack(num)
+    else:
+        return
+    
+stack(start(n))
+```
+
+![result](https://user-images.githubusercontent.com/85277660/210166960-8bc08e50-62b2-4a4f-8d40-db363faf6547.png)
+
+별을 출력할때 어렵게 생각할거없고, 저렇게 정수배를 해주시면 됩니다. 즉 저기 숫자3 대신 코드에서는 int변수가 차례대로 곱을 해주겠지요
+
+뭔가 함수 하나에 몰어 넣는 방법이 있을건데 게을러서 안떠올라서 그냥 리스트에다가 별 집어넣고 스택으로 역순 출력하기를 선택했습니다.
+
+재귀도 얼마 안남았네요 빨리 DFS랑 BFS같은것도 풀어야 겠습니다.

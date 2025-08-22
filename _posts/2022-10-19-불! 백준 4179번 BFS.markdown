@@ -1,0 +1,91 @@
+---
+title: 불! 백준 4179번 BFS
+date:   2022-10-19 14:51:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, bfs]
+---
+
+[https://www.acmicpc.net/problem/4179](https://www.acmicpc.net/problem/4179)
+
+문제
+지훈이는 미로에서 일을 한다. 지훈이를 미로에서 탈출하도록 도와주자!
+
+미로에서의 지훈이의 위치와 불이 붙은 위치를 감안해서 지훈이가 불에 타기전에 탈출할 수 있는지의 여부, 그리고 얼마나 빨리 탈출할 수 있는지를 결정해야한다.
+
+지훈이와 불은 매 분마다 한칸씩 수평또는 수직으로(비스듬하게 이동하지 않는다)  이동한다. 
+
+불은 각 지점에서 네 방향으로 확산된다. 
+
+지훈이는 미로의 가장자리에 접한 공간에서 탈출할 수 있다. 
+
+지훈이와 불은 벽이 있는 공간은 통과하지 못한다.
+
+--- 
+
+어려울줄 알았는데 생각보다 아이디어 자체는 간단합니다. 먼저 불을 BFS로 이동시켜서 불이 도달하는 이동거리가 구하는 것을 다 계산한 다음 지훈이를 이동시켜서 벽이 아니거나 불이 먼저 도달하지 않은 곳으로 쭉 이동 시키다가 지도를 벗어나는 곳에 도달하면 출력하면 됩니다.
+
+
+즉 BFS를 두번 돌리고 조건문을 약간 다르게 주면 됩니다.
+
+```py
+from collections import deque
+queue_f = deque()
+queue_j = deque()
+n, m = map(int,input().split())
+map_list = []
+dist = [[0]*m for _ in range(n)]
+for i in range(n):
+    temp = str(input())
+    check=[]
+    for j in range(m):
+        check.append(temp[j])
+        if temp[j]=='.':
+            dist[i][j]=-1
+        elif temp[j]=='F':
+            queue_f.append([i,j])
+        elif temp[j]=='J':
+            queue_j.append([i,j])
+    map_list.append(check)
+```
+
+지훈이와 불의 큐를 따로 두고 지도를 입력받을때도 조건에 따라서 dist거리 리스트를 받습니다.
+
+```py
+dx = [0,0,1,-1]
+dy = [1,-1,0,0]
+esecep = False
+while queue_f:
+    curr = queue_f.popleft()
+    for k in range(4):
+        nx = curr[0] + dx[k]
+        ny = curr[1] + dy[k]
+        if nx >= m or nx <0 or ny >= n or ny < 0:
+            continue
+        if dist[nx][ny] != -1 or map_list[nx][ny]=='#':
+            continue
+        queue_f.append([nx,ny])
+        dist[nx][ny] = dist[curr[0]][curr[1]] + 1
+        
+while queue_j:
+    curr = queue_j.popleft()
+    for k in range(4):
+        nx = curr[0] + dx[k]
+        ny = curr[1] + dy[k]
+        if nx >= m or nx <0 or ny >= n or ny < 0:
+            print(dist[curr[0]][curr[1]] + 1)
+            esecep = True
+            break
+        if map_list[nx][ny]=='#':
+            continue
+        if dist[nx][ny]<dist[curr[0]][curr[1]]+1:
+            continue
+        queue_j.append([nx,ny])
+        dist[nx][ny] = dist[curr[0]][curr[1]] + 1
+
+if not esecep:
+    print("IMPOSSIBLE")
+```
+
+다만 파이썬으로 하면 시간초과가 나오고 pypy로하면 메모리 초과가 나옵니다.
+
+.... 알고리즘 자체는 맞는거 같으니 그냥 넘어가겠습니다. 코테를 창의적으로 풀어라고 하는데 사실 무슨말인지 잘 모르겠습니다. 숏코딩이 의미가 없는것은 아니지만 창의적으로 코드를 짜버리면 다른 사람이 알아보기 힘들건데 효과적이지 않다면 왜...? 라는 생각이라

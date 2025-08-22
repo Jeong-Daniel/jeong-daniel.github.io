@@ -1,0 +1,86 @@
+---
+title: 파이썬 리스트에서 2x2배열에서 얕은 복사가 일어나는 경우
+date:   2022-05-08 11:45:46 +0900
+categories: [Languages, Python]
+tags: [python]
+comment: true
+---
+
+오늘도 어김없이 코딩테스트를 준비하기 위해서 문제를 이것저것 풀어보는데 2차원배열 문제에서 값이 제대로 삽입되지 않는 문제가 있었습니다.
+
+만약에 numpy를 사용했다면 np.zeros((n,n))으로 간단하게 만드는 방법이 있겠지만 이런거 없이 리스트와 반복문을 이용해서 한번 2차원 배열을 만들어 보도록 하겠습니다.
+
+```python
+# First method to create a 1 D array
+N = 5
+arr = [0]*N
+
+# Second method to create a 1 D array
+N = 5
+arr = [0 for i in range(N)]
+```
+
+일단 1차원 배열 리스트를 만드는 방법은 아주 간단합니다. 리스트에다가 N번 곱해버리거나 반복문을 쓴다면 한줄로 만들 수 있습니다. 여기서 좀더 추가해서 2차원을 만들어 봅시다.
+
+## 1. 컴프레핸스 사용하기
+
+```python
+# first method to create 2D array
+rows, cols = (5, 5)
+arr = [[0]*cols]*rows
+
+# second method to create a
+rows, cols = (5, 5)
+arr = [[0 for i in range(cols)] for j in range(rows)]
+```
+
+첫번째 방법은 리스트를 만들고 거기에 한번더 리스트를 곱하는 것이고 두번째 방법은 for문을 이중으로 걸어둔 것입니다. 가독성이 떨어지기는 하는데 자주 보면 익숙하실거라 믿습니다. (?)
+
+
+## 2. 이중 for문 사용하기
+
+```python
+rows, cols = (5, 5)
+arr=[]
+for i in range(rows):
+    col = []
+    for j in range(cols):
+        col.append(0)
+    arr.append(col)
+print(arr)
+```
+
+마지막 방법은 단순히 곱하거나, for문을 이중으로 쓴것과는 달리 좀더 복잡하게 만들어지는데
+
+일단 col이라는 비어있는 리스트를 선언한다음 append를 통해서 반복을 해주고 이렇게 col 리스트가 완성이 되면 arr에 추가하는 식으로 만들어 지게 됩니다.
+
+자 그렇다면 print를 사용하면 결국 똑같은 값을 출력하지만 놀랍게도 다릅니다.
+
+![이중 for문 돌린 결과](https://user-images.githubusercontent.com/85277660/210081960-f1b2c852-6b43-4e64-9f88-42c17b16166e.png)
+
+바로 첫번째 방법을 이용해서 리스트를 곱하고 그 리스트를 한번더 곱하는 방법이지요 분명 저는 2,2 (0부터 시작했으니 3,3에 있는 값) 에 1을 추가를 했는데 보시면 3번째 있는 값이 몽땅 바뀌어져 있습니다.
+
+이유는 간단합니다. 얕은복사/깊은복사 문제가 일어났기 때문이지요
+
+![메모리 참조](https://user-images.githubusercontent.com/85277660/210081989-79cbc501-f19b-4149-b610-d794c18fdac5.png)
+
+단순히 리스트를 곱하고 그 리스트를 곱해서 넣게 되면 우리 눈에는 N개의 리스트가 나열된것처럼 보이지만
+
+ 
+
+N개의 리스트가 서로 다른 객체가 아니라 첫번째 객체가 N번 복사되어서 우리에게 보이는 것입니다.
+
+ 
+
+그러니 첫번째든 몇번째고 N번째고 리스트에 접근을 하게 되면 우리가 처음에 만들었던 객체에 접근하게 되는 것이고
+
+ 
+
+그 객체에서 받아온 리스트가 몽땅 바뀌어버리니 저런 일이 발생하는 것입니다.
+
+ 
+
+리스트를 단순히 곱하거나 복사해서 쓰기보다 for문이나 append를 사용해서 객체를 개별로 생성하는 것이 안전합니다.
+
+
+참고자료 : [geeksforgeeks](https://www.geeksforgeeks.org/python-using-2d-arrays-lists-the-right-way/)

@@ -1,0 +1,32 @@
+---
+title:  윈도우11 더 많은 옵션 표시 제거 방법
+date:   2023-01-27 14:40:46 +0900
+categories: [Tech, Tips]
+tags: [windows, tip]
+---
+
+윈도우 11에서 오른쪽 마우스를 클릭하면 아래와 같이 더 많은 옵션 보기로 따로 나오게 되는데
+
+![더 많은 옵션 보기](https://user-images.githubusercontent.com/85277660/215017787-014e93b5-1113-4fb9-a582-f56bf58c6ae7.jpg)
+
+거의 기본 수준에서는 이름 바꾸기, 삭제 정도로 할 수 있는게 없으니 더 많은 옵션 보기를 눌러야하고 클릭을 두번하게 됩니다. 이를 간단하게 지울 수 있는 방법이 있어서 포스팅을 해봅니다.
+
+![검색창 cmd](https://user-images.githubusercontent.com/85277660/215017794-bf9399d3-e763-4aad-8379-61db524c1e2c.jpg)
+
+검색에서 cmd 명령프롬프트를 불러 옵시다.
+
+그리고 3줄의 명령어를 다음과 같이 차례대로 입력을 해줍시다.
+
+![Cap 2023-01-27 14-37-59-629](https://user-images.githubusercontent.com/85277660/215017803-bd0c6b88-dc2f-4eb3-acaa-626d5738e65d.png)
+
+
+reg.exe add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve  
+
+taskkill /f /im explorer.exe  
+
+explorer  
+
+![Cap 2023-01-27 14-38-08-426](https://user-images.githubusercontent.com/85277660/215017809-e398f59f-72fa-4b2c-864b-26d46802aff6.jpg)
+
+
+끝! 이제 더 많은 옵션 표시를 누르지 않고 바로 이전 버전과 똑같이 작동합니다.

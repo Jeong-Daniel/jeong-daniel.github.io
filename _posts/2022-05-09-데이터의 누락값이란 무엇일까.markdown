@@ -1,0 +1,51 @@
+---
+title: 데이터의 누락값이란 무엇일까?
+date:   2022-05-09 9:43:41 +0900
+categories: [Data_Sceince, Study]
+tags: [numpy, missing, data]
+---
+
+![누락값 예시](https://user-images.githubusercontent.com/85277660/210135897-cdf9b930-43df-4165-9aa5-d80609a7305a.png)
+
+
+데이터 분석에 있어서 누락값은 필수적으로 다루어야 하는 녀석인데, 누락값은 무엇이고 어떻게 처리할까?
+
+```python
+import pandas as pd
+import numpy as np
+from numpy import NaN, NAN, nan
+일단 기본적으로 numpy의 NaN, NAN, nan을 모두 불러오고
+```
+
+ 
+```python
+print(NaN == True)
+print(NaN == False)
+print(NaN == 0)
+print(NaN == '')
+print(NaN == NaN)
+```
+
+여기서 True인것은? 정답은 없다 입니다.
+
+NaN은 참거짓도, 0도 공백도아니며 누락값끼리 비교하는 것이 불가능합니다.
+
+ 
+```python
+print(pd.isnull(NaN))
+print(pd.isnull(nan))
+print(pd.isnull(NAN))
+```
+
+pandas에서는 isnull이라는 매서드를 통해서 누락값을 판단할 수 있습니다.
+
+당연히 위 코드에서는 전부 True라고 나오지요
+
+ 
+```python
+print(pd.notnull(NaN))
+print(pd.notnull(42))
+print(pd.notnull(''))
+```
+
+반대로 notnull을 통해서 누락값의 여부를 확인 할 수 있습니다.

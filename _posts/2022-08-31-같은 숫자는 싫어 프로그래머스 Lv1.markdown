@@ -1,0 +1,29 @@
+---
+title: 같은 숫자는 싫어 프로그래머스 Lv1
+date:   2022-08-31 14:49:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/12906](https://school.programmers.co.kr/learn/courses/30/lessons/12906)
+
+```py
+def solution(arr):
+    lenght = len(arr)
+    curr = arr[0]
+    answer = [curr]
+    for i in range(1, lenght):
+        now = arr[i]
+        if curr==now:
+            continue
+        else:
+            answer.append(now)
+            curr = now
+    return answer
+```
+
+아무래도 저는 Lv1 보다는 Lv2 정도에 집중하는게 맞는거 같습니다. 크게 고민하지 않고 대부분 문제가 풀어지네요
+
+이거는 그냥 투포인터로 문제를 해결했습니다.
+
+커서를 두개 두고 비교하면서 같으면 넘어가고 다르면 갱신하고 답에 추가하는 식으로 쭉 이어 갔습니다.

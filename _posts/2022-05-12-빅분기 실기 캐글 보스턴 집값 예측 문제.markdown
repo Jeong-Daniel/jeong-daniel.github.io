@@ -1,0 +1,217 @@
+---
+title: 빅분기 실기 캐글 보스턴 집값 예측 문제
+date:   2022-05-12 10:30:30 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [python, bigdata, data, pandas, ml]
+---
+
+빅데이터분석 실기 작업형 2유형 대비를 위해서 캐글의 입문자를 위한 문제 몇가지를 풀어볼 생각입니다.
+
+![house price](https://user-images.githubusercontent.com/85277660/210172049-c8e95512-4bed-4c7a-a504-6af0f35b52f1.png)
+
+![data science](https://user-images.githubusercontent.com/85277660/210172065-b6424d6a-cae8-43cb-a3b5-c44907c4df6b.png)
+
+![titanic](https://user-images.githubusercontent.com/85277660/210172070-e7fc040f-984e-47ac-94a5-0ef0830c18e7.png)
+
+여러가지 유명한 것들이 있는데 거의 한번씩은 다들 보는 타이타닉과 보스턴 집값 문제 그리고 한두개정도 더 해볼 계획입니다. 가장 먼저 집값 예측 문제로 가볍게 시작하겠습니다.
+
+[빅분기 실기 작업형 2유형 모형 구축 및 평가 영역 1편](https://jeong-daniel.github.io/posts/%EB%B9%85%EB%B6%84%EA%B8%B0-%EC%8B%A4%EA%B8%B0-%EC%9E%91%EC%97%85%ED%98%95-2%EC%9C%A0%ED%98%95-%EB%AA%A8%ED%98%95-%EA%B5%AC%EC%B6%95-%EB%B0%8F-%ED%8F%89%EA%B0%80-%EC%98%81%EC%97%AD-1%ED%8E%B8/)
+
+여려번 말씀을 드렸지만 아마 2회 실험에서 오류도 있었기에 신유형이 나오기는 어려우며 전체 작업 시간이 1분 이내인 점 고도화되고 복잡한 머신러닝은 사용하기 힘들 것입니다. 목적 자체가 너 이거 해볼 수 있어? 정도 이기 때문에 최대한 간단하게 접근을 하고 일단 돌리는 것을 목적으로 하겠습니다.
+
+[https://www.kaggle.com/c/house-prices-advanced-regression-techniques](https://www.kaggle.com/c/house-prices-advanced-regression-techniques)
+
+데이터는 캐글에서 받으시고 저와 같이 보스턴 집값 분석을 해봅시다.
+
+```py
+import numpy as np
+import pandas as pd
+
+train = pd.read_csv("train.csv")
+test = pd.read_csv("test.csv")
+```
+
+scikit-learn은 나중에 부르는 걸로 하고 데이터 부터 봅시다. train과 test가 있습니다.
+
+![house pirce data view](https://user-images.githubusercontent.com/85277660/210172571-1dcf9412-e06d-49b2-8293-feb0d9d079be.png)
+
+train 데이터를 기준으로 보면 0번부터 1460개의 열과 81개의 컬럼이 있습니다. 그리고 SalePrice라는 목표열도 있습니다.
+
+![test data view](https://user-images.githubusercontent.com/85277660/210172579-d90833a0-f772-462f-a3aa-766000f8c703.png)
+
+test를 보시면 id가 1461번부터 총 1459개의 행이 들어 있는데 열이 하나가 빠졌지요 우리가 구해야할 SalePrice입니다.
+
+[빅분기 실기 작업형 2유형 모형 구축 및 평가 영역 2편](https://jeong-daniel.github.io/posts/%EB%B9%85%EB%B6%84%EA%B8%B0-%EC%8B%A4%EA%B8%B0-%EC%9E%91%EC%97%85%ED%98%95-2%EC%9C%A0%ED%98%95-%EB%AA%A8%ED%98%95-%EA%B5%AC%EC%B6%95-%EB%B0%8F-%ED%8F%89%EA%B0%80-%EC%98%81%EC%97%AD-2%ED%8E%B8/)
+
+지난번 예시로 풀었던 문제와 비슷합니다. train데이터를 가지고 모델을 학습을 하고, test데이터를 가지고 예측을 하고 예측 결과 값을 csv파일로 제출하면 됩니다.
+
+
+시작하기전에 아래 글을 보고 오시면 중간 생략없이 한눈에 볼 수 있습니다.
+
+[Pandas 데이터프레임 중간 생략없이 전체 보는 방법](https://jeong-daniel.github.io/posts/Pandas-%EB%8D%B0%EC%9D%B4%ED%84%B0%ED%94%84%EB%A0%88%EC%9E%84-%EC%A4%91%EA%B0%84-%EC%83%9D%EB%9E%B5%EC%97%86%EC%9D%B4-%EC%A0%84%EC%B2%B4-%EB%B3%B4%EB%8A%94-%EB%B0%A9%EB%B2%95/)
+
+## 1. 데이터 전처리
+가장 먼저 데이터 전처리를 해봅시다. 일단 범주형 데이터도 들어 있고, NaN으로 비어있는 값도 보입니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210172615-2af8b704-6942-49fd-a2f0-cdfd8c75ee7f.png)
+
+한가지 문제가 있습니다. 만약에 수치적인 값이라면 fillna()를 통해서 0이나 평균값을 넣을 수 있지만 범주값의 경우 이야기가 달라집니다. 결측치 처리를 할때 이산값과 범주값을 다르게 다루어야 합니다.
+
+여기서 데이터 전처리 전략은 다음과 같습니다.
+
+1. 이산형 값에다가 표준화 처리를 해줍니다.
+
+2. 비어있는 모든 값은 0으로 채웁니다. (표준화 처리를 하면 평균은 0이 됩니다.)
+
+3. 범주형은 원핫인코딩을 적용합니다.
+
+차근차근 해봅시다.
+
+일단 첫번째로 봐야할 것은 Id입니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210172627-20ddd015-6da4-4917-b232-612c61c48bda.png)
+
+Id는 값들을 구분하는데 유용하지만 집값을 예측하는데는 아무런 의미가 없는 변수입니다. 학습을 할때 잘못된 정보를 줄 수 있으니 이를 제거 합시다.
+
+```py
+all_features = pd.concat((train.iloc[:, 1:-1], test.iloc[:, 1:]))
+```
+
+결측값을 한번에 처리 하기 위해서 concat를 이용해서 train데이터와 test를 합쳤습니다.
+
+[Pandas loc와 iloc차이](https://jeong-daniel.github.io/posts/Pandas-loc%EC%99%80-iloc%EC%B0%A8%EC%9D%B4/)
+
+iloc의 의미는 위 게시글을 확인해주세요 일단 train의 경우 모든 행과, id를 제외한 1번부터(0이 첫번째) 주택가격열을 뺀 모든 것을 포함합니다. 슬라이싱 할때 -1은 마지막을 뜻합니다. -2는 마지막에서 두번째가 되지요 그러니까 데이터가 0 1 2 3 4 이렇게 있는데 제가 ':-1'이라고 주면 0 1 2 3 을 얻을 수 있습니다. ~까지라고 하면 이해하시기 편할겁니다. test에서도 마찬가지로 모든 데이터를 가져오는데 id를 제외하고 받아옵니다. 이렇게 두 DataFrame를 합쳐서 새로운 DataFrame를 만들었습니다.
+
+이번에는 이산형값을 가진 열을 구해봅시다.
+
+```py
+numeric_features = all_features.dtypes[all_features.dtypes != 'object'].index
+```
+
+float              float64
+int                  int64
+datetime    datetime64[ns]
+string              object
+
+dtypes를 하면 float64, int64, 또는 문자열이라면 object를 반환을 하게 됩니다. 즉 해당 데이터프레임에서 object가 아닌 것들의 index를 뽑아옵니다. 이렇게 얻는 값은 모두 이산형 값임을 알 수 있습니다.
+
+![data](https://user-images.githubusercontent.com/85277660/210172659-e2f7ad7f-924f-4c51-aaf8-e18e8c2c7f95.png)
+
+```py
+all_features[numeric_features] = all_features[numeric_features].apply(lambda x: (x - x.mean()) / (x.std()))
+all_features = all_features.fillna(0)
+```
+
+그 다음으로 이산형 값들을 표준화 처리를 하게 됩니다. apply는 데이터프레임에다가 함수를 걸어주게되고 lambda는 이름이 없는 임시로 걸어루즌 함수입니다. 먼저 나오는 인자는 x입니다. 표준화 공식은 (해당값 - 평균)/(표준편차)입니다. 이산형값에다가 표준화를 걸어주고 fillna를 통해서 비어 있는 값에다가는 0을 넣어줍니다. 그러면 범주형에 비어있는 값은 0이 들어가고 이산화된 값에 0은 평균이 0이 됩니다. 즉 0을 집어 넣으면서 평균값으로 채우게 됩니다.
+
+이제 원핫인코딩을 해서 범주를 처리해봅시다.
+
+```py
+all_features = pd.get_dummies(all_features, dummy_na=True)
+```
+그리고 dummy_na = True를 해주게 되면 0이나 비어있는 값도 원핫인코딩으로 처리를 하게 됩니다.
+
+```py
+X_train = all_features.iloc[:1460,:]
+X_test = all_features.iloc[1460:,:]
+y_train = train.iloc[:,-1]
+```
+다시 데이터를 나누어 봅시다. train과 test는 1459개가 기준이었으니 저렇게 나누어 줍시다. y_train은 모든 행에다가 -1번째 마지막 값을 가져오게 됩니다.
+
+```py
+from sklearn.ensemble import RandomForestRegressor
+Random_modle = RandomForestRegressor()
+Random_modle.fit(X_train,y_train)
+pred_train=Random_modle.predict(X_train)
+Random_modle.score(X_train, y_train)
+```
+지난번에 다루어 보았으니 전부 언급하지는 않겠습니다. 랜덤포레스트회귀를 가져와서 fit을 하고 예측을 해봅니다.
+
+![score](https://user-images.githubusercontent.com/85277660/210172692-4a46f019-5265-4494-8f29-5114e5a04c03.png)
+
+훈련데이터에 대해서는 0.98로 학습이 잘된것을 확인 할 수 있습니다.
+
+```py
+summit = pd.DataFrame()
+summit['Id'] = test['Id']
+summit['SalePrice'] = Random_modle.predict(X_test)
+```
+조건에 따라서 데이터를 만들어 줍시다.
+
+```py
+summit.to_csv('SalePrice_predic.csv', index=False)
+```
+to_csv를 이용해서 csv파일을 생성하고 index=False 하는것도 빼먹지 맙시다.
+
+![img](https://user-images.githubusercontent.com/85277660/210172707-3a48c4ac-63bf-492f-9a87-44ad51f61bfd.png)
+
+데이터가 완성되었습니다. 이왕 이렇게 만든거 캐글에 제출도 한번 해보겠습니다.
+
+![summit](https://user-images.githubusercontent.com/85277660/210172716-3c1ebada-1db2-443f-9e02-f46b691a8955.png)
+
+![kaggle score](https://user-images.githubusercontent.com/85277660/210172720-74010de3-560b-4242-87b3-d0c5f0b1c464.png)
+
+전체 참가자수가 4823인데 중간쯤 되는 성적을 얻었습니다. 
+
+
+이왕하는거 랜덤서치까지 해보겠습니다.
+
+
+## +Option 랜덤서치
+
+```py
+from scipy.stats import randint
+param_distribs = {'n_estimators': randint(low=100, high=500), 
+                  'max_features': ['auto', 'sqrt', 'log2']}
+from sklearn.model_selection import RandomizedSearchCV
+random_search=RandomizedSearchCV(RandomForestRegressor(), 
+                                 param_distributions=param_distribs, n_iter=20, cv=5)
+random_search.fit(X_train, y_train)
+```
+
+[빅분기 실기 작업형 2유형 모형 하이퍼파라미터 탐색하기](https://jeong-daniel.github.io/posts/%EB%B9%85%EB%B6%84%EA%B8%B0-%EC%8B%A4%EA%B8%B0-%EC%9E%91%EC%97%85%ED%98%95-2%EC%9C%A0%ED%98%95-%ED%95%98%EC%9D%B4%ED%8D%BC%ED%8C%8C%EB%9D%BC%EB%AF%B8%ED%84%B0-%ED%83%90%EC%83%89%ED%95%98%EA%B8%B0/)
+
+랜덤서치 하는 방법은 하이퍼파라미터 탐색 게시글로 대체하겠습니다.
+
+![final score](https://user-images.githubusercontent.com/85277660/210172751-7f7fb552-54c6-4cd6-aa88-282a579fd3b2.png)
+
+하이퍼파라미터를 수정하니 2409등에서 7등이 올랐습니다. 다른 방법이 필요해 보입니다.
+
+여기서 좀더 부스팅이나 앙상블을 이용해보려고 했는데 기본값으로는 랜덤포레스트보다 못한 결과값이 나와서 이쯤에서 끝내는걸로 하겠습니다. 제 생각에는 분석기사가 이거보다 어렵게 나올거 같지는 않네요
+
+ 
+
+전체 코드는 다음과 같습니다.
+
+
+```py
+import numpy as np
+import pandas as pd
+train = pd.read_csv("train.csv")
+test = pd.read_csv("test.csv")
+
+all_features = pd.concat((train.iloc[:, 1:-1], test.iloc[:, 1:]))
+numeric_features = all_features.dtypes[all_features.dtypes != 'object'].index
+all_features[numeric_features] = all_features[numeric_features].apply(lambda x: (x - x.mean()) / (x.std()))
+all_features = all_features.fillna(0)
+all_features = pd.get_dummies(all_features, dummy_na=True)
+
+X_train = all_features.iloc[:1460,:]
+X_test = all_features.iloc[1460:,:]
+y_train = train.iloc[:,-1]
+
+from sklearn.ensemble import RandomForestRegressor
+Random_modle = RandomForestRegressor()
+Random_modle.fit(X_train,y_train)
+pred_train=Random_modle.predict(X_train)
+Random_modle.score(X_train, y_train)
+
+summit = pd.DataFrame()
+summit['Id'] = test['Id']
+summit['SalePrice'] = Random_modle.predict(X_test)
+
+summit.to_csv('SalePrice_predic.csv', index=False)
+```
+
+공백포함해서 26줄되는 코드입니다. 여러분들이 이정도를 다른 도움없이 한번에 작성하실 수 있다면 아마 무난하게 작업 2유형은 할 수 있을 겁니다.

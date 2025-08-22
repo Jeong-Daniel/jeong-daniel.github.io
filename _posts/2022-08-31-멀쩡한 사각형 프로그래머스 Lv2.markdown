@@ -1,0 +1,30 @@
+---
+title: 멀쩡한 사각형 프로그래머스 Lv2
+date:   2022-08-31 18:03:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/62048](https://school.programmers.co.kr/learn/courses/30/lessons/62048)
+
+
+아무리 생각해도 이 문제는 코딩보다는 수학적인 해결 방법을 찾아야 할듯 합니다.
+
+얼핏 생각해도 가로 세로 길이가 똑같다면 전체 크기에서 n개만 반환하면 되고 각 변의 비율에 따라서 못쓰는 사각형이 결정된다고 보았습니다.
+
+```py
+import math
+def solution(w,h):
+    return w*h - (w+h-math.gcd(w,h))
+```
+
+
+.....
+
+파이썬에는 고맙게도 내장함수 덕분에 최대 공약수를 쉽게 얻을 수 있습니다.
+
+최대공약수가 1일때는 w+h-1이고 
+
+[참고 블로그](https://leedakyeong.tistory.com/entry/%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%A8%B8%EC%8A%A4-%EB%A9%80%EC%A9%A1%ED%95%9C-%EC%82%AC%EA%B0%81%ED%98%95-in-python)
+
+왜 이렇게 풀 수 있는지는 이분꺼 참고하시면 됩니다. 코테에 이런 문제도 있네요

@@ -1,0 +1,66 @@
+---
+title: 코랩(Colab) 무료부터 프로와 프로 플러스 성능 정리
+date:   2022-06-28 14:01:36 +0900
+categories: [Languages, Python]
+tags: [python,colab,google,jupyter]
+comment: true
+---
+
+![colab view](https://user-images.githubusercontent.com/85277660/210755237-2f5391cf-444b-436f-9d8a-9eaa2b63c475.png)
+
+머신러닝/딥러닝에서 중요한 것은 첫번째이고 그다음 어딘가쯤 장비빨입니다. GPU에서도 특히 DRAM이 큰거는 가격이 어마어마하게 뛰니 클리우드 컴퓨팅에서 유명한 코랩으로 쓰는데 사실 기업에서는 그렇게 많이 쓰지 않는다고 합니다. 데이터가 수백기가~수테라하는 거는 GPU 사다가 서버 구축하는게 훨씬 낫다고 하네요
+
+이야기가 조금 샜는데 다시 본론으로 들어와서 코랩에서는 기본(무료) 요금제 말고도 프로와 프로 플러스가 있습니다. 몇몇 설명은 있던데 나머지는 정리가 없는거 같아서 제가 한번 찾아 보았습니다. 나중에 시간에 따라서 변동사항이 있을지도 모르니 참고만 하시면 될것입니다.
+
+ ![info colab](https://user-images.githubusercontent.com/85277660/210755359-5d5a60f5-5b20-4a44-882d-d6a22ab329d3.png)
+
+코랩에서 상단에 연결이 되면 정보가 뜹니다.
+
+지속 시간(런타임) : 무료 12시간 / 프로 24시간 / 프로+ 무제한은 아니지만 2주 까지 돌려봤는데 안꺼졌다는 걸 봄
+
+거기에다가 브라우저를 닫아도 백그라운드에서 작업이 돌아가기 때문에 컴퓨터 끄고 가도 작동함
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210755476-a4113b03-2115-4840-8930-4c43fc5a7676.png)
+
+* 프로 플러스에서 두개 띄울 수는 있지만 이것을 24시간 풀로 두개를 사용하지는 못하는듯
+
+* 프로에서는 세션유지 24시간 보장이 아니라 최대 24시간이기 때문에 전에 종료될 수도 있음
+
+![nvidia-smi](https://user-images.githubusercontent.com/85277660/210755523-98d9ad09-f492-4621-ae86-143570c31be9.png)
+
+!nvidia-smi 명령을 입력하면 GPU 모델과 메모리를 알 수 있음
+
+```
+K80
+(Kepler)
+
+K80: 4992 * 560/875 MHz, 5591–8736 GFLOPS, 2x12G (Nov 2014)
+
+T4
+(Turing)
+
+PCIe: 2560 * 585/1590 MHz, 8100 GFLOS, 16G (Sep 2018)
+
+P100
+(Pascal)
+
+mezzanine(NVLink): 3584 * 1328/1480 MHz, 9519–10609 GFLOPS, 16G (Apr 2016)
+```
+
+![info lab](https://user-images.githubusercontent.com/85277660/210755650-dd0641a9-e8dc-4ce4-99c7-dc04ca076596.png)
+
+GPU : K80 / T4 or P100 / 좋은 성능 우선 할당
+
+다만 무료버전에서 GPU모델을 조회하니 T4가 나오기는 함
+
+![cpu info](https://user-images.githubusercontent.com/85277660/210755744-58e2b1f6-3dbf-41fd-950b-fa3b0b80103b.png)
+
+!head -n 3 /proc/meminfo 메모리 확인
+
+램 :  12.72GB / 25.51GB / 51GB(GPU사용시 13GB?)
+
+![xeon info](https://user-images.githubusercontent.com/85277660/210755821-c7b7e99c-eeab-4ed7-adb3-68b0fa15b7e1.png)
+
+!head /proc/cpuinfo 명령어로 cpu확인
+
+CPU : Intel(R) Xeon(R) 인텔 제온 CPU @ 2.20GHz(클럭은 더 주는듯?)

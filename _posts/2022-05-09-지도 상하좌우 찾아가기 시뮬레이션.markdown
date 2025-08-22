@@ -1,0 +1,58 @@
+---
+title: 지도 상하좌우 찾아가기 시뮬레이션
+date:   2022-05-10 13:55:41 +0900
+categories: [Coding_Test, Others]
+tags: [coding, python, algorithm, simulation]
+---
+
+NxN 크기의 정사각형 공간 위에 서 있다고 가정하자
+
+가장 왼쪽 위 좌표 (1,1)에서 시작을 해서 LRUD중 하나의 문자를 입력해서 해당 문자를 따라서 이동하는데(상하좌우)
+
+최종적으로 이동하는 곳을 출력하기
+
+```python
+n = int(input())
+x,y = 1,1
+plans = input().split()
+
+#L R U D에 따른 이동 방향
+dx = [0,0,-1,1]
+dy = [-1,1,0,0]
+move_types = ['L','R','U','D']
+
+#이동 계획을 하나씩 확인
+for plan in plans:
+    #이동 후 좌표 구하기
+    for i in range(len(move_types)):
+        if plan == move_types[i]:
+            nx = x + dx[i]
+            ny = y + dy[i]
+    #공간을 벗어나는 경우 무시
+    if nx < 1 or ny < 1 or nx > n or ny>n:
+        continue
+    x, y = nx,ny
+
+print(x,y)
+```
+
+일단 가장먼저 지도의 크기를 입력을 하고, plans에다가 어떻게 이동할지 계획합니다.
+
+여기에서 L,R,U,D는 방향을 나타내는데 왼쪽, 오른쪽, 위, 아래가 되는데
+
+최초의 좌표를 (1,1)라고 했을때 어떤 문자가 오느냐에 따라서 연산하는것이 달라집니다.
+
+ 
+
+왼쪽으로 왔을때는 (-1.0), 오른쪽일때는 (1,0), 위일때는 (0,1), 아래일때는 (0,-1)이런식으로 더해지게 됩니다.
+
+ 
+
+하지만 여기에서 공간 밖으로 나가게되면 무시하고 넘어가는 조건을 걸어주고
+
+ 
+
+마지막에 출력을 하게 됩니다. 
+
+
+![시뮬레이션 결과](https://user-images.githubusercontent.com/85277660/210141141-8816687d-530b-4c1b-a6db-1e0bc36c465f.png)

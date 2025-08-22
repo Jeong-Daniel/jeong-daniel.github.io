@@ -1,0 +1,136 @@
+---
+title: 빅분기 실기 대비 이기적 10주차 작업형 1유형 문제 풀이
+date:   2022-05-12 20:10:30 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [bigdata, data, python, pandas]
+---
+
+## 10주차 작업형 1유형
+ 
+데이터 출처 :[https://www.kaggle.com/rsrishav/youtube-trending-video-dataset?select=KR_youtube_trending_data.csv](https://www.kaggle.com/rsrishav/youtube-trending-video-dataset?select=KR_youtube_trending_data.csv)
+
+(참고, 데이터 수정)
+
+데이터 설명 : 유튜브 데일리 인기동영상 (한국)
+
+dataurl =[https://raw.githubusercontent.com/Datamanim/datarepo/main/youtube/youtube.csv
+](https://raw.githubusercontent.com/Datamanim/datarepo/main/youtube/youtube.csv
+)
+​
+데이터 상위 5개 컬럼
+
+baseline 코드
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210373746-a48829d2-0559-4e1a-8f7e-9e96d3889015.png)
+
+### Q1. 인기동영상 제작횟수가 많은 채널 상위 10개명을 출력하라 (날짜기준, 중복포함)
+ 
+channelTitle를 가지고 제작 횟수를 따지면 되겠습니다
+```py
+list(df.channelTitle.value_counts().head(10).index)
+```
+
+![youtube list](https://user-images.githubusercontent.com/85277660/210373818-6a2232a4-0e94-4ea6-999f-ec530179ddea.png)
+
+###Q2. 논란으로 인기동영상이 된 케이스를 확인하고 싶다.
+
+dislikes수가 like 수보다 높은 동영상을 제작한 채널을 모두 출력하라
+
+```py
+list(df.loc[df['likes']<df['dislikes']].channelTitle.unique())
+```
+
+### Q3. 채널명을 바꾼 케이스가 있는지 확인하고 싶다.
+
+channelId의 경우 고유값이므로 이를 통해 채널명을 한번이라도 바꾼 채널의 갯수를 구하여라
+
+일단 채널 타이틀과 채널 아이디를 가져옵시다. 그리고 drop_duplicates()를 사용하면 똑같은 중복값을 자동으로 지우게 됩니다.
+
+```py
+change = df[['channelTitle','channelId']].drop_duplicates()
+```
+그리고 생각을 해봅시다. 채널타이틀이 아니라 채널아이디의 개수를 셀 수 있습니다. 1개 이상이 있다면 그 채널은 이름을 바꾼적이 있다고 되겠네요
+
+```py
+change = df[['channelTitle','channelId']].drop_duplicates().channelId.value_counts()
+target = change[change>1]
+target.size
+```
+len또는 size를 통해서 row의 개수를 알 수 있습니다.
+
+ 
+### Q4. 일요일에  인기있었던 영상들중 가장많은 영상 종류(categoryId)는 무엇인가?
+
+```py
+df['trending_date2'] = pd.to_datetime(df['trending_date2']
+df.loc[df['trending_date2'].dt.day_name() =='Sunday'].categoryId.value_counts().index[0]
+```
+날짜정보는 있지만 요일정보는 없습니다. 즉 to_datetime을 이용해서 형변환을 하고 dt.day_name()를 가지고 Sunday를 구할 수 있습니다.
+
+
+### Q5. 각 요일별 인기 영상들의 categoryId는 각각 몇개 씩인지 하나의 데이터 프레임으로 표현하라
+
+```py
+df['trending_date2'].dt.day_name()
+```
+앞서 날짜 형변환을 했다면 dt.day_name()를 사용하시면 요일을 반환받습니다.
+
+```py
+group = df.groupby([df['trending_date2'].dt.day_name(),'categoryId'],as_index=False).size()
+group.pivot(index='categoryId',columns='trending_date2')
+```
+dt.day_name()과 'categoryId'로 정렬을 하고 pivot로 다시 재설정을 해주면 됩니다.
+
+
+### Q6. 댓글의 수로 (comment_count) 영상 반응에 대한 판단을 할 수 있다.
+
+viewcount대비 댓글수가 가장 높은 영상을 확인하라 (view_count값이 0인 경우는 제외한다)
+
+```py
+target = df.loc[df.view_count !=0]
+most = (target['comment_count'] / target['view_count']).dropna().sort_values().index[-1]
+target.iloc[most].title
+```
+일단 view_count가 0이 아닌 것부터 가져온 다음에 코멘트 대비 카운트를 구하고 정렬을 한다음에 인덱스를 통해서 제일 높은 것을 가져옵니다. 그러면 숫자값을 받을 수 있는데 iloc로 불러오게 됩니다
+
+ 
+
+### Q7. 댓글의 수로 (comment_count) 영상 반응에 대한 판단을 할 수 있다.
+
+viewcount대비 댓글수가 가장 낮은 영상을 확인하라 (view_counts, ratio값이 0인경우는 제외한다.)
+
+ 
+```py
+ratio = (target['comment_count'] / target['view_count']).dropna().sort_values()
+ratio[ratio!=0].index[0]
+df.iloc[ratio[ratio!=0].index[0]].title
+```
+
+바로 앞의 문제와 비슷합니다. 제일 낮지만 0이 아닌 것을 가져오게 됩니다. sort_vlaue를 하면 낮은순서대로 값이 정렬이 되는데 0인것을 버리고 첫번째 것을 가져온다음 해당 title을 보면 되겠습니다.
+
+ 
+
+### Q8. like 대비 dislike의 수가 가장 적은 영상은 무엇인가? (like, dislike 값이 0인경우는 제외한다)
+
+```py
+target = df.loc[(df.likes !=0) & (df.dislikes !=0)]
+num = (target['dislikes']/target['likes']).sort_values().index[0]
+df.iloc[num].title
+```
+likes와 dislikes가 0인 것을 제외한 값부터 가져온 다음 비융르 구하고 인덱스 값을 적용을 하면 되겠습니다.
+
+ 
+### Q9. 가장많은 트렌드 영상을 제작한 채널의 이름은 무엇인가? (날짜기준, 중복포함)
+
+```py
+df.loc[df.channelId==df.channelId.value_counts().index[0]].channelTitle.unique()[0]
+```
+사실 unique를 하고 첫번째 선택을 하지 않더라도 결국 value_counts를 하면서 짤툰하나만 쭉 나올 것입니다.
+
+ 
+### Q10. 20회(20일)이상 인기동영상 리스트에 포함된 동영상의 숫자는?
+
+```py
+(df[['title','channelId']].value_counts()>=20).sum()
+```
+인기동영상에 결국 20번 이상 똑같은 값이 있다면 맞는 것입니다.

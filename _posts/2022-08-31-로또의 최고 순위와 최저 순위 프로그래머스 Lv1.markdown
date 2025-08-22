@@ -1,0 +1,56 @@
+---
+title: 로또의 최고 순위와 최저 순위 프로그래머스 Lv1
+date:   2022-08-31 15:38:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/77484](https://school.programmers.co.kr/learn/courses/30/lessons/77484)
+
+이거를 마지막으로 Lv1는 그만하고 이제 Lv2를 풀러가야겠습니다.
+
+```py
+def count(num):
+    if num==6:
+        return 1
+    elif num==5:
+        return 2
+    elif num==4:
+        return 3
+    elif num==3:
+        return 4
+    elif num==2:
+        return 5
+    else:
+        return 6
+
+def solution(lottos, win_nums):
+    num_list = [0]*46
+    for i in range(6):
+        index = win_nums[i]
+        num_list[index] = 1
+    
+    count_a = 0
+    count_b = 0
+    
+    for i in range(6):
+        temp = lottos[i]
+        if temp==0:
+            count_b+=1
+        elif num_list[temp]!=0:
+            count_a+=1
+
+    answer = []
+
+    a = count(count_b+count_a)
+    b = count(count_a)
+
+    answer.append(a)
+    answer.append(b)
+    return answer
+```
+
+로또번호를 비교하는건데 어차피 로또번호는 1부터 45까지 숫자가 제한되어 있습니다. 그래서 win_nums를 참고해서 해당 번호의 배열에 1을 추가를 하고 이후 lottos번호로 해당 인덱스를 참조 했을때 번호가 1이라면 맞은거고 아니라면 틀렸겠지요 그리고 나머지 0으로 된것은 따로 관리해서 마지막에 구했습니다.
+
+
+6개 맞추면 1등 5개 맞추면 2등 이거는 편하게 구하는 방법이 있을 법도 했는데 어차피 나오는 숫자라고 해봐야 6가지니 그냥 함수 대충 만들었습니다.

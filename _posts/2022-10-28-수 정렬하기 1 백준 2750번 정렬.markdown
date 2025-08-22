@@ -1,0 +1,22 @@
+---
+title: 수 정렬하기 1 백준 2750번 정렬
+date:   2022-10-28 14:06:20 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, sorting]
+---
+
+[https://www.acmicpc.net/problem/2750](https://www.acmicpc.net/problem/2750)
+
+
+```py
+num = int(input())
+num_list = []
+for i in range(num):
+    num_list.append(int(input()))
+    
+num_list = sorted(num_list, reverse=False)
+for i in range(num):
+    print(num_list[i])
+```
+
+이번에도 간단한 정렬문제입니다.

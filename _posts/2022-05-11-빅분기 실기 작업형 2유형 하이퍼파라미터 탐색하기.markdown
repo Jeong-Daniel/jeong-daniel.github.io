@@ -1,0 +1,97 @@
+---
+title: 빅분기 실기 작업형 2유형 모형 하이퍼파라미터 탐색하기
+date:   2022-05-11 17:59:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [python, bigdata, data, pandas, ml]
+---
+
+[빅분기 실기 작업형 2유형 : 모형 구축 및 평가 영역 - 2](https://jeong-daniel.github.io/posts/%EB%B9%85%EB%B6%84%EA%B8%B0-%EC%8B%A4%EA%B8%B0-%EC%9E%91%EC%97%85%ED%98%95-2%EC%9C%A0%ED%98%95-%EB%AA%A8%ED%98%95-%EA%B5%AC%EC%B6%95-%EB%B0%8F-%ED%8F%89%EA%B0%80-%EC%98%81%EC%97%AD-2%ED%8E%B8/)
+
+맨 처음에는 간단하게 모든 과정을 했는데 두가지가 생략이 되었습니다. feature를 다루는거라거나 하이퍼파라미터를 탐색하는 것인데 이번에는 이 두가지를 어떻게 하는지 해볼려고 합니다.
+
+다만 기본값으로도 train데이터에 대해서 0.998이라는 정확도가 나왔기에 이를 가지고 모델을 더 다듬는다는 의미 보다는 그냥 이렇게 하는 구나 하고 보시면 될거 같습니다.
+
+하이퍼파라미터 탐색은 크게 두가지가 있습니다. 그리드 탐색과 랜덤 서치입니다.
+
+## 1. 그리드 탐색 Grid Search
+
+그리드 탐색은 사용자가 제시한 조건을 모두 확인해보는 것입니다. 예를 들어서 A 하이퍼 파라미터와 B 하이퍼 파라미터 두가지가 있다고 하겠습니다. A에다가 1,2,3을 주고 B에다가 10,100,1000을 주었다고 가정하겠습니다. 그러면 모든 조합의 개수인 9가지의 경우의 수를 다 체크를 하고 결과를 보여줍니다. 문제는 느리겠지요
+
+```py
+param_grid = {'n_estimators': range(100,500,100), 'max_features':['auto','sqrt','log2']}
+from sklearn.model_selection import GridSearchCV
+grid_search = GridSearchCV(RandomForestClassifier(), param_grid, cv=5)
+grid_search.fit(X_scaled_train, y_train)
+```
+
+param_grid라는 변수에 사전 형식으로 n_estimators를 줍시다. 랜덤포레스트에서 얼마나 tree를 생성할 것인가 결정하는 것입니다. 100부터 500까지 간격은 100이라는 뜻의 range를 주게 됩니다.
+
+max_features은 최대 features의 개수를 뜻합니다. 그런데 최대 개수라고 하면서 숫자를 안넣고 auto, sqrt, log2등이 들어 있습니다. sqrt(n_feature), log2(n_feature)입니다. n_feature 개수는 이미 데이터에 포함되어 있고 이를 sqrt(제곱근)의 값만큼 할건지 log2의 값만큼 할건지 결정하는 겁니다. 참고로 자동(auto)으로 설정하시면 sqrt입니다. 즉 3개가 들어갔지만 실질적으로는 두개지요
+
+참고로 더 자세히 알고 싶으시다면
+
+[scikit-learn 공식 문서](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html) 를 참고하시면 됩니다.
+
+그리고 GridSearchCV를 불러옵니다.
+
+```py
+grid_search = GridSearchCV(RandomForestClassifier(), param_grid, cv=5)
+```
+이전과 거의 비슷합니다. 우리는 지금부터 grid_search라는 별명으로 랜덤포레스트분류기, 탐색할 그리드, cv는 교차검증 횟수입니다.
+
+```py
+grid_search.fit(X_scaled_train, y_train)
+```
+그리고 grid_search에다가 데이터를 주어서 학습을 시킵니다.
+```py
+print("Best Parameter: {}".format(grid_search.best_params_))
+```
+
+![parameter result](https://user-images.githubusercontent.com/85277660/210171117-e81222f3-a2b8-4349-9245-b7ae524cfae1.png)
+
+
+사실 원래 모델에서 정확도가 0.998이 나온이상 얼마나 좋아졌는지는 의미가 없는거 같아 빼고 결과만 적었습니다.
+
+n_estimators는 400이고 max_features는 auto로 했을때 좋다고 합니다. 그렇다면 이 값을 가지고
+
+```py
+model=RandomForestClassifier()
+model=RandomForestClassifier(max_features='auto', n_estimators=400)
+```
+
+모델을 만들때 괄호로 비워두면 자동으로 기본값으로 설정이 됩니다. 이를 max_feature = 어떤 것을 사용할지 명시적으로 적어주면 적용이 가능합니다. 하이퍼파라미터 탐색은 시간이 오래 걸릴 수 있기 때문에 변수를 뽑아낸다음 사용할 모델에 적용하시고 이후 탐색부분은 주석처리하거나 지우셔야 합니다.
+
+이제 랜덤 서치를 살펴봅시다.
+
+## 2. 랜덤 서치 random search
+
+![vs search](https://user-images.githubusercontent.com/85277660/210171127-07073173-5756-47e1-87ee-e176386066c8.png)
+
+그리드 서치는 지정해준 모든 공간을 탐색하는 것에 반해서 랜덤 서치는 일정 영역을 주면 확률론에 따라서 알아서 탐색을 한다고 합니다. 일반적으로 랜덤서치의 성능이 더 좋은 것으로 알려진 만큼 사실 그리드 서치는 머리속에서 지우고 가셔도 무방할 것입니다.
+
+바로 코드부터 살펴봅시다.
+
+```py
+from scipy.stats import randint
+param_distribs = {'n_estimators': randint(low=100, high=1000), 
+                  'max_features': ['auto', 'sqrt', 'log2']}
+from sklearn.model_selection import RandomizedSearchCV
+random_search=RandomizedSearchCV(RandomForestClassifier(), 
+                                 param_distributions=param_distribs, n_iter=20, cv=5)
+random_search.fit(X_scaled_train, y_train)
+```
+
+이번에는 한가지 못보이던 녀석이 보이는데 randint입니다. 랜덤한 수를 호출하는 함수인데 아마 자주 보셨을지도 모르겠습니다. 마찬가지로 n_estimators는 low와 high로 최소와 최대값을 정해줍니다. 그리고 randint로 호출될때마다 해당 조건안의 랜덤수를 생성합니다.
+
+랜덤서치는 마찬가지로 model_selection의 RandomizedSearchCV를 호출 합니다. 그리고 n_iter이 추가 되었는데 이는 반복횟수 입니다. 대략 20분 정도면 될것입니다.
+
+```py
+print("Best Parameter: {}".format(random_search.best_params_))
+```
+
+![random search parameter](https://user-images.githubusercontent.com/85277660/210171179-3d3b0510-c1db-42a8-ab06-c5b1ac32bec5.png)
+
+
+이렇게 하이퍼파라미터 최적화가 완료되었습니다.  마찬가지로 위의 값을 가지고 모델에 적용하신다음 주석처리하거나 지우시면 됩니다.
+
+다음번에는 원핫인코딩을 해보겠습니다.

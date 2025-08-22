@@ -1,0 +1,75 @@
+---
+title: 파이썬 재귀에서 마지막 값만 들어갈때 해결방법
+date:   2022-10-25 15:48:30 +0900
+categories: [Languages, Python]
+tags: [python, coding, algorithm, recursive]
+---
+
+[N과 M (9) 백준 15663번 백트래킹](https://jeong-daniel.github.io/posts/N%EA%B3%BC-M-(9)-%EB%B0%B1%EC%A4%80-15663%EB%B2%88-%EB%B0%B1%ED%8A%B8%EB%9E%98%ED%82%B9/)
+
+코딩테스트 공부를 하다가 재귀/백트래킹 문제를 푸는데 도저히 이해가 되지 않는 부분이 있었다.
+
+```py
+n,m = map(int,input().split())
+num_list = list(map(int,input().split()))
+num_list.sort()
+check = []
+arr = [0]*m
+isused = [False]*n
+
+def func(k):
+    if k==m:
+        if arr not in check:
+            check.append(arr[:])
+            for i in range(m):
+                print(arr[i], end=' ')
+            print()
+        return
+    
+    for j in range(n):
+        if not isused[j]:
+            arr[k]=num_list[j]
+            isused[j] = True
+            func(k+1)
+            isused[j] = False
+            
+func(0)
+```
+
+여기서 문제가 되는 부분은 if문
+
+```py
+if k==m:
+	if arr not in check:
+    	check.append(arr)
+    	for i in range(m):
+        	print(arr[i], end=' ')
+        print()
+    return
+```
+
+문제는 숫자 리스트를 주고 주어진 조건에 따라서 중복없이 출력을 해야하는데
+
+백트래킹을 통해서 주어진 길이 m에 도달을 한다면 출력할 숫자(arr)이 check에 들어 있는지 확인을 하고 없다면 check에 추가를 하고 출력을 하는 건데
+
+check 리스트를 돌려보면 항상 arr의 마지막 값만 들어 있었다.
+
+결론은 재귀는 순서대로 돌기는 하지만 참조가 순서대로 도는것은 아니기에 발생하는 거다.
+
+어렵게 생각 할 것 없이 재귀에서 코드를 저렇게 짜면 
+
+```py
+if arr not in check:
+    	check.append(arr)
+```
+
+여기서 arr은 재귀의 마지막 것만 일괄적으로 참조해서 들어간다.... (???)
+
+해결 방법은 간단하다,
+
+```py
+if arr not in check:
+    	check.append(arr[:])
+```
+
+이렇게 [:] 이것을 리스트에 붙여주면 재귀의 마지막 것만 참조하지 않고 들어간다고 한다.

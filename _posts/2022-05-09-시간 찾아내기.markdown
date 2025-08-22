@@ -1,0 +1,37 @@
+---
+title: 시간 찾아내기 시뮬레이션
+date:   2022-05-10 15:58:41 +0900
+categories: [Coding_Test, Others]
+tags: [coding, python, algorithm, simulation]
+---
+
+정수 N이 들어올때 00시00분00초부터 N시59분59초까지의 모든 시각중에서 3이 하나라도 포함되는 경우의 수를 구하는 프로그램을 작성하기 1을 입력했을 때 다음은 3이 하나라도 포함되어 있으므로 세어야 하는 시각이다.
+
+ 
+```python
+h=int(input())
+count=0
+
+for i in range(h+1):
+    for j in range(60):
+        for k in range(60):
+            if '3' in str(i)+str(j)+str(k):
+                count+=1
+print(count)
+```
+
+이번에는 딱히 설명도 필요없는 문제입니다. 하루는 86,400초이기 때문에 완전탐색을 하더라도 큰 시간이 걸리지 않습니다. 
+
+ 
+
+3중 for문을 사용하며 각 시,분,초를 str로 바꾼다음 if문을 이용해서 있는지 물어보는 겁니다.
+
+ 
+
+3대신에 str(h)를 사용하시면 N이 하나라도 포함되는 수를 찾게 됩니다.
+
+
+![simulation result](https://user-images.githubusercontent.com/85277660/210141538-cb163015-20da-44b7-aa40-b4d789b8b6f1.png)
+
+
+보통 이런 구현, 시뮬레이션과 그리디는 별개로 나오는 것이 아니라 함께 포함된 형태로 출제되는 경우가 많습니다.

@@ -1,0 +1,145 @@
+---
+title: 빅분기 실기 대비 이기적 2주차 예상 문제 풀이 1
+date:   2022-05-12 10:40:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [bigdata, data, python, pandas]
+---
+
+## 작업형 1유형
+
+데이터 출처 :[https://www.data.go.kr/data/15007122/fileData.do](https://www.data.go.kr/data/15007122/fileData.do) (참고, 데이터 수정)
+
+데이터 설명 : 2018년도 성인의 건강검 진데이터 (흡연상태 1- 흡연, 0-비흡연 )
+
+데이터 url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/smoke/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/smoke/train.csv)
+
+데이터 상위 5개 컬럼
+
+![table view](https://user-images.githubusercontent.com/85277660/210362222-31a44b0a-fe75-41b2-9e0c-9236c368b1d4.png)
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/smoke/train.csv")
+```
+
+### Q1. 시력(좌) 와 시력(우)의 값이 같은 남성의 허리둘레의 평균은?
+
+loc를 이용해서 시력이 같은 두 컬럼의 값이 같은 것들을 가져와서 허리둘레열의 mean()을 찾아보면 되겠습니다.
+
+```py
+df.loc[(df['시력(좌)']==df['시력(우)'])&(df['성별코드']=='M')]['허리둘레'].mean()
+```
+정답 : 84.97
+
+
+### Q2. 40대(연령대코드 40,45) 여성 중 '총콜레스테롤'값이 40대 여성의 '총콜레스테롤' 중간값 이상을 가지는 그룹과
+
+50대(연령대코드 50,55) 여성 중 '총콜레스테롤'값이 50대 여성의 '총콜레스테롤' 중간값 이상을 가지는
+
+두 그룹의 '수축기혈압'이 독립성,정규성,등분산성이 만족하는것을 확인했다.
+
+두 그룹의 '수축기혈압'의 독립표본 t 검증 결과를 통계값, p-value 구분지어 구하여라.
+
+
+제 생각에는 작업유형 1에 나오기에는 난이도가 조금 있는거 같은데 일단 해보겠습니다.
+
+```py
+f1 =df.loc[(df['성별코드']=='F') &(df['연령대코드(5세단위)'].isin([50,55]))]
+f2 =df.loc[(df['성별코드']=='F') &(df['연령대코드(5세단위)'].isin([40,45]))]
+```
+주어진 연령대코드를 바탕으로 f1과 f2라는 두 그룹으로 구분을 한다음 총 콜레스테를 값을 한번더 추출합시다.
+
+```py
+f1f = f1.loc[f1['총콜레스테롤'] >=f1['총콜레스테롤'].median()]['수축기혈압']
+f2f = f2.loc[f2['총콜레스테롤'] >=f2['총콜레스테롤'].median()]['수축기혈압']
+```
+그리고 중간값이상의 총 콜레스테롤 조건을 걸어주고 여기서 다시 한번 '수축기혈압'을 뽑아좁시다.
+
+```py
+import scipy.stats
+scipy.stats.ttest_ind(f1f, f2f, equal_var=True)
+```
+t검증결과는 scipy.stats에 있는 ttest_ind를 이용하면 됩니다.
+
+[https://docs.scipy.org/doc/scipy/reference/stats.html#statistical-tests](https://docs.scipy.org/doc/scipy/reference/stats.html#statistical-tests)
+
+scipy.stats 문서를 참고해보시면 t테스트, 카이검증, 윌콕스 검정, 샤피로 검증등 여러가지가 있습니다. 여기서는 두개의 그룹을 비교하기 위해서 ttest_ind를 사용했으며 대상 그룹이 하나라면 ttest_1samp입니다.
+
+---
+
+## 작업형 2유형
+
+데이터 출처 :[https://www.data.go.kr/data/15007122/fileData.do](https://www.data.go.kr/data/15007122/fileData.do) (참고, 데이터 수정)
+
+데이터 설명 : 2018년도 성인의 건강검진 데이터로부터 흡연상태 예측 (흡연상태 1- 흡연, 0-비흡연 )
+
+문제타입 : 분류유형
+
+평가지표 : f1-score
+
+trainData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/smoke/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/smoke/train.csv)
+
+testData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/smoke/test.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/smoke/test.csv)
+
+subData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/smoke/submission.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/smoke/submission.csv)
+
+
+데이터 상위 5개 컬럼
+
+![img1 column](https://user-images.githubusercontent.com/85277660/210363601-54067beb-87e9-483d-8e92-22863e692bfb.png)
+
+이번에는 성인의 흡연여부를 예측하는 문제입니다. 지난번에는 train데이터로 모델을 만들고 test데이터로는 별다른 예측만하고 평가를 따로하지 않았는데 이번 몇개는 train데이터를 분리해서 사용하고 오버피팅 문제도 조금 해볼까합니다.
+ 
+데이터를 살펴보면 드랍해야할 데이터도 없는거 같고 크게 표준화 할 필요도 없어보입니다. 다만 구강검진여부는 의미가 없는거 같으니 드랍한 다음 원핫인코딩만 적용하고 그대로 진행해보겠습니다. 시력이랑 청력이랑 관계가 없는거 아닌가? 했는데 흡연은 시력이랑 청력 둘다 손상시킨다고 합니다. 전문가가 아닌만큼 일단 다 포함하겠습니다.
+ 
+```py
+train.drop(columns='구강검진수검여부', inplace=True)
+y = train.pop('흡연상태')
+X = pd.get_dummies(train)
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y)
+```
+구강검진수검여부를 빼버리고 y에다가는 목적변수 흡연상태를 넣고 나머지에다가는 원핫인코딩을 적용했습니다. 그리고 train데이터를 가지고 데이터를 분리해보았습니다. stratify는 계층적 샘플링을 적용하겠다는 의미 입니다. 계층적 샘플링이란 모집단의 데이터 분포 비율을 유지하면서 데이터를 샘플링(취득)하는 것을 말합니다. 여기서 예를 들어 흡연자의 비율이 40%라고 할경우 test, train데이터 둘다 흡연자의 비율을 40%를 유지하게 만드는 것입니다. 범주형 데이터를 다룰때는 이렇게 하시면 됩니다.
+
+```py
+from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier()
+model.fit(X_train,y_train)
+print(model.score(X_train,y_train),model.score(X_test,y_test))
+```
+학습결과 test데이터에 대해서는 77%가 나왔습니다. 하이퍼파라미터 튜닝을 해봅시다.
+
+```py
+from scipy.stats import randint
+param_distribs = {'n_estimators': randint(low=100, high=1000), 
+                  'max_features': ['auto', 'sqrt', 'log2']}
+from sklearn.model_selection import RandomizedSearchCV
+random_search=RandomizedSearchCV(RandomForestClassifier(), 
+                                 param_distributions=param_distribs, n_iter=20, cv=5)
+random_search.fit(X_train, y_train)
+```
+n_estimator은 100~1000개 최대 featrues는 auto, sqrt, log2이렇게 되 있습니다. 지난번에 여러차례 설명했기 때문에 자세히 설명은 안하겠습니다. 그래도 데이터가 좀 있어서 그런지 금방은 안되는군요
+
+```py
+print("Best Parameter: {}".format(random_search.best_params_))
+print("Best Score: {:.4f}".format(random_search.best_score_))
+print("TestSet Score: {:.4f}".format(random_search.score(X_test, y_test)))
+```
+마지막으로 이번에는 아이디값이 따로 없기 때문에 흡연여부만 저장하도록 하겠습니다.
+
+```py
+Best Parameter: {'max_features': 'sqrt', 'n_estimators': 425}
+Best Score: 0.7590
+TestSet Score: 0.7603
+```
+sqrt와 425일때 제일 좋은 성능을 낸다고합니다. 데이터가 그래도좀 있어서 그런지 상당히 시간이 오래 걸리네요
+
+하지만 학습데이터 0.77에 비하면 오히려 소폭 감소했으며 별 의미는 없었습니다. 하이퍼파라미터를 튜닝하는 것은 좋은 성능을 내는 방법은인 것은 맞지만 아마 실제 문제를 풀때는 그리큰 효과는 있는지 모르겠습니다.
+
+```py
+summit = pd.DataFrame()
+summit['흡연여부'] = model.predict(test)
+summit.to_csv('smoking_predict.csv',index=False)
+```
+csv파일을 만들고 저장을 했습니다. 참고로 저거 그대로 흡연여부라고 한글로 쓰시면 아마 깨질겁니다.

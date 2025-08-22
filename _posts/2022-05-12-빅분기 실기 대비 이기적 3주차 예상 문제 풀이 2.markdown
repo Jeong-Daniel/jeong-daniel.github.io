@@ -1,0 +1,89 @@
+---
+title: 빅분기 실기 대비 이기적 3주차 예상 문제 풀이 2
+date:   2022-05-12 11:40:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [bigdata, data, python, pandas]
+---
+
+## 작업형 1유형
+
+데이터 출처 :[https://www.kaggle.com/iabhishekofficial/mobile-price-classification?select=train.csv](https://www.kaggle.com/iabhishekofficial/mobile-price-classification?select=train.csv) (참고, 데이터 수정)
+
+데이터 설명 : 핸드폰 가격예측 (price_range컬럼 0(저렴) ~3(매우비쌈) 범위 ) 2000 rows × 21 columns
+
+Data url [https://raw.githubusercontent.com/Datamanim/datarepo/main/mobile/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/mobile/train.csv)
+
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210366880-0a940533-426b-43d6-b76c-8c1fa9634441.png)
+
+```py
+import pandas as pd
+df = pd.read_csv("https://raw.githubusercontent.com/Datamanim/datarepo/main/mobile/train.csv")
+```
+
+### Q1. price_range 의 각 value를 그룹핑하여 각 그룹의 n_cores 의 빈도가 가장높은 value와 그 빈도수를 구하여라
+
+```py
+df[['price_range','n_cores']].groupby(['price_range','n_cores']).size().sort_values(0).groupby(level=0).tail(1)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210366943-071da2a5-eab2-4a09-87b7-8403392ae273.png)
+
+개인적으로는 문제가 별로 좋지 못한거 같아서 넘어가겠습니다. 문장을 읽고 뭘 원하는지 한눈에 안들어오네요
+
+### Q2. price_range 값이 3인 그룹에서 상관관계가 2번째로 높은 두 컬럼과 그 상관계수를 구하여라
+```py
+corrdf = df.loc[df['price_range']==3].corr().unstack().sort_values(ascending=False)
+corrdf_remove = corrdf.loc[corrdf!=1]
+```
+
+price_range를 3인 것에서 corr()은 상관관계를 추출을쭉 하게 됩니다. 하지만 이대로 값을 구하기가 힘드니 unstack을 통해서 1줄로 쭉 쌓게됩니다. 그리고 정렬을 하는데 문제가 있습니다. 같은 행렬간의 상관관계수는 1입니다. 즉 자기 자신의 값으 빼야하니 상관계수가 1을 빼고 값을 확인합시다.
+정답 : pc - fc 0.635166
+
+---
+
+## 작업형 2유형
+
+데이터 출처 :[https://www.kaggle.com/iabhishekofficial/mobile-price-classification?select=train.csv](https://www.kaggle.com/iabhishekofficial/mobile-price-classification?select=train.csv) (참고, 데이터 수정)
+
+데이터 설명 : 핸드폰 가격예측 (price_range컬럼 0(저렴) ~3(매우비쌈) 범위 )
+
+문제타입 : 분류유형
+
+평가지표 : accuracy
+
+trainData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/mobile/train.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/mobile/train.csv)
+
+testData url : [https://raw.githubusercontent.com/Datamanim/datarepo/main/mobile/test.csv](https://raw.githubusercontent.com/Datamanim/datarepo/main/mobile/test.csv)
+
+데이터 상위 5개 컬럼
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210367045-b9a5b5fe-4418-427e-b663-620310117ae8.png)
+
+먼저 price_range가 어떤 값에 속하는지 확인을 합니다. 데이터 설명에서 0~3사이라고 하는데 직접 확인해봅시다.
+
+```py
+train.price_range.unique()
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210367082-d8e08ada-3a9b-49c9-bd1f-70be79c6cbea.png)
+
+말그대로 1,2,3,0으로 분류가 됩니다. 이번에는 결측값도 없고 스케일도 따로 안하겠습니다. 랜덤포레스트분류를 통해서 바로 학습을 해보겠습니다.
+
+```py
+y = train.pop('price_range')
+summit = pd.DataFrame(test.pop('id'))
+```
+train에서 y값을 뺍시다. 그런데 test데이터에는 train에는 없던 id가 들어 있습니다. 미리 summit에 빼버립시다.
+
+```py
+from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier()
+model.fit(train,y)
+summit['price_range'] = model.predict(test)
+summit.to_csv('Predict_price_range.csv', index=False)
+```
+바로 분류기를 불러와서 학습을 해버리고 csv파일로 저장을 해줍시다.
+
+이번에도 딱히 데이터를 나눠서 훈련을 하지는 않겠습니다.

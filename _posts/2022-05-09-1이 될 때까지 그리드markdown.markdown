@@ -1,0 +1,66 @@
+---
+title: 1이 될 때까지 그리드
+date:   2022-05-10 11:55:41 +0900
+categories: [Coding_Test, Others]
+tags: [coding, python, algorithm, greedy]
+---
+
+출처 : 2018 E 기업 알고리즘 대회
+
+문제
+
+어떤 수 N이 1이 될 때까지 다음의 두 과정 중 하나를 반복적으로 선택하여 수행하려 한다.
+두번째 연산은 N이 K로 나누어 떨어질 때만 선택할 수 있다.
+
+N에서 1을 뺀다.
+N을 K로 나눈다.수행횟수는?
+
+
+```python
+n, k = map(int, input().split())
+
+count = 0
+result = n
+while True:
+    if result==1: break
+    if result%k != 0:
+        result-=1
+    else:
+        result=(result/k)
+    count+=1
+
+print(count)
+```
+첫번째 방법은 단순하게 접근한것입니다. 나누었을때 0이라면 나눈값을 넣어주고 아니라면 1을 빼주고 이 과정을 반복하게됩니다.
+
+ 
+
+하지만 문제는 숫자가 작다면 문제가 되지 않겠지만 만약 입력받는 값이 수백만 억이라면 어떻게 될까요? 계산량이 상당히 늘어나겠지요
+
+ 
+
+하지만 배수가 들어온 것을 감지하고 한번에 뺄 수 있다면 계산량은 훨씬 줄어들 것입니다.
+
+ 
+```python
+n, k = map(int, input().split())
+result = 0
+
+while True:
+    #N==K로 나누어떨어지는 수 가 될 때까지 1식 빼기
+    target = (n//k)*k
+    result += (n-target)
+    n = target
+    #N이 K보다 작을 때(더 이상 나눌 수 없을 때) 반복문 탈출
+    if n < k:
+        break
+    #k로 나누기
+    result += 1
+    n //= k
+
+#마지막으로 남은 수에 대해서 1씩 빼기
+result += (n-1)
+print(result)
+```
+
+![result](https://user-images.githubusercontent.com/85277660/210141098-46372942-ba18-4cb6-8431-81bc180c27a1.png)

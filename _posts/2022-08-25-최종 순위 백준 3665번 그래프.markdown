@@ -1,0 +1,221 @@
+---
+title: 최종 순위 백준 3665번 그래프
+date:   2022-08-25 14:19:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, graph]
+---
+
+[https://www.acmicpc.net/problem/3665](https://www.acmicpc.net/problem/3665)
+
+> 올해 ACM-ICPC 대전 인터넷 예선에는 총 n개의 팀이 참가했다. 팀은 1번부터 n번까지 번호가 매겨져 있다. 놀랍게도 올해 참가하는 팀은 작년에 참가했던 팀과 동일하다.
+> 
+> 올해는 인터넷 예선 본부에서는 최종 순위를 발표하지 않기로 했다. 그 대신에 작년에 비해서 상대적인 순위가 바뀐 팀의 목록만 발표하려고 한다. (작년에는 순위를 발표했다) 예를 들어, 작년에 팀 13이 팀 6 보다 순위가 높았는데, 올해 팀 6이 팀 13보다 순위가 높다면, (6, 13)을 발표할 것이다.
+> 
+> 창영이는 이 정보만을 가지고 올해 최종 순위를 만들어보려고 한다. 작년 순위와 상대적인 순위가 바뀐 모든 팀의 목록이 주어졌을 때, 올해 순위를 만드는 프로그램을 작성하시오. 하지만, 본부에서 발표한 정보를 가지고 확실한 올해 순위를 만들 수 없는 경우가 있을 수도 있고, 일관성이 없는 잘못된 정보일 수도 있다. 이 두 경우도 모두 찾아내야 한다.
+
+정해진 우선순위에 맞게 전체 팀들의 순서를 나열해야 한다는점에서 위상 정렬 알고리즘을 떠올릴 수 있어야 한다.
+
+ 
+
+다시 말해서 팀 간의 순위 정보를 그래프로 표현한 뒤에 위상 정렬 알고리즘을 이용해 문제를 해결 할 수 있다.
+
+ 
+
+5 4 3 2 1
+
+ 
+
+이렇게 주어 졌다면 자신보다 낮은 등수를 가진 팀을 가르키도록 방향 그래프를 그릴 수 있다. 그리고 순위가 바뀌면 위상정렬의 간선 방향을 바꿔볼 수 있다. 그리고 위상 정렬을 다시 수행하면 된다.
+
+ 
+
+그러면 두가지 특이케이스가 존재하는데 첫번째는 사이클이 발생(불가능) 위상정렬의 결과가 1개가 아니라 여러개인 경우이다. 이 두가지 조건에 해당하지 않으면 한가지 위상정렬만 남게 된다.
+
+ 
+
+변경된 상대적인 순위를 적용하고 위상 정렬 알고리즘을 실행하면서 사이클이 발생하는지, 결과가 여러 가지 인지 확인하면된다. 일반적인 위상 정렬의 경우, 정확히 N개의 노드가 큐에서 출력이 된다. 만약 노드가 N번 나오기 전에 큐가 비게 된다면 사이클이 발생한 것이다. 또는 특정 시점에 2개 이상의 노드가 한꺼번에 들어가면 정렬 가능한 결과가 여러가지라는 의미다. 그러므로 위상 정렬 수행 과정에서 큐의 노드를 뽑을때 큐의 원소가 항상 1개로 유지되는 경우에만 고유한 순위가 존재하는 것으로 이해할 수 있다.
+
+ 
+
+위 조건을 고려해서 위상 정렬 소스코드에서 매 시점마다 큐의 원소가 0개이거나 2개 이상인지를 체크하는 부분을 넣어주어 정답 소스코드를 작성 할 수 있다. 예시 정답 코드는 다음과 같습니다.
+
+ 
+
+조건에서는 여러개의 테스트케이스를 받는 것이기는 한데 일단 각 케이스에 대해서만 보겠습니다.
+
+```py
+    #노드의 개수 입력받기
+    n = int(input())
+    #모든 노드에 대한 진입차수는 0으로 초기화
+    indegree = [0]*(n+1)
+    #각 노드에 연결된 간선 정보를 담기 위한 인접 행렬 초기화
+    graph = [[False]*(n+1) for i in range(n+1)]
+    #작년 순위 정보 입력
+    data = list(map(int,input().split()))
+    #방향 그래프의 간선 정보 초기화
+    for i in range(n):
+        for j in range(i+1,n):
+            graph[data[i]][data[j]] = True
+            indegree[data[j]] += 1
+```
+
+![graph result](https://user-images.githubusercontent.com/85277660/211148816-ab89b65b-58b2-493d-9914-8f3b6609254e.png)
+
+graph와 indegree를 초기화를 하면 위와 같이 됩니다. 일단 인덱스의 편의를 위해서 0번 인덱스를 사용하지 않으니 신경을 쓰지 말고 자기 자신으로 도는 간선도 없습니다. 그러면 각 노드에서 갈 수 있는 곳은 True 그리고 그 개수는 차수로 결정을 할 수 있습니다.
+
+```py
+#올해 변경된 순위 정보 입력
+    m = int(input())
+    for i in range(m):
+        a,b = map(int,input().split())
+        #간선의 방향 뒤집기
+        if graph[a][b]:
+            graph[a][b] = False
+            graph[b][a] = True
+            indegree[a] += 1
+            indegree[b] -= 1
+        else:
+            graph[a][b] = True
+            graph[b][a] = False
+            indegree[a] -= 1
+            indegree[b] += 1
+```
+그리고 이제 변경된 순위 정보를 입력을 하게 되는데 해당하는 간선의 방향을 역방향으로 바꾸게 됩니다. False를 True 아니라면 True는 False로 차수 역시 마찬가지로 증감을 합니다.
+
+ 
+```py
+	#위상 정렬(Topology Sort)시작
+    result = [] #알고리즘 수행 결과를 담을 리스트
+    q = deque() #큐 기능을 위한 deque 라이브러리를 사용
+    
+    #처음 시작할 때는 진입차수가 0인 노드를 큐에 삽입
+    for i in range(1,n+1):
+        if indegree[i] == 0:
+            q.append(i)
+            
+    certain = True #위상 정렬 결과가 오직 하나인지의 여부
+    cycle = False #그래프 내 사이클이 존재하는지 여부
+```
+알고리즘 수행과 큐를 초기화를 하고 이제 전입차수가 0인 것부터 (마지막 순위)부터 시작을 합니다.
+
+그리고 위상정렬의결과와 사이클의 판단을 하는 것도 초기화를 합니다.
+
+```py
+#정확히 노드의 개수만큼 반복
+    for i in range(n):
+        #큐가 비어 있다면 사이클이 발생했다는 의미
+        if len(q) == 0:
+            cycle = True
+            break
+        
+        #큐의 원소가 2개 이사이라면 가능한 정렬 결과가 여러 개라는 의미
+        if len(q) >= 2:
+            certain = False
+            break
+        #큐에서 원소 꺼내기
+        now = q.popleft()
+        result.append(now)
+        #해당 원소와 연결된 노드들의 진입차수에서 1빼기
+        for i in range(1, n+1):
+            if graph[now][i]:
+                indegree[i] -= 1
+                #새롭게 진입차수가 0이되는 노드를 큐에 삽입
+                if indegree[i] == 0:
+                    q.append(i)
+```
+노드의 개수만큼 반복을 하는데 반복이 끝나기전에 큐가 비었다면 사이클이 발생했다고 체크를 합시다.
+
+그리고 큐에는 원소가 하나씩 들어가는데 2개 이상일 경우에는 결과가 여러개라는 의미입니다.
+
+ 
+
+이제 하나씩 확인을 해봅시다. 큐에서 원소를 꺼내고 현재 result를 업데이트합시다.
+
+그리고 해당 원소와 연결된 노드들의 전입차수에서 1을 빼게 됩니다. 그러면 우리가 제일 낮은 것부터 시작했으니 1보다 높은 수의 차수는 하나씩 다 빠지게 될 것입니다. 그리고 두번째로 작은 것이 들어가게되고 이를 반복하게 됩니다.
+
+ 
+
+그런데 진입차수가 0이 되는게 조건에 맞지 않게 여러개 존재하면 결국 문제가 있는 것으로 볼 수 있네요
+
+ 
+```py
+from collections import deque
+
+#테스트 케이스(Test Case)만큼 반복
+for tc in range(int(input())):
+    #노드의 개수 입력받기
+    n = int(input())
+    #모든 노드에 대한 진입차수는 0으로 초기화
+    indegree = [0]*(n+1)
+    #각 노드에 연결된 간선 정보를 담기 위한 인접 행렬 초기화
+    graph = [[False]*(n+1) for i in range(n+1)]
+    #작년 순위 정보 입력
+    data = list(map(int,input().split()))
+    #방향 그래프의 간선 정보 초기화
+    for i in range(n):
+        for j in range(i+1,n):
+            graph[data[i]][data[j]] = True
+            indegree[data[j]] += 1
+            
+    #올해 변경된 순위 정보 입력
+    m = int(input())
+    for i in range(m):
+        a,b = map(int,input().split())
+        #간선의 방향 뒤집기
+        if graph[a][b]:
+            graph[a][b] = False
+            graph[b][a] = True
+            indegree[a] += 1
+            indegree[b] -= 1
+        else:
+            graph[a][b] = True
+            graph[b][a] = False
+            indegree[a] -= 1
+            indegree[b] += 1
+            
+    #위상 정렬(Topology Sort)시작
+    result = [] #알고리즘 수행 결과를 담을 리스트
+    q = deque() #큐 기능을 위한 deque 라이브러리를 사용
+    
+    #처음 시작할 때는 진입차수가 0인 노드를 큐에 삽입
+    for i in range(1,n+1):
+        if indegree[i] == 0:
+            q.append(i)
+            
+    certain = True #위상 정렬 결과가 오직 하나인지의 여부
+    cycle = False #그래프 내 사이클이 존재하는지 여부
+    
+    #정확히 노드의 개수만큼 반복
+    for i in range(n):
+        #큐가 비어 있다면 사이클이 발생했다는 의미
+        if len(q) == 0:
+            cycle = True
+            break
+        
+        #큐의 원소가 2개 이사이라면 가능한 정렬 결과가 여러 개라는 의미
+        if len(q) >= 2:
+            certain = False
+            break
+        #큐에서 원소 꺼내기
+        now = q.popleft()
+        result.append(now)
+        #해당 원소와 연결된 노드들의 진입차수에서 1빼기
+        for i in range(1, n+1):
+            if graph[now][i]:
+                indegree[i] -= 1
+                #새롭게 진입차수가 0이되는 노드를 큐에 삽입
+                if indegree[i] == 0:
+                    q.append(i)
+
+    #사이클이 발생하는 경우(일관성이 없는 경우)
+    if cycle:
+        print("IMPOSSIBLE")
+    #위상 정렬 결과가 여러 개인 경우
+    elif not certain:
+        print("?")
+    #위상정렬 결과 출력
+    else:
+        for i in result:
+            print(i,end=' ')
+        print()
+```

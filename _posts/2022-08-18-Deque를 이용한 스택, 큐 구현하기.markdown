@@ -1,0 +1,162 @@
+---
+title: Deque를 이용한 스택, 큐 구현하기
+date:   2022-08-18 13:18:11 +0900
+categories: [Languages, Python]
+tags: [python, coding, queue, stack, data, dfs]
+---
+
+[깊이 우선 탐색을 위한 파이썬 알고리즘 DFS](https://jeong-daniel.github.io/posts/%EA%B9%8A%EC%9D%B4-%EC%9A%B0%EC%84%A0-%ED%83%90%EC%83%89%EC%9D%84-%EC%9C%84%ED%95%9C-%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98/)
+
+[파이썬 스택을 이용한 문자열 역순 출력 프로그램](https://jeong-daniel.github.io/posts/%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EC%8A%A4%ED%83%9D%EC%9D%84-%EC%9D%B4%EC%9A%A9%ED%95%9C-%EB%AC%B8%EC%9E%90%EC%97%B4-%EC%97%AD%EC%88%9C-%EC%B6%9C%EB%A0%A5-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8/)
+
+예전에 사용한 게시물에서 스택과 큐를 직접 구현하는 코드를 작성하였지만
+
+실제 코딩테스트나 현장에서 이를 일일이 구현하는것은 상당히 번거롭습니다. 까딱 잘못하기라도 하면 더 큰일이지요
+
+바로 기본적으로 내장된 deque를 이용해서 스택과 큐를 구현해서 사용 하는 것이 훨씬 간편하기에 이를 정리하였습니다.
+
+[collections - 컨테이너 데이터형](https://docs.python.org/ko/3/library/collections.html#collections.deque)
+
+일단 공식 문서의 deque를 간단하게 살펴봅시다.
+
+> 데크는 스택과 큐를 일반화 한 것입니다 (이름은 “deck”이라고 발음하며 “double-ended queue”의 약자입니다). 데크는 스레드 안전하고 메모리 효율적인 데크의 양쪽 끝에서의 추가(append)와 팝(pop)을 양쪽에서 거의 같은 O(1) 성능으로 지원합니다.
+> 
+> list 객체는 유사한 연산을 지원하지만, 빠른 고정 길이 연산에 최적화되어 있으며, 하부 데이터 표현의 크기와 위치를 모두 변경하는 pop(0) 과 insert(0, v) 연산에 대해 O(n) 메모리 이동 비용이 발생합니다.
+
+deque는 양방향큐의 약자로 추가와 팝연산에 있어서 O(1)의 시간복잡도를 보여줍니다.
+
+그리고 이어서 리스트와 차이점을 설명하는데 리스트는 고정크기이기에 만약 내가
+
+[1,0,0]  에서 1을 오른쪽 끝으로 보내고 싶으면 [0,0,1]을 수행하는 과정에서 0의 위치가 모두 이동하게 되며 이 과정에서 O(n)의 시간복잡도가 소요가 됩니다. 하지만 queue에서는 그냥 1을 빼고 오른쪽에다가 집어넣으니 고정적으로 O(n)의 시간복잡도를 보이게 됩니다. (0의 자리이동이 발생하지 않습니다)
+
+연산을 보도록 하겠습니다.
+
+---
+append(x)데크의 오른쪽에 x를 추가합니다.
+
+appendleft(x)데크의 왼쪽에 x를 추가합니다.
+
+clear() 데크에서 모든 요소를 제거하고 길이가 0인 상태로 만듭니다.
+
+copy()데크의 얕은 복사본을 만듭니다.
+
+count(x) x 와 같은 데크 요소의 수를 셉니다.버전 3.2에 추가.
+
+extend(iterable)iterable 인자에서 온 요소를 추가하여 데크의 오른쪽을 확장합니다.
+
+extendleft(iterable)iterable에서 온 요소를 추가하여 데크의 왼쪽을 확장합니다. 일련의 왼쪽 추가는 iterable 인자에 있는 요소의 순서를 뒤집는 결과를 줍니다.
+
+index(x[, start[, stop]])데크에 있는 x의 위치를 반환합니다 (인덱스 start 또는 그 이후, 그리고 인덱스 stop 이전). 첫 번째 일치를 반환하거나 찾을 수 없으면 ValueError를 발생시킵니다.
+
+insert(i, x)x를 데크의 i 위치에 삽입합니다.삽입으로 인해 제한된 길이의 데크가 maxlen 이상으로 커지면, IndexError가 발생합니다.
+
+pop()데크의 오른쪽에서 요소를 제거하고 반환합니다. 요소가 없으면, IndexError를 발생시킵니다.
+
+popleft()데크의 왼쪽에서 요소를 제거하고 반환합니다. 요소가 없으면, IndexError를 발생시킵니다.
+
+remove(value)value의 첫 번째 항목을 제거합니다. 찾을 수 없으면, ValueError를 발생시킵니다.
+
+reverse()데크의 요소들을 제자리에서 순서를 뒤집고 None을 반환합니다.
+
+rotate(n=1) 데크를 n 단계 오른쪽으로 회전합니다. n이 음수이면, 왼쪽으로 회전합니다.데크가 비어 있지 않으면, 오른쪽으로 한 단계 회전하는 것은 d.appendleft(d.pop())과 동등하고, 왼쪽으로 한 단계 회전하는 것은 d.append(d.popleft())와 동등합니다.
+
+maxlen데크의 최대 크기 또는 제한이 없으면 None.
+---
+
+다양한 기능들이 있는데 이번 게시글의 목적은 deque를 이용해서 스택과 큐처럼 움직이는 것을 만드는 것이 목표이니 deque 자체를 공부하고 싶으시다면 한번 쭉 따라해보시면 될 듯합니다.
+
+### 1. 스택 : append(), pop()
+
+deque를 스택처럼 사용하기 위해서 단 두가지 연산자가 필요한데 append와 pop입니다.
+
+```py
+from collections import deque
+
+stack_list='12345'
+stack = deque(stack_list)
+stack
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211028325-7fb63d6c-e53d-4a6e-806d-424353bfaac1.png)
+
+이렇게 문자열이나 리스트를 입력을 하면 이렇게 하나씩 deque에 들어가는 것을 확인 할 수 있습니다.
+
+그러면 이제 리스트와 다른 연산이 가능합니다.
+
+```py
+stack.append(6)
+print(stack)
+stack.pop()
+print(stack)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211028408-bf5ff178-68d0-4a0c-bef4-14f07c4c51b1.png)
+
+stack는 늘 그렇듯 선입선출입니다. 6이 마지막에 들어 왔으니 pop(오른쪽 요소 제거)을 하면 끝
+
+### 2. 큐 구현 : appendleft(),  popleft(), append(), pop()
+
+큐를 위해서는 4가지가 필요한데 스택에서는 나가고 들어가는 방향이 하나였지만 큐의 경우 2방향에 2가지 연산이기 때문에 총 4개가 필요합니다. 왼쪽에서 입력과 출력을 하는 appendleft(), popleft()와 오른쪽에서 입출력을 받는 append(), pop() 이렇게 됩니다.
+
+```py
+stack.appendleft(7)
+print(stack)
+stack.popleft()
+print(stack)
+```
+
+![deque](https://user-images.githubusercontent.com/85277660/211028463-f8ae0b28-4785-4ecf-afe8-aa968c22fc61.png)
+
+이번에는 왼쪽에서 연산이 발생했네요
+
++큐와 스택을 다루는 김에 다른 것도 추가
+
+### 3. deque 확장하기 : extend(), extendleft()
+
+두 리스트를 붙이는 것처럼 deque도 확장하는 것이 있습니다. 그리고 붙이는 방향 역시 양방향을 설정 할 수 있습니다.
+
+항상 기본값은 오른쪽임을 기억하면 됩니다.
+
+```py
+right_list='54321'
+right_list = deque(right_list)
+stack.extend(right_list)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211028772-6c4dfa4e-6755-4b67-98ec-8ee021202e2b.png)
+
+### 4. 리스트처럼 사용 : insert(), remove()
+
+deque역시 일반적인 리스트 처럼 양끝에서가 아닌 안에 있는 값을 삽입과 출력을 할 수 있습니다. 다만 이렇게 사용할때의 시간복잡도 장점은 없어지게 됩니다.
+
+```py
+#첫번째 항목에 111을 추가
+stack.insert(0, 111)
+print(stack)
+#100번째 항목에 222을 추가
+stack.insert(100,222)
+print(stack)
+#5를제거 다만 같은 것이 여러개 있을 경우 가장 오른쪽에 있는 것을 제거
+stack.remove('5')
+print(stack)
+```
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/211028812-0dcc634e-c4a4-4b00-946c-19d6bad2a231.png)
+
+첫번째 항목에 111을 추가하자 뒤로 한칸씩 미뤄졌고 100번째라는 존재하지 않는 값을 넣으니 가장 마지막에다가 222가 들어 갔습니다.
+
+그리고 원소 5를 제거하니 모든 5을 빼는 것이 아니고 오른쪽부터 제거가 들어갑니다.
+
+### 5. deque의 내용을 좌우로 반전 : reverse()
+
+그리고 정말 유용할거 같은 좌우 반전
+
+```py
+print(stack)
+print(stack.reverse())
+print(stack)
+```
+
+![reverse result](https://user-images.githubusercontent.com/85277660/211028876-9efb4ffd-49fe-4621-9a65-5751726b2bfd.png)
+
+deque에다가 reverse를 하면 됩니다. 다만 이때 바로 reverse를 찍는다고 연산을 수행하지 return되는 값이 없기에 출력은 없습니다. 다시 찍으면 반전된 것이 나옵니다.

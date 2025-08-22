@@ -1,0 +1,38 @@
+---
+title: 회의실 배정 백준 1931번 그리디
+date:   2022-11-11 13:31:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, greedy]
+---
+
+[https://www.acmicpc.net/problem/1931](https://www.acmicpc.net/problem/1931)
+
+문제
+한 개의 회의실이 있는데 이를 사용하고자 하는 N개의 회의에 대하여 회의실 사용표를 만들려고 한다. 각 회의 I에 대해 시작시간과 끝나는 시간이 주어져 있고, 각 회의가 겹치지 않게 하면서 회의실을 사용할 수 있는 회의의 최대 개수를 찾아보자. 단, 회의는 한번 시작하면 중간에 중단될 수 없으며 한 회의가 끝나는 것과 동시에 다음 회의가 시작될 수 있다. 회의의 시작시간과 끝나는 시간이 같을 수도 있다. 이 경우에는 시작하자마자 끝나는 것으로 생각하면 된다.
+
+---
+
+해당 문제는 그리디로 풀 수 있다고 합니다. 오히려 이런 문제를 만나면 DP문제로 착각하기 쉬울거 같습니다.
+
+```py
+import sys
+input = sys.stdin.readline
+num = int(input())
+time_list = []
+for i in range(num):
+    n,m = map(int,input().split())
+    time_list.append([m,n])
+time_list.sort()
+ans = 0
+t = 0
+for i in range(num):
+    if t>time_list[i][1]:
+        continue
+    ans+=1
+    t = time_list[i][0]
+print(ans)
+```
+
+뭔가 시작시간 종료하는 시간으로 입력을 받으니 데이터도 그 순서로 받아야한다는 생각이 들었는데
+
+중요한 것은 끝나는 지점이고 끝나는 지점을 순서로 정렬을하니 편한대로하면 되는데 이상하게 이런 생각을 깨는게 어렵네요

@@ -1,0 +1,31 @@
+---
+title: 숫자 카드 2 백준 10816번 이진탐색
+date:   2022-11-11 19:48:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, bisect]
+---
+
+[https://www.acmicpc.net/problem/10816](https://www.acmicpc.net/problem/10816)
+
+
+앞에서 숫자 찾기는 있는지 없는지만 확인하면 되는데 이번에는 그 숫자가 몇번 등장했는지도 알아야 합니다.
+
+그리고 이거는 지난번 게시글에 있던 이진탐색 함수 그대로 가져와서 사용하시고 출력 형태만 바꾸면 됩니다.
+
+```py
+from bisect import *
+
+n = int(input())
+num_list = list(map(int,input().split()))
+num_list.sort()
+b = int(input())
+find_num = list(map(int,input().split()))
+
+def count_by_range(array, left_value, right_value):
+    right_index = bisect_right(array, right_value)
+    left_index = bisect_left(array, left_value)
+    return right_index - left_index
+
+for i in range(b):
+    print(count_by_range(num_list,find_num[i],find_num[i]), end=' ')
+```

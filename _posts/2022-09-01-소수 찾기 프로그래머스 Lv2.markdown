@@ -1,0 +1,68 @@
+---
+title: 소수 찾기 프로그래머스 Lv2
+date:   2022-09-01 13:46:10 +0900
+categories: [Coding_Test, 프로그래머스]
+tags: [coding, python, algorithm]
+---
+
+[https://school.programmers.co.kr/learn/courses/30/lessons/42839](https://school.programmers.co.kr/learn/courses/30/lessons/42839)
+
+주사위였나... 이런 비슷한 문제는 종종 보는거 같다. 주어진 숫자로 만들 수 있는 숫자나 형태를 모두 구하고 조건을 만족하는 것은 몇개인지~ 하는 식으로 다만 이때 0번의 경우 처리를 조심해야 한다.
+
+여기서 필요한 함수는 두가지인데 첫번째는 만들 수 있는 숫자의 모든 종류와 그 숫자가 소수인지 판별하는 함수
+
+그리고 만들 수 있는 숫자의 종류는 자연스럽게 DFS, 재귀를 이용하면 구현할 수 있고 마지막 base condition에 도달했을때 해당 숫자가 소수인지 판별하고 맞다면 카운트 하는 식으로 문제를 풀면 되겠다는 생각
+
+언제나 그렇듯이 그냥 손이 가는데로 편하게 짰는데
+
+```py
+import math
+from itertools import permutations
+
+def primenumber(x):
+    for i in range (2, int(math.sqrt(x) + 1)):
+        if x % i == 0:
+            return False
+    return True
+
+def solution(numbers):
+    result = []
+    for _ in range(len(numbers)):
+        result.append(int(numbers[_]))
+
+    num_list = []
+    for i in range(1,len(numbers)+1):
+        num_list.append(list(permutations(numbers, i))) 
+
+    count = 0
+    check_list = [0,1]
+    for i in range(len(num_list)):
+        length = len(num_list[i])
+        for j in range(length):
+            length_k = len(num_list[i][j])
+            str_list = ''
+            for k in range(length_k):
+                str_list += str(num_list[i][j][k])
+            if primenumber(int(str_list)) and int(str_list) not in check_list:
+                check_list.append(int(str_list))
+                count += 1
+    return count
+```
+
+대충 소수는 2부터 해당 수의 제곱근까지 돌려보면 나온다.
+
+DFS 재귀 대신에 permutations로 가능한 경우의 수 뽑아 높았는데 문제는 이게 값을 반환할때 (0,2,3) 이렇게 튜플형태로 나온다. 그래서 이거 다시 풀어서 집어 넣고 난리를 쳤는데
+
+3중 for문에다가 사용하는 변수가 몇개인데 시간복잡도랑 공간복잡도 박살났지 ㅋㅋ 당연히 안돌아가겠지
+
+![img](https://user-images.githubusercontent.com/85277660/211156831-89bd1e9a-1ab4-40af-b88b-ac962e04046d.png)
+
+기대도 안했는데 통과했다.... 그래도 다른 테스트에서 이런 식으로 풀었다가 통과 안될 수도 있으니 정석적인 풀이를 보자.
+
+```py
+    for i in range(1, len(numbers)+1):            # numbers의 각 숫자들을 순열로 모든 경우 만들기
+        per += list(permutations(nums, i))        # i개씩 순열조합
+    new_nums = [int(("").join(p)) for p in per]
+```
+
+재귀로 문자열을 구성해서 푸는 방법이 있을거라고 검색했는데 대충 보니 다른 분들도 순열조합라이브러리를 이용해서 풀었다.

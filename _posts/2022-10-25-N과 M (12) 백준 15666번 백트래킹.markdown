@@ -1,0 +1,44 @@
+---
+title: N과 M (12) 백준 15666번 백트래킹
+date:   2022-10-25 17:51:20 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, backtracking]
+---
+
+[https://www.acmicpc.net/problem/15666](https://www.acmicpc.net/problem/15666)
+
+문제
+N개의 자연수와 자연수 M이 주어졌을 때, 아래 조건을 만족하는 길이가 M인 수열을 모두 구하는 프로그램을 작성하시오.
+
+* N개의 자연수 중에서 M개를 고른 수열
+* 같은 수를 여러 번 골라도 된다.
+* 고른 수열은 비내림차순이어야 한다.
+* 길이가 K인 수열 A가 A1 ≤ A2 ≤ ... ≤ AK-1 ≤ AK를 만족하면, 비내림차순이라고 한다.
+
+```py
+n,m = map(int,input().split())
+num = list(map(int,input().split()))
+num.sort()
+arr = [0]*m
+
+def func(k,st):
+    if k==m:
+        for i in range(m):
+            print(arr[i], end=' ')
+        print()
+        return
+    temp = -1
+    for i in range(st,n):
+        if num[i] != temp:
+            arr[k] = num[i]
+            temp = arr[k]
+            func(k+1,i)
+
+func(0,0)
+```
+
+재귀로 들어갈때 인자가 하나더 추가되었습니다. st는 시작하는 범위를 기르키는데
+
+예시로 1 1 2 2 가 들어가있습니다. 첫번째 1번의 경우 다른 모든 1이 들어 있습니다. i는 0부터 시작하니 모든 칸은 제일 작은 1을 선택할 수 있습니다.
+
+두번째는 1과 다른 2이고 이는 3번부터(인덱스는 2) 들어갈 수 있습니다. 그러니 마지막에 선택할 수 있는 것은 2밖에 없습니다.

@@ -1,0 +1,63 @@
+---
+title: 회전하는 큐 백준 1021번 덱
+date:   2022-10-08 16:36:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, queue]
+---
+
+[https://www.acmicpc.net/problem/1021](https://www.acmicpc.net/problem/1021)
+
+문제
+지민이는 N개의 원소를 포함하고 있는 양방향 순환 큐를 가지고 있다. 지민이는 이 큐에서 몇 개의 원소를 뽑아내려고 한다.
+
+지민이는 이 큐에서 다음과 같은 3가지 연산을 수행할 수 있다.
+
+* 첫 번째 원소를 뽑아낸다. 이 연산을 수행하면, 원래 큐의 원소가 a1, ..., ak이었던 것이 a2, ..., ak와 같이 된다.  
+* 왼쪽으로 한 칸 이동시킨다. 이 연산을 수행하면, a1, ..., ak가 a2, ..., ak, a1이 된다.  
+* 오른쪽으로 한 칸 이동시킨다. 이 연산을 수행하면, a1, ..., ak가 ak, a1, ..., ak-1이 된다.  
+* 큐에 처음에 포함되어 있던 수 N이 주어진다. 그리고 지민이가 뽑아내려고 하는 원소의 위치가 주어진다. (이 위치는 가장 처음 큐에서의 위치이다.) 이때, 그 원소를 주어진 순서대로 뽑아내는데 드는 2번, 3번 연산의 최솟값을 출력하는 프로그램을 작성하시오.  
+
+---
+
+```py
+from collections import deque
+m,n = map(int,input().split())
+num_list = deque([i for i in range(1,m+1)])
+find_e = list(map(int,input().split()))
+```
+
+이번 문제는 덱인 만큼 자료형도 deque를 사용합니다. 그리고 N개의 원소수와 몇개의 수가 들어가는지 입력을 받읍시다. 이때 range는 1부터 m+1까지의 원소 개수로 조절을 합니다.
+
+```py
+lenght = len(num_list)
+count = 0
+for j in find_e:
+    left = num_list.index(j)
+    right = lenght-left
+    count += min(left,right)
+    if left<right:
+        for k in range(left):
+            num_list.append(num_list.popleft())
+    else:
+        for k in range(right):
+            num_list.appendleft(num_list.pop())
+    num_list.popleft()
+    lenght-=1
+print(count)
+```
+
+그리고 문제를 인덱스의 위치를 중심으로 해결합니다.
+
+첫번째 테스트 케이스에서 2가 먼저 나왔습니다. 2의 인덱스는 왼쪽부터 보면 1이 되고 오른쪽부터 보면 (길이-왼쪽인덱스)인 9가 됩니다. 즉 2를 빼기 위해서는 오른쪽으로 돌리기보다 왼쪽으로 돌리는게 거리가 짧습니다.
+
+오른쪽과 왼쪽 작인 인덱스 값을 count에 더해주고 (또는 조건문 안에 넣어도 됩니다) 그만큼 회전을 시켜 줍니다.
+
+그리고 첫번째 원소가 우리가 빼야할 것이니 pop으로 빼주고 전체 길이를 1 감소 합니다.
+
+마지막 출력!
+
+다만 문제를 풀때 조건이 1부터 N까지의 정수였는데 0부터9까지 인것을 1부터 9까지로 바꾸고 왜 숫자가 안맞지 고민하고 있었다.... 0을 1로 바꾸면서 9도 10으로 바꿔야 하는데 ㅋㅋㅋ
+
+파이썬으로 코테를 준비할때 index 위치를 뽑는다거나 간단한 오퍼레이션을 몇가지 기억하고 가시면 훨씬 편리하게 사용할 수 있습니다.
+
+[Deque를 이용한 스택, 큐 구현하기](https://jeong-daniel.github.io/posts/Deque%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-%EC%8A%A4%ED%83%9D,-%ED%81%90-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0/)

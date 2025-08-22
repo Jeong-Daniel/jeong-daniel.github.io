@@ -1,0 +1,66 @@
+---
+title: 오큰수 백준 17298번 스택
+date:   2022-10-06 16:43:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, stack]
+---
+
+[https://www.acmicpc.net/problem/17298](https://www.acmicpc.net/problem/17298)
+
+문제
+크기가 N인 수열 A = A1, A2, ..., AN이 있다. 수열의 각 원소 Ai에 대해서 오큰수 NGE(i)를 구하려고 한다. Ai의 오큰수는 오른쪽에 있으면서 Ai보다 큰 수 중에서 가장 왼쪽에 있는 수를 의미한다. 그러한 수가 없는 경우에 오큰수는 -1이다.
+
+예를 들어, A = [3, 5, 2, 7]인 경우 NGE(1) = 5, NGE(2) = 7, NGE(3) = 7, NGE(4) = -1이다. A = [9, 5, 4, 8]인 경우에는 NGE(1) = -1, NGE(2) = 8, NGE(3) = 8, NGE(4) = -1이다.
+
+입력
+첫째 줄에 수열 A의 크기 N (1 ≤ N ≤ 1,000,000)이 주어진다. 둘째 줄에 수열 A의 원소 A1, A2, ..., AN (1 ≤ Ai ≤ 1,000,000)이 주어진다.
+
+* 오른쪽에 있는 것중 나보다 큰 수 중에서 가장 왼쪽에 있는 숫자. 시간제한과 입력의 수로 봐서는 이번에도 역시 스택으로 문제를 해결해야 합니다. 한번 고민을 해봅시다.
+
+[탑 백준 2493번 스택](https://jeong-daniel.github.io/posts/%ED%83%91-%EB%B0%B1%EC%A4%80-2493%EB%B2%88-%EC%8A%A4%ED%83%9D/)
+
+지난번 풀었던 문제중 탑이라는게 있습니다. 결국 이 문제는 방향만 다른 문제라고 생각해도 될 듯합니다.
+
+2번 예시인 9 - 5 - 4 - 8을 봅시다.
+
+8을 넣었을때 스택에는 아무것도 없습니다. -1을 반환하고 8은 스택에 넣습니다.
+
+stack = [8], ans = [-1]
+
+4를 넣는데 스택에는 4보다 큰 수가 있습니다. 8을 반환하고 4는 스택에 넣습니다.
+
+stack = [4, 8] ans = [-1,8]
+
+5를 넣는데 스택에서 제일 위에 있는 수는 4입니다. pop으로 제거를 합니다. 그리고 8이 나옵니다.
+
+stack = [5, 8] ans = [-1,8,8]
+
+마지막으로 9를 넣는데 스택을 모두 찾아봐도 9보다 큰 수는 없습니다. -1을 반환하고 9를 넣습니다.
+
+stack = [9], ans = [-1,8,8,-1]
+
+
+생각을 정리하니 그럴싸한답이 하나 나왔습니다. 한번 확인해봅시다.
+
+```py
+num = int(input())
+num_list = list(map(int,input().split()))
+
+stack = []
+answer = []
+for i in range(num):
+    while stack:
+        if stack[-1] > num_list[-1-i]:
+            answer.append(stack[-1])
+            break
+        else:
+            stack.pop()
+    if not stack:
+        answer.append(-1)
+    stack.append(num_list[-1-i])    
+        
+answer.reverse()
+print(" ".join(map(str,answer)))
+```
+
+다만 저도 위에 쓰면서 뭐가 이상했는데 한번 출력순서를 뒤집어야 합니다. appendleft를 사용하면 될지 몰라도 큐를 사용해야하는데 그냥 이대로 정답처리가 되니 알고리즘은 맞는것으로 보고 넘어가겠습니다.

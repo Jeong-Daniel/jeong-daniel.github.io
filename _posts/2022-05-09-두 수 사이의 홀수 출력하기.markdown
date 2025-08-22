@@ -1,0 +1,36 @@
+---
+title: 두 수 사이의 홀수 출력하기
+date:   2022-05-11 10:35:41 +0900
+categories: [Coding_Test, Others]
+tags: [coding, python, algorithm, recursive]
+---
+
+이번에는 재귀로 두 수 사이의 홀 수 출력하기 입니다.
+
+앞서서 n부터 1까지나 1부터 n까지 출력 하는 것을 해보았다면 이번에는 쉬울 겁니다.
+
+ 
+
+첫 시작은 a이고 끝은 b라고 주어진 상태이니까요
+
+```py
+a, b = map(int,input().split())
+
+def recur(num):
+    if (num%2)==0:
+        num+=1
+    
+    if num <= b:
+        print(num, end=' ')
+        return recur(num+2)
+    else:
+        return
+        
+recur(a)
+```
+
+다만 여기서는 홀수를 검증해야 하기 때문에 if문으로 2로 나눈 나머지가 0인지를 확인해서 홀수인지 확인하고 아니라면 1을 추가한 것을 시작을 합시다 그리고 그 값이 b가 아닐때까지 계속해서 다음 홀수를 불러오게 됩니다.
+
+ 
+
+사실 재귀는 코드가 깔끔해질지는 몰라도 그렇게 효율적이지는 않습니다.

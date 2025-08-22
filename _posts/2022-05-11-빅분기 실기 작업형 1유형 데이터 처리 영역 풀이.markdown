@@ -1,0 +1,321 @@
+---
+title: 빅분기 실기 작업형 1유형 데이터 처리 영역 풀이
+date:   2022-05-11 23:11:41 +0900
+categories: [Certificate, 빅데이터분석기사]
+tags: [python, bigdata, data, pandas, ml]
+---
+
+12월 4일 빅데이터분석기사 실기가 있는데 준비겸 포스팅을 한 1주일동안 해볼까 합니다. 예시부터 가볍게 풀면서 봅시다. 이 글을 보시는 분들을 기본적으로 파이썬을 다루고 sickit-learn은 모르지만 pandas와 numpy는 다룰수 있다는 전제하에 글을 써볼 생각입니다. 궁금한게 있으면 덧글로 남겨주세요 시험 전까지는 저도 공부할겸 답변드리겠습니다.
+
+![img1 description](https://user-images.githubusercontent.com/85277660/210167433-d795c608-81be-4350-a96e-c6ea7c4bcb80.png)
+
+특정 컬럼을 최소최대 척도로 변환한 다음 0.5보다 큰 값을 가지는 레코드 수를 구해보랍니다.
+
+일단 데이터 처리 영역이라는 말처럼 데이터 전처리를 해볼 수 있는가 물어보는 문제입니다.
+
+최소최대 정규화는 데이터 정규화 기법중 하나입니다. 크게 데이터 정규화 기법은 최대최소정규화, Z스코어 정규화 두가지가 있는데 이 둘만 쓸 줄 안다면 충분 할 것입니다. 물론 둘다 scikit-learn패키지안에 들어 있습니다. 왜 이런 데이터 전처리를 하는가? 말그대로 학습에 효과가 있으니 하는 거지요 이번에는 문제 푸는데 집중할 것이라 이론 적인 부분은 넘어가겠습니다. 왜 하는지에 대해서는 다른 게시글을 참고해주세요
+
+![최대 최소 정규화 공식](https://user-images.githubusercontent.com/85277660/210167438-9d97a4c1-5091-4805-a6ad-3ddbd50e462f.png)
+
+최대 최소 정규화 방법
+
+### Min-Max Normalization (최소-최대 정규화)
+
+모든 feature에 대해 각각의 최소값 0, 최대값 1로, 그리고 다른 값들은 0과 1 사이의 값으로 변환합니다
+
+어떤 특성의 최소값이 0이고 최대값이 10인 경우 우리가 관찰하고자 하는 값이 5일때 최소최대정규화를 적용하면 0.5가 되겠네요
+
+```py
+def min_max_normalize(lst):
+    normalized = []
+    
+    for value in lst:
+        normalized_num = (value - min(lst)) / (max(lst) - min(lst))
+        normalized.append(normalized_num)
+    
+    return normalized
+```
+파이썬 함수로 표현한다면 위와 같이 될것입니다. 이런 함수를 하나 만들고 apply로 적용하는 방법도 있겠지만. 하지 않겠습니다. scikit-learn패키지에 들어 있는데 이런거 까지 머리속에 집어 넣고 다니기에는 힘들지요
+
+ 
+
+* 생각나는데로 쓰다보니 빌드업이 있는게 아니라 좀 왔다 갔다 할겁니다. 더 나은 구성이 있다면 적어주세요 참고해서 수정하거나 다음번에 반영하겠습니다.
+
+
+ 
+
+일단 주피터 노트북을 켜봅시다. sklearn, numpy, pandas는 이미 설치되어 있다는 가정하게 진행하도록 하겠습니다. 참고로 저는 윈도우, 아나콘다 환경에서 진행하고 있습니다.
+
+```py
+import sklearn
+```
+다른거는 모르겠고 sklearn은 import 하고 시작을 합시다.
+
+```py
+help(sklearn)
+```
+그리고 함수 help를 이용해서 sklearn을 보시면
+
+```py
+PACKAGE CONTENTS
+    __check_build (package)
+    _build_utils (package)
+    _config
+    _distributor_init
+    _isotonic
+    _loss (package)
+    _min_dependencies
+    base
+    calibration
+    cluster (package)
+    compose (package)
+    conftest
+    covariance (package)
+    cross_decomposition (package)
+    datasets (package)
+    decomposition (package)
+    discriminant_analysis
+    dummy
+    ensemble (package)
+    exceptions
+    experimental (package)
+    externals (package)
+    feature_extraction (package)
+    feature_selection (package)
+    gaussian_process (package)
+    impute (package)
+    inspection (package)
+    isotonic
+    kernel_approximation
+    kernel_ridge
+    linear_model (package)
+    manifold (package)
+    metrics (package)
+    mixture (package)
+    model_selection (package)
+    multiclass
+    multioutput
+    naive_bayes
+    neighbors (package)
+    neural_network (package)
+    pipeline
+    preprocessing (package)
+    random_projection
+    semi_supervised (package)
+    setup
+    svm (package)
+    tests (package)
+    tree (package)
+    utils (package)
+```
+이렇게 사용가능한 패키지가 주르륵 나옵니다.  그중에서 정규화 기법은 preprocessing에 들어 있습니다. 
+
+Ctrl+F를 눌러서 prepro나 process만 검색해도 찾을 수 있습니다. 영단어 암기하듯이 모든 것을 기억할 필요도 없고 필요한 것의 '일부'만 기억하고 있어도 help나 dir을 통해서 필요한 함수를 찾을 수 있습니다.
+
+
+ 
+
+아무튼 우리가 사용할 패키지의 이름을 찾았습니다. 그다음은 Min-Max는 어떤건지 찾아봅시다.
+
+```py
+dir(sklearn.preprocessing)
+```
+이번에는 help대신 dir을 사용해서 이름을 찾아봅시다.
+
+```py
+['Binarizer',
+ 'FunctionTransformer',
+ 'KBinsDiscretizer',
+ 'KernelCenterer',
+ 'LabelBinarizer',
+ 'LabelEncoder',
+ 'MaxAbsScaler',
+ 'MinMaxScaler',
+ 'MultiLabelBinarizer',
+ 'Normalizer',
+ 'OneHotEncoder',
+ 'OrdinalEncoder',
+ 'PolynomialFeatures',
+ 'PowerTransformer',
+ 'QuantileTransformer',
+ 'RobustScaler',
+ 'StandardScaler',
+ '__all__',
+ '__builtins__',
+ '__cached__',
+ '__doc__',
+ '__file__',
+ '__loader__',
+ '__name__',
+ '__package__',
+ '__path__',
+ '__spec__',
+ '_csr_polynomial_expansion',
+ '_data',
+ '_discretization',
+ '_encoders',
+ '_function_transformer',
+ '_label',
+ 'add_dummy_feature',
+ 'binarize',
+ 'label_binarize',
+ 'maxabs_scale',
+ 'minmax_scale',
+ 'normalize',
+ 'power_transform',
+ 'quantile_transform',
+ 'robust_scale',
+ 'scale']
+ ```
+dir(클래스) 를 입력할 경우 해당 클래스에 내장되어있는 함수들의 이름 리스트를 반환합니다. help는 모든 정보를 반환하는데, 대충 적절하게 사용하시면 될겁니다.
+
+ 
+
+이제 쭉 찾아보면 MinMaxScaler 라고 이름이 딱 있습니다. 개인적인 생각으로는 StandardScaler와 같이 두가지만 알고 있으면 될거 같습니다.
+
+```py
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+```
+
+그러면 최종적으로 작업형 1을 풀때 필요한 라이브러리는 위의 3개 인거 같으니 사용해봅시다. 이제 데이터를 열어봅시다.
+
+[https://www.dataq.or.kr/www/board/notice/list.do](https://www.dataq.or.kr/www/board/notice/list.do)
+
+유형예시와 데이터는 위 공지사항에서 빅데이터분석기사 실기를 검색한다음 가장 예전에 작성된 글(4.19)를 참고하시면 됩니다.
+
+아무래도 테스트 환경에서는 가독성이 떨어지니 계속해서 주피터노트북으로 해보겠습니다.
+
+![csv view](https://user-images.githubusercontent.com/85277660/210167471-9c366d35-40ec-4897-af80-4aeead76d70c.png)
+
+데이터를 열어보겠습니다. pd.read_csv('경로')
+
+![데이터 파일 읽기 예제](https://user-images.githubusercontent.com/85277660/210167478-c875401b-7c24-4fc6-934e-557383b2b481.png)
+![example 2](https://user-images.githubusercontent.com/85277660/210167481-950a81c3-ad3e-415b-b5de-278854c9a104.png)
+
+다만 테스트환경에서 이 정도는 자동으로 입력을 해주나 봅니다.
+
+다시 돌아와서 우리는 모든 컬럼을 사용 하는 것이 아니라 qsec 컬럼만 있으면 됩니다.
+
+그렇다면 df['qsec'] 로 해당 컬럼을 간단하게 불러 올 수 있습니다.
+
+```py
+X = df['qsec']
+```
+
+![img1 head](https://user-images.githubusercontent.com/85277660/210167489-b6959cb8-adbc-4d50-a6e9-2bda8573549e.png)
+
+X의 데이터 일부
+
+이렇게 각 번호와 값이 들어 있습니다. 하지만 이대로 사용 할 수 없습니다. 우리에게 필요한 값들은 value이지 label이 아니거든요 이대로 사용하려면 에러가 납니다. 다시 형변환을 해줘야 합니다.
+
+```py
+X = df1['qsec'].to_numpy()
+```
+numpy로 바꾸어 주었습니다! 참고로 numpy 에서 dataframe로 다시 변경하고 싶다면 pd.DataFrame(행렬) 쓰시면 됩니다.
+
+그런데 아직도 끝이 아닙니다.
+
+![view X](https://user-images.githubusercontent.com/85277660/210167493-dcac3606-fdf6-4839-9bc9-31fda8219960.png)
+
+우리가 원했던 것은 1개의 열을 가진 숫자의 나열인데 이렇게 일렬로 늘어집니다. 이거는 1차원입니다.
+
+```
+Expected 2D array, got 1D array instead
+Reshape your data either using array.reshape(-1, 1) if your data has a single feature or array.reshape(1, -1) if it contains a single sample.
+```
+
+이거 그대로 넣고 돌려보면 이런 에러를 출력합니다. 정규화를 하고 싶으면 2D를 가져와야 하는데 너가 넣은 것은 1D라는 것입니다. 형변환을 한번더 해줍시다.
+
+```py
+X = X.reshape(-1, 1)
+```
+
+reshape(-1,1)을 통해서 드디어 우리가 원하는 형태로 전환이 완료되었습니다. 
+
+reshape(행,열) 순서로 매개변수가 들어가게 됩니다. (3,4)를 넣으면 3행 4열을 가진 값으로 변환되겠지요
+
+그런데 문제는 -1행이나 -1열이라는거는 존재하지 않습니다. -1은 무슨 의미일까?
+
+ 
+```
+One shape dimension can be -1. In this case, the value is inferred from the length of the array and remaining dimensions.
+```
+reshape()의 '-1'이 의미하는 바는, 변경된 배열의 '-1' 위치의 차원은 "원래 배열의 길이와 남은 차원으로 부터 추정"이 된다.
+
+
+ 
+
+-1을 쓰지 않는다면 우리가 만들어야 하는 형태는 정확하게 reshape(32,1)이 됩니다. 데이터 값이 32개가 있거든요, 그런데 32개는 별로 중요한게 아닙니다. 1개의 열을 가졌다는게 더 중요하지 그러니 우리가 정해줄것은 1개의 열인거고 나머지 행의 개수는 컴퓨터가 알아서 추정해서 잘 만들어 봐라고 하는 겁니다. 예를 들어서 (-1,2)를 하면 열이 2개이고 나머지 행은 또 알아서 잘 만들어 놓겠지요
+
+ 
+
+데이터도 만들어 졌겠다. 이제 드디어 sklearn을 사용해봅시다.
+
+```py
+min_max_scaler = MinMaxScaler()
+```
+보통 이렇게 하는데 이 코드는 특별한 의미가 있는 것은 아닙니다. 그냥 MinMaxScaler()대신에 별명을 하나 붙여서 똑같이 쓰겠다는 의미인데 그냥 MinMaxScaler()그대로 사용해도 결과는 똑같습니다. 별명은 마음대로 붙이시면 되요
+
+```py
+min_max_scaler.fit(X)
+X_scaled_minmax=min_max_scaler.transform(X)
+```
+변환은 두줄로 이루어 집니다. fit와 transform은 또 다릅니다.
+
+첫줄의 .fit(X)는 우리가 X라는 값을 가지고 스케일을 '학습'을 하는 것이고
+
+두번째 줄의 .transform(X)는 이제 X에 적용해보겠다고 생각하시면 편합니다. 둘은 쌍으로 같이 움직입니다.
+
+![img1 daumcdn](https://user-images.githubusercontent.com/85277660/210167527-ae5fec16-5915-4b68-b8be-e46e341d1b4c.png)
+
+거의 다왔습니다. qsec에서 스케일을 적용까지 해보았습니다. 이제 여기서 0.5이상인 것읃 골라내야 할 것입니다.
+
+ 
+
+뭐 데이터값이 32개에다가 print로 결론을 적으니 하나하나 세어보셔도 될겁니다(?)
+
+ 
+
+여기서 numpy그대로 사용하시려면
+
+```py
+count=0
+for i in range(X_scaled_minmax.size):
+    if X_scaled_minmax[i]>=0.5:
+        count+=1
+print(count)
+```
+이렇게 간단한 함수를 하나 만드셔서 처음부터 크기만큼 쭉 돌려서 0.5보다 커지면 개수를 세는 방법과
+
+```py
+df = pd.DataFrame(X_scaled_minmax)
+df[df[0]>=0.5].count()
+```
+아니면 numpy를 다시 panda의 dataframe로 변경하고 0.5보다 큰 값만 가져와서 개수를 세어봐도 됩니다. 결과는 9로 똑같습니다. 저거 조건식을 좀더 설명하자면 데이터 프레임을 df라고 가정하겠습니다.
+
+df[df[열이름or열번호]+원하는 조건식] 이며 괄호와 컴마를 이용해서 여러 조건을 동시에 넣을 수 있습니다. 그러면 해당하는 값만 뽑아주게 되는데 count()를 사용하면 해당하는 값의 개수만 자동으로 셀수있습니다.
+
+ 
+```py
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+
+df1 = pd.read_csv('./mtcars.csv')
+
+X = df1['qsec'].to_numpy()
+X = X.reshape(-1, 1)
+
+min_max_scaler = MinMaxScaler()
+min_max_scaler.fit(X)
+X_scaled_minmax=min_max_scaler.transform(X)
+
+df = pd.DataFrame(X_scaled_minmax)
+df[df[0]>=0.5].count()
+```
+
+구구절절 설명하다고 뭐가 되게 길었는데 그냥 공백 포함해도 15줄이면 끝나는 간단한 코드였습니다.
+
+StandardScaler도 사용방법은 똑같습니다. MinMaxScaler대신에 저걸로 대체하면 끝입니다. 이어서 유형작업 3에 대해서 설명해보겠습니다.

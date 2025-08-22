@@ -1,0 +1,31 @@
+---
+title: 곱셈 백준 1629번 재귀
+date:   2022-10-21 16:45:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, recursive]
+---
+
+[https://www.acmicpc.net/problem/1629](https://www.acmicpc.net/problem/1629)
+
+문제
+자연수 A를 B번 곱한 수를 알고 싶다. 단 구하려는 수가 매우 커질 수 있으므로 이를 C로 나눈 나머지를 구하는 프로그램을 작성하시오.
+
+---
+
+앞에서 연산자 끼워넣기나 재귀로 문제를 간단하게 푸는 경우는 종종 있어 보입니다.
+
+```py
+a,b,c = map(int,input().split())
+
+def pow(a,b,c):
+    if b==1:
+        return a%c
+    print(a,b,c)
+    val = pow(a,b//2,c)
+    val = (val*val)%c
+    if b%2==0:
+        return val
+    return val*a%c
+
+print(pow(a,b,c))
+```

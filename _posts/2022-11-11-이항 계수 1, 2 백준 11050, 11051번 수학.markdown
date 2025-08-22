@@ -1,0 +1,52 @@
+---
+title: 이항 계수 1, 2 백준 11050, 11051번 수학
+date:   2022-11-11 19:19:30 +0900
+categories: [Coding_Test, 백준]
+tags: [coding, python, algorithm, math]
+---
+
+[https://www.acmicpc.net/problem/11050](https://www.acmicpc.net/problem/11050)
+
+[https://www.acmicpc.net/problem/11051](https://www.acmicpc.net/problem/11051)
+
+이항 계수(二項係數, 영어: binomial coefficient)는 이항식을 이항 정리로 전개 했을때 각 항의 계수인데 이는 조합의 개수와 같습니다.
+
+그러니까 N개의 숫자가 있을때 M개를 이용해서 조합의 수를 구하는 방법입니다.
+
+재귀나 반복문으로 풀어도 되지만 파이썬인만큼 내장함수로 풀 수 있습니다.
+
+```py
+n,m = map(int,input().split())
+import math
+ans = math.factorial(n)/(math.factorial(m)*math.factorial(n-m))
+print(int(ans))
+```
+
+팩토리얼함수를 사용해서 풀어도되고
+
+```py
+n,m = map(int,input().split())
+import math
+print(math.comb(n,m)%10007)
+```
+
+아니면 math.comb는 조합의 개수를 구하는 함수입니다.
+
+참고로 maht,perm(n,r)은 순열의 개수를 바로 구할 수 있습니다.
+
+사실 이렇게 해도 백준 이항 계수 1, 2번 문제를 모두 시간초과 없이 풀 수는 있지만 그래도 코드를 직접 짜봐야겠지요
+
+```py
+n,m = map(int,input().split())
+mod = 10007
+comb = [[0]*1002 for _ in range(1002)]
+for i in range(1,n+1):
+    comb[i][0] = comb[i][i] = 1
+    for j in range(1,i):
+        comb[i][j] = (comb[i-1][j]+comb[i-1][j-1])%mod
+print(comb[n][m])
+```
+
+nCk = n - 1Ck + n - 1Ck - 1
+
+위 공식을 따르기 때문에 DP로 문제를 접근할 수 있다는 점입니다.
