@@ -53,6 +53,10 @@ webmaster_verifications:
   baidu: # fill in your Baidu verification code
   facebook: # fill in your Facebook verification code
 
+# Google AdSense Configuration
+adsense:
+  client: "ca-pub-6569793832137858"  # 여기에 본인의 게시자 ID를 입력하세요.
+
 # ↑ --------------------------
 # The end of `jekyll-seo-tag` settings
 
