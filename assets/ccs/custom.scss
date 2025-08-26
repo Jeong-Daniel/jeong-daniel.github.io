@@ -1,0 +1,10 @@
+/* assets/css/custom.scss */
+
+/* Stop the shimmer effect on image loading */
+.shimmer {
+  -webkit-animation: none !important;
+  -moz-animation: none !important;
+  -o-animation: none !important;
+  animation: none !important;
+  background: none !important;
+}
