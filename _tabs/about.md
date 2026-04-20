@@ -20,7 +20,7 @@ Second major : [<u>BigData Science</u>](https://github.com/Jeong-Daniel/Bigdata_
 > Tech&Dev Team Software Engineer   
 > 22.12.01 ~ 23.01.31    
 
-![ligci](https://github.com/user-attachments/assets/59ecff5d-5879-4af6-936f-26ff413a6668)    
+<img width="5537" height="406" alt="1_LIG_DefenseAerospace" src="https://github.com/user-attachments/assets/d093ed3e-3655-4015-87df-b265a2fa31ef" />
 > * LIG Defense & Aerospace
 > Laser Systems Research Engineer  
 > 23.02.06 ~ now  
