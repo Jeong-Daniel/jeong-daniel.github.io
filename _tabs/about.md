@@ -5,7 +5,7 @@ order: 4
 ---
 
 ## Jeong Daeheyon
-Hi! My name is Jeong Daehyeon or English name is Daniel Jeong. I'm doing computer vision and deep learning enginner . If you need anything or want to inquire, please feel free to contact me.
+Hi, I'm Daehyeon (Daniel) Jeong. I am a Software Engineer with 4 years of experience in the defense industry, specializing in robust system integration and architecture. Rather than just writing code, I focus on solving structural bottlenecks and building scalable solutions for complex environments. Feel free to reach out if you'd like to discuss system architecture or engineering challenges.
 
 ### <strong><a href="https://www.notion.so/Jeong_Daniel-CV-a538e8ba44c748cc97b90ba569338b03"><i class="fa-solid fa-file-user"></i>  Please refer to my C.V.</a></strong>
 
@@ -20,8 +20,8 @@ Second major : [<u>BigData Science</u>](https://github.com/Jeong-Daniel/Bigdata_
 > Tech&Dev Team Software Engineer   
 > 22.12.01 ~ 23.01.31    
 
-![ligci](https://user-images.githubusercontent.com/85277660/212669546-ed6def8d-cc90-49f6-9130-413abeae7f17.png)    
-> * LIG Nex1  
+![ligci](https://github.com/user-attachments/assets/59ecff5d-5879-4af6-936f-26ff413a6668)    
+> * LIG Defense & Aerospace
 > Laser Systems Research Engineer  
 > 23.02.06 ~ now  
 
@@ -37,8 +37,17 @@ Second major : [<u>BigData Science</u>](https://github.com/Jeong-Daniel/Bigdata_
 *   [<u>UAV Ground Detection and Tracking Systems</u>](https://github.com/Jeong-Daniel/project17_UAV)
 *   [<u>Dialect Analysis Web Service</u>](https://github.com/Jeong-Daniel/Ai_Bigdata_based_Project/tree/main/Final%20Projet)
 
-## Technology Stack
-* Programming Language & Web Framework<br/>
-* Computer Vision(with Raspberry Pi & Python)<br/>
-* Machin Learning / Deep Learning<br/>
-* DataBase<br/>
+## 🛠️ Tech Stack & Arsenal
+
+**Architecture & Integration**
+- RESTful API Design, gRPC, Kafka
+
+**Core Languages**
+- 1st. C++, C#, Python.
+- 2nd. Rust, Ruby
+
+**Infrastructure & Deployment**
+- Docker, Linux, Jenkins
+
+## 📚 Philosophy
+> "I build systems, solve real-world bottlenecks, and engineer solutions that last."
