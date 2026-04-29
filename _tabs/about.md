@@ -7,8 +7,6 @@ order: 4
 ## Jeong Daeheyon
 Hi, I'm Daehyeon (Daniel) Jeong. I am a Software Engineer with 4 years of experience in the defense industry, specializing in robust system integration and architecture. Rather than just writing code, I focus on solving structural bottlenecks and building scalable solutions for complex environments. Feel free to reach out if you'd like to discuss system architecture or engineering challenges.
 
-### <strong><a href="https://www.notion.so/Jeong_Daniel-CV-a538e8ba44c748cc97b90ba569338b03"><i class="fa-solid fa-file-user"></i>Please refer to my C.V.</a></strong>
-
 ## Education
 Undergraduate student at Pusan National University  
 First major : [<u>Aerospace Engineering</u>](https://github.com/Jeong-Daniel/aerospace_engineering)  
