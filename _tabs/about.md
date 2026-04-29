@@ -7,7 +7,7 @@ order: 4
 ## Jeong Daeheyon
 Hi, I'm Daehyeon (Daniel) Jeong. I am a Software Engineer with 4 years of experience in the defense industry, specializing in robust system integration and architecture. Rather than just writing code, I focus on solving structural bottlenecks and building scalable solutions for complex environments. Feel free to reach out if you'd like to discuss system architecture or engineering challenges.
 
-### <strong><a href="https://www.notion.so/Jeong_Daniel-CV-a538e8ba44c748cc97b90ba569338b03"><i class="fa-solid fa-file-user"></i>  Please refer to my C.V.</a></strong>
+### <strong><a href="https://www.notion.so/Jeong_Daniel-CV-a538e8ba44c748cc97b90ba569338b03"><i class="fa-solid fa-file-user"></i>Please refer to my C.V.</a></strong>
 
 ## Education
 Undergraduate student at Pusan National University  
@@ -16,14 +16,13 @@ Second major : [<u>BigData Science</u>](https://github.com/Jeong-Daniel/Bigdata_
 
 ## Working
 ![meta ci](https://user-images.githubusercontent.com/85277660/212669538-41cc5155-f346-4479-9690-3cd6111824f5.png)   
-> * Metaverse Entertainmnet  
+> * Metaverse Entertainmnet   
 > Tech&Dev Team Software Engineer   
 > 22.12.01 ~ 23.01.31    
 
-<img width="5537" height="406" alt="1_LIG_DefenseAerospace" src="https://github.com/user-attachments/assets/d093ed3e-3655-4015-87df-b265a2fa31ef" />
-
+<img width="1755" height="318" alt="3_LIG_DefenseAerospace(조합형)" src="https://github.com/user-attachments/assets/c0e420d2-0522-41be-b626-7522905889d1" />
 > * LIG Defense & Aerospace   
-> Laser Systems Research Engineer  
+> Laser Systems Research Engineer   
 > 23.02.06 ~ now  
 
 ## Certification & Course
